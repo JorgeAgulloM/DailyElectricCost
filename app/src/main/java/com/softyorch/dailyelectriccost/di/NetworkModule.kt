@@ -1,5 +1,6 @@
 package com.softyorch.dailyelectriccost.di
 
+import com.softyorch.dailyelectriccost.data.network.red21Api.RedClient
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -14,10 +15,13 @@ object NetworkModule {
 
     @Singleton
     @Provides
-    fun providesRetrofit() = Retrofit.Builder()
+    fun providesRetrofit(): Retrofit = Retrofit.Builder()
         .baseUrl("https://apidatos.ree.es/")
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
-    
+    @Singleton
+    @Provides
+    fun provideGetRed21Data(retrofit: Retrofit): RedClient = retrofit.create(RedClient::class.java)
+
 }
