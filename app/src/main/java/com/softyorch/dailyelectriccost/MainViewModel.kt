@@ -13,7 +13,15 @@ class MainViewModel @Inject constructor(private val repository: Red21Repository)
 
     fun getData() {
         viewModelScope.launch {
-            Log.d("RED21_VM", "data -${repository.getData()}")
+            val response = repository.getData()
+            response.let {
+                if (it != null) {
+                    if (it.isSuccessful){
+                        Log.d("RED21_VM", "data ->${it.body()}")
+                    }
+                }
+
+            }
         }
     }
 }
