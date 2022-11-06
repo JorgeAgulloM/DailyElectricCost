@@ -2,23 +2,61 @@ package com.softyorch.dailyelectriccost.data.network.red21Api
 
 import android.util.Log
 import com.softyorch.dailyelectriccost.data.network.red21Api.response.Red21
+import com.softyorch.dailyelectriccost.utils.Constants.RED21
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.internal.notify
 import retrofit2.Response
 import javax.inject.Inject
 
 class RedService @Inject constructor(private val redClient: RedClient) {
-    suspend fun getData(): Response<Red21>? {
+    suspend fun getDataDefault(
+        widget: String,
+        startDate: String,
+        endDate: String,
+        timeTrunc: String
+    ): Response<Red21>? {
         return withContext(Dispatchers.IO) {
             try {
-                val response = redClient.getData()
-                Log.d("API21", "Response ->$response")
+                val response = redClient.getDataDefault(
+                    widget = widget,
+                    startDate = startDate,
+                    endDate = endDate,
+                    timeTrunc = timeTrunc
+                )
+                Log.d(RED21, "ResponseDefault.Service ->$response")
                 response
             } catch (ex: java.lang.Exception) {
-                ex.message.toString().notify()
+                Log.d(RED21, "ResponseDefault.Service.error ->${ex.message.toString()}")
                 null
             }
         }
     }
+
+    suspend fun getDataGeoTruncate(
+        widget: String,
+        startDate: String,
+        endDate: String,
+        timeTrunc: String,
+        geo_limit: String,
+        geo_ids: String
+    ): Response<Red21>? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = redClient.getDataGeoTruncate(
+                    widget = widget,
+                    startDate = startDate,
+                    endDate = endDate,
+                    timeTrunc = timeTrunc,
+                    geo_limit = geo_limit,
+                    geo_ids = geo_ids
+                )
+                Log.d(RED21, "ResponseDefault.Service ->$response")
+                response
+            } catch (ex: java.lang.Exception) {
+                Log.d(RED21, "ResponseDefault.Service.error ->${ex.message.toString()}")
+                null
+            }
+        }
+    }
+
 }
