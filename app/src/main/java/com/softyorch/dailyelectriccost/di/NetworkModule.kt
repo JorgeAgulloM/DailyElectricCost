@@ -1,6 +1,7 @@
 package com.softyorch.dailyelectriccost.di
 
 import com.softyorch.dailyelectriccost.data.network.red21Api.RedClient
+import com.softyorch.dailyelectriccost.utils.Constants.URL_BASE
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,7 +17,7 @@ object NetworkModule {
     @Singleton
     @Provides
     fun providesRetrofit(): Retrofit = Retrofit.Builder()
-        .baseUrl("https://apidatos.ree.es/")
+        .baseUrl(URL_BASE)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
