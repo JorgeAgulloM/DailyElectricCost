@@ -44,10 +44,10 @@ class RedService @Inject constructor(private val redClient: RedClient) {
                     geo_limit = redDataTruncateEntity.geo_limit,
                     geo_ids = redDataTruncateEntity.geo_ids
                 )
-                Log.d(RED21, "ResponseDefault.Service ->$response")
+                Log.d(RED21, "ResponseDataTruncate.Service ->$response")
                 response
             } catch (ex: java.lang.Exception) {
-                Log.d(RED21, "ResponseDefault.Service.error ->${ex.message.toString()}")
+                Log.d(RED21, "ResponseDataTruncate.Service.error ->${ex.message.toString()}")
                 null
             }
         }
