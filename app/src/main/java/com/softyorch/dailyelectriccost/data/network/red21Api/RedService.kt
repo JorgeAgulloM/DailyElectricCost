@@ -1,6 +1,8 @@
 package com.softyorch.dailyelectriccost.data.network.red21Api
 
 import android.util.Log
+import com.softyorch.dailyelectriccost.data.network.red21Api.entity.RedDataTruncateEntity
+import com.softyorch.dailyelectriccost.data.network.red21Api.entity.RedDefaultEntity
 import com.softyorch.dailyelectriccost.data.network.red21Api.response.Red21
 import com.softyorch.dailyelectriccost.utils.Constants.RED21
 import kotlinx.coroutines.Dispatchers
@@ -10,18 +12,15 @@ import javax.inject.Inject
 
 class RedService @Inject constructor(private val redClient: RedClient) {
     suspend fun getDataDefault(
-        widget: String,
-        startDate: String,
-        endDate: String,
-        timeTrunc: String
+        redDefaultEntity: RedDefaultEntity
     ): Response<Red21>? {
         return withContext(Dispatchers.IO) {
             try {
                 val response = redClient.getDataDefault(
-                    widget = widget,
-                    startDate = startDate,
-                    endDate = endDate,
-                    timeTrunc = timeTrunc
+                    widget = redDefaultEntity.widget,
+                    startDate = redDefaultEntity.startDate,
+                    endDate = redDefaultEntity.endDate,
+                    timeTruncate = redDefaultEntity.timeTruncate
                 )
                 Log.d(RED21, "ResponseDefault.Service ->$response")
                 response
@@ -33,22 +32,17 @@ class RedService @Inject constructor(private val redClient: RedClient) {
     }
 
     suspend fun getDataGeoTruncate(
-        widget: String,
-        startDate: String,
-        endDate: String,
-        timeTrunc: String,
-        geo_limit: String,
-        geo_ids: String
+        redDataTruncateEntity: RedDataTruncateEntity
     ): Response<Red21>? {
         return withContext(Dispatchers.IO) {
             try {
                 val response = redClient.getDataGeoTruncate(
-                    widget = widget,
-                    startDate = startDate,
-                    endDate = endDate,
-                    timeTrunc = timeTrunc,
-                    geo_limit = geo_limit,
-                    geo_ids = geo_ids
+                    widget = redDataTruncateEntity.widget,
+                    startDate = redDataTruncateEntity.startDate,
+                    endDate = redDataTruncateEntity.endDate,
+                    timeTruncate = redDataTruncateEntity.timeTruncate,
+                    geo_limit = redDataTruncateEntity.geo_limit,
+                    geo_ids = redDataTruncateEntity.geo_ids
                 )
                 Log.d(RED21, "ResponseDefault.Service ->$response")
                 response
