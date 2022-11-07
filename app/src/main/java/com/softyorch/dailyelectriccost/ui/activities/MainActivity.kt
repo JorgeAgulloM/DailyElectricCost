@@ -1,4 +1,4 @@
-package com.softyorch.dailyelectriccost
+package com.softyorch.dailyelectriccost.ui.activities
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

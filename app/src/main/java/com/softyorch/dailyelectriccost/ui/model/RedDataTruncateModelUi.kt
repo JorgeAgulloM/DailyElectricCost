@@ -1,4 +1,4 @@
-package com.softyorch.dailyelectriccost.model
+package com.softyorch.dailyelectriccost.ui.model
 
 data class RedDataTruncateModelUi(
     var widget: String,

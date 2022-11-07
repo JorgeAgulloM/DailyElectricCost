@@ -1,4 +1,4 @@
-package com.softyorch.dailyelectriccost
+package com.softyorch.dailyelectriccost.ui.activities
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -6,8 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.softyorch.dailyelectriccost.domain.redUseCases.RedUsesCases
 import com.softyorch.dailyelectriccost.domain.redUseCases.model.mapper.mapToRedDataTruncateModelDomain
 import com.softyorch.dailyelectriccost.domain.redUseCases.model.mapper.mapToRedDefaultModelDomain
-import com.softyorch.dailyelectriccost.model.RedDataTruncateModelUi
-import com.softyorch.dailyelectriccost.model.RedDefaultModelUi
+import com.softyorch.dailyelectriccost.ui.model.RedDataTruncateModelUi
+import com.softyorch.dailyelectriccost.ui.model.RedDefaultModelUi
 import com.softyorch.dailyelectriccost.utils.Constants.RED21
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
