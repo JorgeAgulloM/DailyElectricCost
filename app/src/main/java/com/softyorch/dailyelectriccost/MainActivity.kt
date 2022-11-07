@@ -24,6 +24,7 @@ class MainActivity: ComponentActivity() {
             val viewModel = hiltViewModel<MainViewModel>()
             viewModel.getDataDefault()
             viewModel.getDataGeoTruncate()
+            //viewModel.getDataPrueba()
             DailyElectricCostTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
