@@ -1,6 +1,6 @@
 package com.softyorch.dailyelectriccost.data.network.red21Api
 
-import com.softyorch.dailyelectriccost.data.network.red21Api.responseMercados.Red21Mercados
+import com.softyorch.dailyelectriccost.data.network.red21Api.responseMercados.Red21Response
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -21,7 +21,7 @@ interface RedClient {
         @Query("start_date") startDate: String = "2019-01-01T00:00",
         @Query("end_date") endDate: String = "2019-01-31T23:59",
         @Query("time_trunc") timeTruncate: String = "day"
-    ): Response<Red21Mercados>
+    ): Response<Red21Response>
 
     @GET(URL)
     suspend fun getDataGeoTruncate(
@@ -33,7 +33,7 @@ interface RedClient {
         @Query("geo_trunc") geoTruncate: String = GEO_TRUNCATE,
         @Query("geo_limit") geo_limit: String = "peninsular",
         @Query("geo_ids") geo_ids: String = "8741"
-    ): Response<Red21Mercados>
+    ): Response<Red21Response>
 
     companion object {
         const val URL = "es/datos/{category}/{widget}"

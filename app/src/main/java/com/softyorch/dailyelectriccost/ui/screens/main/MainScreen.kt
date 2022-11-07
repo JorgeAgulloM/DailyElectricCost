@@ -14,7 +14,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import com.softyorch.dailyelectriccost.data.network.red21Api.responseMercados.Red21Mercados
+import com.softyorch.dailyelectriccost.data.network.red21Api.responseMercados.Red21Response
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -24,7 +24,7 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel) {
     Scaffold(
     ) {
 
-        val dataDefault: Red21Mercados? by viewModel.defaultData.observeAsState(initial = Red21Mercados.red21MercadosEmpty)
+        val dataDefault: Red21Response? by viewModel.defaultData.observeAsState(initial = Red21Response.red21ResponseEmpty)
 
         Column(
             modifier = Modifier.padding(it.calculateTopPadding()).fillMaxSize(),

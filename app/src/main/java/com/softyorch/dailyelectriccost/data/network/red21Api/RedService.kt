@@ -3,7 +3,7 @@ package com.softyorch.dailyelectriccost.data.network.red21Api
 import android.util.Log
 import com.softyorch.dailyelectriccost.data.network.red21Api.entity.RedDataTruncateEntity
 import com.softyorch.dailyelectriccost.data.network.red21Api.entity.RedDefaultEntity
-import com.softyorch.dailyelectriccost.data.network.red21Api.responseMercados.Red21Mercados
+import com.softyorch.dailyelectriccost.data.network.red21Api.responseMercados.Red21Response
 import com.softyorch.dailyelectriccost.utils.Constants.RED21
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -13,7 +13,7 @@ import javax.inject.Inject
 class RedService @Inject constructor(private val redClient: RedClient) {
     suspend fun getDataDefault(
         redDefaultEntity: RedDefaultEntity
-    ): Response<Red21Mercados>? {
+    ): Response<Red21Response>? {
         return withContext(Dispatchers.IO) {
             try {
                 val response = redClient.getDataDefault(
@@ -34,7 +34,7 @@ class RedService @Inject constructor(private val redClient: RedClient) {
 
     suspend fun getDataGeoTruncate(
         redDataTruncateEntity: RedDataTruncateEntity
-    ): Response<Red21Mercados>? {
+    ): Response<Red21Response>? {
         return withContext(Dispatchers.IO) {
             try {
                 val response = redClient.getDataGeoTruncate(
