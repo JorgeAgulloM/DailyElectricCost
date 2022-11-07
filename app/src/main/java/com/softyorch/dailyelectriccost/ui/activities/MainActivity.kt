@@ -1,4 +1,4 @@
-package com.softyorch.dailyelectriccost
+package com.softyorch.dailyelectriccost.ui.activities
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -10,12 +10,21 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.softyorch.dailyelectriccost.ui.theme.DailyElectricCostTheme
+import dagger.hilt.android.AndroidEntryPoint
 
-class MainActivity : ComponentActivity() {
+@AndroidEntryPoint
+class MainActivity: ComponentActivity() {
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            val viewModel = hiltViewModel<MainViewModel>()
+            viewModel.getDataDefault()
+            viewModel.getDataGeoTruncate()
+            //viewModel.getDataPrueba()
             DailyElectricCostTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
