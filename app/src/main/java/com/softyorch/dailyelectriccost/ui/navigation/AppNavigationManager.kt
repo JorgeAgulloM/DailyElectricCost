@@ -1,11 +1,13 @@
 package com.softyorch.dailyelectriccost.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.softyorch.dailyelectriccost.ui.screens.main.MainScreen
+import com.softyorch.dailyelectriccost.ui.screens.main.MainViewModel
 import com.softyorch.dailyelectriccost.ui.screens.splash.SplashScreen
 
 @Composable
@@ -15,7 +17,8 @@ fun AppNavigationManager(navController: NavHostController = rememberNavControlle
             SplashScreen(navController)
         }
         composable(route = AppScreenRoutes.MainScreen.route) {
-            MainScreen(navController)
+            val viewModel = hiltViewModel<MainViewModel>()
+            MainScreen(navController, viewModel)
         }
     }
 }
