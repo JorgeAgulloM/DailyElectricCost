@@ -1,6 +1,7 @@
 package com.softyorch.dailyelectriccost.ui.model
 
 data class RedDataTruncateModelUi(
+    val category: String,
     var widget: String,
     var startDate: String,
     var endDate: String,

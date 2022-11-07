@@ -6,9 +6,9 @@ import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.Red
 import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.RedDefaultModel
 
 fun RedDefaultModel.mapToRedDefaultEntity(): RedDefaultEntity = RedDefaultEntity(
-    widget, startDate, endDate, timeTruncate
+    category, widget, startDate, endDate, timeTruncate
 )
 
 fun RedDataTruncateModel.mapToRedDataTruncateEntity(): RedDataTruncateEntity = RedDataTruncateEntity(
-    widget, startDate, endDate, timeTruncate, geo_limit, geo_ids
+    category, widget, startDate, endDate, timeTruncate, geo_limit, geo_ids
 )

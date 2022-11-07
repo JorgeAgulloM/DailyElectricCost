@@ -16,6 +16,7 @@ interface RedClient {
 
     @GET(URL)
     suspend fun getDataDefault(
+        @Path("category") category: String,
         @Path("widget") widget: String = "balance-electrico",
         @Query("start_date") startDate: String = "2019-01-01T00:00",
         @Query("end_date") endDate: String = "2019-01-31T23:59",
@@ -24,6 +25,7 @@ interface RedClient {
 
     @GET(URL)
     suspend fun getDataGeoTruncate(
+        @Path("category") category: String,
         @Path("widget") widget: String = "balance-electrico",
         @Query("start_date") startDate: String = "2019-01-01T00:00",
         @Query("end_date") endDate: String = "2019-01-31T23:59",
@@ -41,7 +43,7 @@ interface RedClient {
     ): Response<Red21>*/
 
     companion object {
-        const val URL = "es/datos/balance/{widget}"
+        const val URL = "es/datos/{category}/{widget}"
         const val GEO_TRUNCATE = "electric_system"
     }
 

@@ -17,6 +17,7 @@ class RedService @Inject constructor(private val redClient: RedClient) {
         return withContext(Dispatchers.IO) {
             try {
                 val response = redClient.getDataDefault(
+                    category = redDefaultEntity.category,
                     widget = redDefaultEntity.widget,
                     startDate = redDefaultEntity.startDate,
                     endDate = redDefaultEntity.endDate,
@@ -37,6 +38,7 @@ class RedService @Inject constructor(private val redClient: RedClient) {
         return withContext(Dispatchers.IO) {
             try {
                 val response = redClient.getDataGeoTruncate(
+                    category = redDataTruncateEntity.category,
                     widget = redDataTruncateEntity.widget,
                     startDate = redDataTruncateEntity.startDate,
                     endDate = redDataTruncateEntity.endDate,

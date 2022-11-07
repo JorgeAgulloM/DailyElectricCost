@@ -6,9 +6,9 @@ import com.softyorch.dailyelectriccost.ui.model.RedDataTruncateModelUi
 import com.softyorch.dailyelectriccost.ui.model.RedDefaultModelUi
 
 fun RedDefaultModelUi.mapToRedDefaultModelDomain(): RedDefaultModelDomain = RedDefaultModelDomain(
-    widget, startDate, endDate, timeTruncate
+    category, widget, startDate, endDate, timeTruncate
 )
 
 fun RedDataTruncateModelUi.mapToRedDataTruncateModelDomain(): RedDataTruncateModelDomain = RedDataTruncateModelDomain(
-    widget, startDate, endDate, timeTruncate, geo_limit, geo_ids
+    category, widget, startDate, endDate, timeTruncate, geo_limit, geo_ids
 )

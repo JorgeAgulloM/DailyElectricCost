@@ -4,9 +4,9 @@ import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.Red
 import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.RedDefaultModel
 
 fun RedDefaultModel.mapToRedDefaultModel(): RedDefaultModel = RedDefaultModel(
-    widget, startDate, endDate, timeTruncate
+    category, widget, startDate, endDate, timeTruncate
 )
 
 fun RedDataTruncateModel.mapToRedDataTruncateModel(): RedDataTruncateModel = RedDataTruncateModel(
-    widget, startDate, endDate, timeTruncate, geo_limit, geo_ids
+    category, widget, startDate, endDate, timeTruncate, geo_limit, geo_ids
 )

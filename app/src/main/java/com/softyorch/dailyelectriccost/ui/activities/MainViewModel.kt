@@ -20,6 +20,7 @@ class MainViewModel @Inject constructor(private val redUsesCases: RedUsesCases) 
         viewModelScope.launch {
             val response = redUsesCases.getDataDefault(
                 RedDefaultModelUi(
+                    category = "balance",
                     widget = "balance-electrico",
                     startDate = "2019-01-01T00:00",
                     endDate = "2019-01-31T23:59",
@@ -41,6 +42,7 @@ class MainViewModel @Inject constructor(private val redUsesCases: RedUsesCases) 
         viewModelScope.launch {
             val response = redUsesCases.getDataGeoTruncate(
                RedDataTruncateModelUi(
+                   category = "balance",
                    widget = "balance-electrico",
                    startDate = "2019-01-01T00:00",
                    endDate = "2019-01-31T23:59",
