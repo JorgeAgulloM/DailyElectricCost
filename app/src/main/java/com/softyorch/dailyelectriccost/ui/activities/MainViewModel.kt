@@ -8,6 +8,7 @@ import com.softyorch.dailyelectriccost.domain.redUseCases.model.mapper.mapToRedD
 import com.softyorch.dailyelectriccost.domain.redUseCases.model.mapper.mapToRedDefaultModelDomain
 import com.softyorch.dailyelectriccost.ui.model.RedDataTruncateModelUi
 import com.softyorch.dailyelectriccost.ui.model.RedDefaultModelUi
+import com.softyorch.dailyelectriccost.utils.Constants.LIST_CATEGORY
 import com.softyorch.dailyelectriccost.utils.Constants.RED21
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -20,8 +21,8 @@ class MainViewModel @Inject constructor(private val redUsesCases: RedUsesCases) 
         viewModelScope.launch {
             val response = redUsesCases.getDataDefault(
                 RedDefaultModelUi(
-                    category = "balance",
-                    widget = "balance-electrico",
+                    category = LIST_CATEGORY[0][0],
+                    widget = LIST_CATEGORY[0][1],
                     startDate = "2019-01-01T00:00",
                     endDate = "2019-01-31T23:59",
                     timeTruncate = "day"
@@ -42,8 +43,8 @@ class MainViewModel @Inject constructor(private val redUsesCases: RedUsesCases) 
         viewModelScope.launch {
             val response = redUsesCases.getDataGeoTruncate(
                RedDataTruncateModelUi(
-                   category = "balance",
-                   widget = "balance-electrico",
+                   category = LIST_CATEGORY[0][0],
+                   widget = LIST_CATEGORY[0][1],
                    startDate = "2019-01-01T00:00",
                    endDate = "2019-01-31T23:59",
                    timeTruncate = "day",
