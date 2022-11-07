@@ -1,7 +1,7 @@
 package com.softyorch.dailyelectriccost.data.repository.red21Repository
 
 import com.softyorch.dailyelectriccost.data.network.red21Api.RedService
-import com.softyorch.dailyelectriccost.data.network.red21Api.response.Red21
+import com.softyorch.dailyelectriccost.data.network.red21Api.responseMercados.Red21Mercados
 import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.RedDataTruncateModel
 import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.RedDefaultModel
 import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.mapper.mapToRedDataTruncateEntity
@@ -14,13 +14,13 @@ import javax.inject.Singleton
 class Red21Repository @Inject constructor( private val api: RedService){
     suspend fun getDataDefault(
         redDefaultModel: RedDefaultModel
-    ): Response<Red21>? = api.getDataDefault(
+    ): Response<Red21Mercados>? = api.getDataDefault(
         redDefaultModel.mapToRedDefaultEntity()
     )
 
     suspend fun getDataGeoTruncate(
        redDataTruncateModel: RedDataTruncateModel
-    ): Response<Red21>? = api.getDataGeoTruncate(
+    ): Response<Red21Mercados>? = api.getDataGeoTruncate(
         redDataTruncateModel.mapToRedDataTruncateEntity()
     )
 }
