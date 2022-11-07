@@ -1,6 +1,6 @@
-package com.softyorch.dailyelectriccost.domain.redUseCases
+package com.softyorch.dailyelectriccost.data.repository.red21Repository.model
 
-data class RedDataTruncateModelDomain(
+data class RedDataTruncateModel(
     var widget: String,
     var startDate: String,
     var endDate: String,

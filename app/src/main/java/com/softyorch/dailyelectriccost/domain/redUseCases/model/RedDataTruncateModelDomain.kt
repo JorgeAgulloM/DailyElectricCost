@@ -1,6 +1,6 @@
-package com.softyorch.dailyelectriccost.data.network.red21Api
+package com.softyorch.dailyelectriccost.domain.redUseCases.model
 
-data class RedDataTruncateEntity(
+data class RedDataTruncateModelDomain(
     var widget: String,
     var startDate: String,
     var endDate: String,

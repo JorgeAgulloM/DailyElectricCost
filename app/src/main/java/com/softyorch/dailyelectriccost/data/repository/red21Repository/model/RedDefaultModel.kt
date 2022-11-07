@@ -1,4 +1,4 @@
-package com.softyorch.dailyelectriccost.data.repository.red21Repository
+package com.softyorch.dailyelectriccost.data.repository.red21Repository.model
 
 data class RedDefaultModel(
     val widget: String,

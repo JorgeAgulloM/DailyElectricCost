@@ -1,6 +1,6 @@
-package com.softyorch.dailyelectriccost.data.network.red21Api
+package com.softyorch.dailyelectriccost.domain.redUseCases.model
 
-data class RedDefaultEntity(
+data class RedDefaultModelDomain(
     val widget: String,
     val startDate: String,
     val endDate: String,
