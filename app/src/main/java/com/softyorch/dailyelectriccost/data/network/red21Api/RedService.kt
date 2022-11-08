@@ -3,7 +3,7 @@ package com.softyorch.dailyelectriccost.data.network.red21Api
 import android.util.Log
 import com.softyorch.dailyelectriccost.data.network.red21Api.entity.RedDataTruncateEntity
 import com.softyorch.dailyelectriccost.data.network.red21Api.entity.RedDefaultEntity
-import com.softyorch.dailyelectriccost.data.network.red21Api.response.market.Red21Balance
+import com.softyorch.dailyelectriccost.data.network.red21Api.response.market.Red21Market
 import com.softyorch.dailyelectriccost.utils.Constants.RED21
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -14,7 +14,7 @@ class RedService @Inject constructor(private val redClient: RedClient) {
     /** Asimilación de datos del balance eléctrico durante las últimas 24 horas. */
     suspend fun getDataDefault(
         redDefaultEntity: RedDefaultEntity
-    ): Response<Red21Balance>? {
+    ): Response<Red21Market>? {
         return withContext(Dispatchers.IO) {
             try {
                 val response = redClient.getDataDefault(
@@ -35,7 +35,7 @@ class RedService @Inject constructor(private val redClient: RedClient) {
 
     suspend fun getDataGeoTruncate(
         redDataTruncateEntity: RedDataTruncateEntity
-    ): Response<Red21Balance>? {
+    ): Response<Red21Market>? {
         return withContext(Dispatchers.IO) {
             try {
                 val response = redClient.getDataGeoTruncate(

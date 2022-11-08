@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softyorch.dailyelectriccost.data.network.red21Api.response.market.Included
-import com.softyorch.dailyelectriccost.data.network.red21Api.response.market.Red21Balance
+import com.softyorch.dailyelectriccost.data.network.red21Api.response.market.Red21Market
 import com.softyorch.dailyelectriccost.domain.redUseCases.RedUsesCases
 import com.softyorch.dailyelectriccost.domain.redUseCases.model.mapper.mapToRedDataTruncateModelDomain
 import com.softyorch.dailyelectriccost.ui.model.RedDataTruncateModelUi
@@ -21,11 +21,11 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(private val redUsesCases: RedUsesCases) : ViewModel() {
 
-    private val _defaultData = MutableLiveData<Red21Balance?>(Red21Balance.red21BalanceEmpty)
-    val defaultData: LiveData<Red21Balance?> = _defaultData
+    private val _defaultData = MutableLiveData<Red21Market?>(Red21Market.red21MarketEmpty)
+    val defaultData: LiveData<Red21Market?> = _defaultData
 
     private val _includes =
-        MutableLiveData<List<Included?>>(Red21Balance.red21BalanceEmpty.included)
+        MutableLiveData<List<Included?>>(Red21Market.red21MarketEmpty.included)
     val includes: LiveData<List<Included?>> = _includes
 
 

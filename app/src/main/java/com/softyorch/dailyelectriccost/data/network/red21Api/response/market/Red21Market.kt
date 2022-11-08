@@ -8,12 +8,12 @@ import com.google.gson.annotations.SerializedName
 import com.softyorch.dailyelectriccost.data.network.red21Api.response.*
 import com.softyorch.dailyelectriccost.utils.Constants.EMPTY_STRING
 
-data class Red21Balance(
+data class Red21Market(
     @SerializedName("data") val data: Data,
     @SerializedName("included") val included: List<Included>
 ) {
     companion object {
-        val red21BalanceEmpty: Red21Balance = Red21Balance(
+        val red21MarketEmpty: Red21Market = Red21Market(
             data = Data(
                 attributes = Attributes(
                     description = EMPTY_STRING,
