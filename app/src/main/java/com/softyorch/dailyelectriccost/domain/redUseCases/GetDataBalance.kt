@@ -5,7 +5,7 @@ import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.map
 import com.softyorch.dailyelectriccost.domain.redUseCases.model.RedBalanceModelDomain
 import javax.inject.Inject
 
-class GetDataDefault @Inject constructor(private val repository: Red21Repository) {
+class GetDataBalance @Inject constructor(private val repository: Red21Repository) {
     suspend operator fun invoke(redBalanceModelDomain: RedBalanceModelDomain) =
         repository.getDataDefault(redBalanceModelDomain.mapToRedBalanceModel())
 }

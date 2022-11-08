@@ -86,7 +86,7 @@ class MainViewModel @Inject constructor(private val redUsesCases: RedUsesCases) 
     fun getDataGeoTruncate() {
 
         viewModelScope.launch {
-            redUsesCases.getDataGeoTruncate(
+            redUsesCases.getDataMarketsTruncate(
                 RedMarketsTruncateModelUi(
                     category = _category[5][0],
                     widget = _category[5][13],

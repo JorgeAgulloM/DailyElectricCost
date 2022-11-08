@@ -5,7 +5,7 @@ import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.map
 import com.softyorch.dailyelectriccost.domain.redUseCases.model.RedMarketsTruncateModelDomain
 import javax.inject.Inject
 
-class GetDataGeoTruncate @Inject constructor(private val repository: Red21Repository) {
+class GetDataMarketsTruncate @Inject constructor(private val repository: Red21Repository) {
     suspend operator fun invoke(redMarketsTruncateModelDomain: RedMarketsTruncateModelDomain) =
         repository.getDataGeoTruncate(redMarketsTruncateModelDomain.mapToRedMarketsTruncateModel())
 }
