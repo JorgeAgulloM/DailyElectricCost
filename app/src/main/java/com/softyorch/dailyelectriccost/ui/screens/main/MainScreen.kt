@@ -13,7 +13,9 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -53,6 +55,20 @@ fun Body(navController: NavController, viewModel: MainViewModel, it: PaddingValu
     val price: Double by viewModel.price.observeAsState(initial = 0.0)
     val dateTime: String by viewModel.dateTime.observeAsState(initial = EMPTY_STRING)
     val geoLimit: String by viewModel.geoLimit.observeAsState(initial = EMPTY_STRING)
+    val modifier = Modifier
+        .shadow(
+            elevation = 2.dp, clip = true,
+            shape = MaterialTheme.shapes.extraLarge.copy(
+                    topStart = CornerSize(25.dp)
+                ),
+            ambientColor = Color.White,
+            spotColor = Color.White,
+        ).background(
+            color = Color(0xff131313).copy(alpha = 0.95f),
+            shape = MaterialTheme.shapes.extraLarge.copy(
+                    topStart = CornerSize(25.dp)
+                )
+        ).width(width = 300.dp)
 
     Box(
         modifier = Modifier
@@ -69,11 +85,13 @@ fun Body(navController: NavController, viewModel: MainViewModel, it: PaddingValu
         ) {
             ActualPrice(price)
             Spacer(modifier = Modifier.padding(vertical = 16.dp))
-            PriceCard(price * 2, "Mejor máximo", Color(0xffba1a1a))
+            PriceCard(modifier, price * 2, "Mejor máximo", Color(0xffba1a1a))
             Spacer(modifier = Modifier.padding(vertical = 8.dp))
-            PriceCard(price / 2, "Mejor precio del día", Color(0xffAFF1CF))//AFF1CF
+            PriceCard(modifier, price / 2, "Mejor precio del día", Color(0xffAFF1CF))//AFF1CF
             Spacer(modifier = Modifier.padding(vertical = 8.dp))
-            WeekResume(price * 3, price / 3)
+            WeekResume(modifier, price * 3, price / 3)
+            Spacer(modifier = Modifier.padding(vertical = 8.dp))
+            GoogleAddsMain(modifier)
         }
     }
 }
@@ -143,19 +161,24 @@ fun ActualPrice(
         horizontalAlignment = Alignment.Start,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 36.dp)
+            .padding(top = 16.dp)
             .width(width = 203.dp)
     ) {
         AnimatedText(
             price = price
         ) { targetCount ->
             Text(
-                text = targetCount.toString(),
-                color = Color(0xffe7e3d0),
+                text = targetCount.toString() + "€",
+                color = Color(0xffE7D800),
                 textAlign = TextAlign.Center,
                 lineHeight = 52.sp,
                 style = TextStyle(
-                    fontSize = 45.sp
+                    fontSize = 45.sp,
+                    shadow = Shadow(
+                        Color.White,
+                        offset = Offset(2F,2F),
+                        blurRadius = 4F
+                    )
                 ),
                 modifier = Modifier
                     .width(width = 203.dp)
@@ -178,28 +201,13 @@ fun ActualPrice(
 
 @Composable
 fun PriceCard(
+    modifier: Modifier,
     price: Double = 0.0,
     text: String = "Precio máximo",
     color: Color = Color(0xffba1a1a)
 ) {
     Column(
-        modifier = Modifier
-            .shadow(
-                elevation = 20.dp,
-                clip = true,
-                shape = MaterialTheme.shapes.extraLarge.copy(
-                    topStart = CornerSize(25.dp)
-                ),
-                ambientColor = Color.White,
-                //spotColor = Color.White,
-            )
-            .background(
-                color = Color(0xff131313).copy(alpha = 0.75f),
-                shape = MaterialTheme.shapes.extraLarge.copy(
-                    topStart = CornerSize(25.dp)
-                )
-            )
-            .width(width = 300.dp)
+        modifier = modifier
             .height(height = 100.dp),
         verticalArrangement = Arrangement.SpaceAround,
         horizontalAlignment = Alignment.Start
@@ -224,7 +232,12 @@ fun PriceCard(
                 textAlign = TextAlign.Start,
                 color = color,
                 style = TextStyle(
-                    fontSize = 45.sp
+                    fontSize = 45.sp,
+                    shadow = Shadow(
+                        Color.White,
+                        offset = Offset(2F,2F),
+                        blurRadius = 4F
+                    )
                 )
             )
         }
@@ -233,31 +246,19 @@ fun PriceCard(
 
 @Composable
 fun WeekResume(
+    modifier: Modifier,
     priceMax: Double = 0.0,
     priceMin: Double = 0.0
 ) {
     Column(
         verticalArrangement = Arrangement.SpaceAround,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
+        modifier = modifier
             .width(width = 300.dp)
     ) {
         Column(
             modifier = Modifier
-                .width(width = 300.dp)
-                .height(height = 215.dp)
-                .shadow(
-                    elevation = 20.dp,
-                    clip = true,
-                    shape = MaterialTheme.shapes.extraLarge.copy(
-                        topStart = CornerSize(25.dp)
-                    ),
-                    ambientColor = Color.White
-                )
-                .background(
-                    color = Color(0xff131313).copy(alpha = 0.85f),
-                    shape = MaterialTheme.shapes.extraLarge
-                ),
+                .height(height = 215.dp),
             verticalArrangement = Arrangement.Top
         ) {
             Text(
@@ -313,7 +314,13 @@ fun WeekResume(
                             text = targetState.toString() + "€",
                             color = Color(0xffba1a1a),
                             lineHeight = 16.sp,
-                            style = MaterialTheme.typography.bodySmall,
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                shadow = Shadow(
+                                    Color.White,
+                                    offset = Offset(1F,1F),
+                                    blurRadius = 1F
+                                )
+                            ),
                             textAlign = TextAlign.Start,
                             modifier = Modifier.fillMaxWidth().padding(start = 8.dp, top = 16.dp)
                         )
@@ -325,7 +332,13 @@ fun WeekResume(
                             text = targetState.toString() + "€",
                             color = Color(0xffaff1cf),
                             lineHeight = 16.sp,
-                            style = MaterialTheme.typography.bodySmall,
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                shadow = Shadow(
+                                    Color.White,
+                                    offset = Offset(1F,1F),
+                                    blurRadius = 1F
+                                )
+                            ),
                             textAlign = TextAlign.Start,
                             modifier = Modifier.fillMaxWidth()
                                 .padding(start = 8.dp, bottom = 40.dp)
@@ -369,4 +382,16 @@ private fun GraphicTextDay(
             .width(width = 16.dp)
             .height(height = 17.dp)
     )
+}
+
+@Composable
+private fun GoogleAddsMain(
+    modifier: Modifier
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(height = 100.dp),
+        contentAlignment = Alignment.Center
+    ) { Text(text = "Google Adds") }
 }
