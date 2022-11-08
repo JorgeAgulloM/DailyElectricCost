@@ -1,6 +1,6 @@
 package com.softyorch.dailyelectriccost.data.repository.red21Repository.model
 
-data class RedGenerationTruncateModel(
+data class RedMarketsTruncateModel(
     val category: String,
     var widget: String,
     var startDate: String,
