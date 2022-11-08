@@ -4,7 +4,7 @@
 
 package com.softyorch.dailyelectriccost.domain.redUseCases.model
 
-data class RedGenerationTruncateModel(
+data class RedGenerationTruncateDomain(
     val category: String,
     var widget: String,
     var startDate: String,
