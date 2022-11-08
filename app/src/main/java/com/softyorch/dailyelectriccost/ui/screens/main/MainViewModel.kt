@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.softyorch.dailyelectriccost.data.network.red21Api.response.market.Included
 import com.softyorch.dailyelectriccost.data.network.red21Api.response.market.Red21Market
 import com.softyorch.dailyelectriccost.domain.redUseCases.RedUsesCases
-import com.softyorch.dailyelectriccost.domain.redUseCases.model.mapper.mapToRedDataTruncateModelDomain
+import com.softyorch.dailyelectriccost.domain.redUseCases.model.mapper.mapToRedMarketsTruncateModelDomain
 import com.softyorch.dailyelectriccost.ui.model.RedMarketsTruncateModelUi
 import com.softyorch.dailyelectriccost.utils.Constants
 import com.softyorch.dailyelectriccost.utils.Constants.EMPTY_STRING
@@ -99,7 +99,7 @@ class MainViewModel @Inject constructor(private val redUsesCases: RedUsesCases) 
                     timeTruncate = _timeTruncate.value!!,
                     geo_limit = _geoLimit.value!!,
                     geo_ids = _geoIds.value!!
-                ).mapToRedDataTruncateModelDomain()
+                ).mapToRedMarketsTruncateModelDomain()
             ).let { response ->
                 if (response != null) {
                     if (response.isSuccessful) {
