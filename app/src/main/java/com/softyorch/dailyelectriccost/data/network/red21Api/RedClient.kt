@@ -32,6 +32,9 @@ interface RedClient {
         @Query("start_date") startDate: String = "2022-11-07T00:00",
         @Query("end_date") endDate: String = "2022-11-13T23:59",
         @Query("time_trunc") timeTruncate: String = "month",
+        @Query("geo_trunc") geoTruncate: String = GEO_TRUNCATE,
+        @Query("geo_limit") geo_limit: String = "peninsular",
+        @Query("geo_ids") geo_ids: String = "8741"
     ): Response<Red21Generation>
 
     @GET(URL)
