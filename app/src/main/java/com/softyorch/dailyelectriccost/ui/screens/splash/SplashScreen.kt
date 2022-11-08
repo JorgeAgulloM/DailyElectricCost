@@ -3,6 +3,7 @@ package com.softyorch.dailyelectriccost.ui.screens.splash
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,8 +23,8 @@ fun SplashScreen(navController: NavController) {
     val scale = remember { Animatable(0f) }
     LaunchedEffect(key1 = true, block = {
         scale.animateTo(
-            targetValue = 1f,
-            animationSpec = tween(durationMillis = 800, easing = FastOutSlowInEasing)
+            targetValue = 2f,
+            animationSpec = spring(dampingRatio = 1f, stiffness = 10f)
         )
 
         delay(2000)
@@ -33,6 +34,6 @@ fun SplashScreen(navController: NavController) {
         }
     })
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-        Text(text = "HOLA", modifier = Modifier.scale(scale.value))
+        Text(text = "DailyElectricCost", modifier = Modifier.scale(scale.value))
     }
 }
