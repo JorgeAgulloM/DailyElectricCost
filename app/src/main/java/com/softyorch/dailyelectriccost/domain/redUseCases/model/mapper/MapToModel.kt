@@ -1,9 +1,9 @@
 package com.softyorch.dailyelectriccost.domain.redUseCases.model.mapper
 
 import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.RedGenerationTruncateModel
-import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.RedDefaultModel
+import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.RedBalanceModel
 
-fun RedDefaultModel.mapToRedDefaultModel(): RedDefaultModel = RedDefaultModel(
+fun RedBalanceModel.mapToRedDefaultModel(): RedBalanceModel = RedBalanceModel(
     category, widget, startDate, endDate, timeTruncate
 )
 

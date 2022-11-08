@@ -3,9 +3,9 @@ package com.softyorch.dailyelectriccost.data.repository.red21Repository.model.ma
 import com.softyorch.dailyelectriccost.data.network.red21Api.entity.RedDataTruncateEntity
 import com.softyorch.dailyelectriccost.data.network.red21Api.entity.RedDefaultEntity
 import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.RedGenerationTruncateModel
-import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.RedDefaultModel
+import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.RedBalanceModel
 
-fun RedDefaultModel.mapToRedDefaultEntity(): RedDefaultEntity = RedDefaultEntity(
+fun RedBalanceModel.mapToRedDefaultEntity(): RedDefaultEntity = RedDefaultEntity(
     category, widget, startDate, endDate, timeTruncate
 )
 
