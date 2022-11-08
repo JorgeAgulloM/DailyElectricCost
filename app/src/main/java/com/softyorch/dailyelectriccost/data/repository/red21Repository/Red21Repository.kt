@@ -28,7 +28,7 @@ class Red21Repository @Inject constructor( private val api: RedService){
         redGenerationTruncateModel.mapToGenerationTruncateEntity()
     )
 
-    suspend fun getDataGeoTruncate(
+    suspend fun getMarketsGeoTruncate(
         redMarketsTruncateModel: RedMarketsTruncateModel
     ): Response<Red21Market>? = api.getMarketsGeoTruncate(
         redMarketsTruncateModel.mapToRedMarketsTruncateEntity()

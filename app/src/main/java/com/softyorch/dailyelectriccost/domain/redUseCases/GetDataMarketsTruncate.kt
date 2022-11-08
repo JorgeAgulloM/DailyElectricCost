@@ -7,5 +7,5 @@ import javax.inject.Inject
 
 class GetDataMarketsTruncate @Inject constructor(private val repository: Red21Repository) {
     suspend operator fun invoke(redMarketsTruncateModelDomain: RedMarketsTruncateModelDomain) =
-        repository.getDataGeoTruncate(redMarketsTruncateModelDomain.mapToRedMarketsTruncateModel())
+        repository.getMarketsGeoTruncate(redMarketsTruncateModelDomain.mapToRedMarketsTruncateModel())
 }
