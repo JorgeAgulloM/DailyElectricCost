@@ -3,6 +3,7 @@ package com.softyorch.dailyelectriccost.data.network.red21Api
 import android.util.Log
 import com.softyorch.dailyelectriccost.data.network.red21Api.entity.RedMarketsTruncateEntity
 import com.softyorch.dailyelectriccost.data.network.red21Api.entity.RedBalanceEntity
+import com.softyorch.dailyelectriccost.data.network.red21Api.entity.RedGenerationTruncateEntity
 import com.softyorch.dailyelectriccost.data.network.red21Api.response.balance.Red21Balance
 import com.softyorch.dailyelectriccost.data.network.red21Api.response.generation.Red21Generation
 import com.softyorch.dailyelectriccost.data.network.red21Api.response.market.Red21Market
@@ -37,16 +38,18 @@ class RedService @Inject constructor(private val redClient: RedClient) {
 
     /** Asimilación de datos de la generación de energía del último dato guardado. */
     suspend fun getGenerationDefault(
-        redBalanceEntity: RedBalanceEntity
+        redGenerationTruncateEntity: RedGenerationTruncateEntity
     ): Response<Red21Generation>? {
         return withContext(Dispatchers.IO) {
             try {
                 val response = redClient.getGenerationGeoTruncate(
-                    category = redBalanceEntity.category,
-                    widget = redBalanceEntity.widget,
-                    startDate = redBalanceEntity.startDate,
-                    endDate = redBalanceEntity.endDate,
-                    timeTruncate = redBalanceEntity.timeTruncate
+                    category = redGenerationTruncateEntity.category,
+                    widget = redGenerationTruncateEntity.widget,
+                    startDate = redGenerationTruncateEntity.startDate,
+                    endDate = redGenerationTruncateEntity.endDate,
+                    timeTruncate = redGenerationTruncateEntity.timeTruncate,
+                    geo_limit = redGenerationTruncateEntity.geo_limit,
+                    geo_ids = redGenerationTruncateEntity.geo_ids
                 )
                 Log.d(RED21, "Response.getGenerationDefault.Service ->$response")
                 response
