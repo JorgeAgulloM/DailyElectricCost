@@ -1,6 +1,6 @@
 package com.softyorch.dailyelectriccost.domain.redUseCases.model
 
-data class RedDefaultModelDomain(
+data class RedBalanceModelDomain(
     val category: String,
     val widget: String,
     val startDate: String,

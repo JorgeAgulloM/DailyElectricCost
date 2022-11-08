@@ -1,14 +1,14 @@
 package com.softyorch.dailyelectriccost.domain.redUseCases.model.mapper
 
-import com.softyorch.dailyelectriccost.domain.redUseCases.model.RedDataTruncateModelDomain
-import com.softyorch.dailyelectriccost.domain.redUseCases.model.RedDefaultModelDomain
-import com.softyorch.dailyelectriccost.ui.model.RedDataTruncateModelUi
-import com.softyorch.dailyelectriccost.ui.model.RedDefaultModelUi
+import com.softyorch.dailyelectriccost.domain.redUseCases.model.RedMarketsTruncateModelDomain
+import com.softyorch.dailyelectriccost.domain.redUseCases.model.RedBalanceModelDomain
+import com.softyorch.dailyelectriccost.ui.model.RedMarketsTruncateModelUi
+import com.softyorch.dailyelectriccost.ui.model.RedBalanceModelUi
 
-fun RedDefaultModelUi.mapToRedDefaultModelDomain(): RedDefaultModelDomain = RedDefaultModelDomain(
+fun RedBalanceModelUi.mapToRedDefaultModelDomain(): RedBalanceModelDomain = RedBalanceModelDomain(
     category, widget, startDate, endDate, timeTruncate
 )
 
-fun RedDataTruncateModelUi.mapToRedDataTruncateModelDomain(): RedDataTruncateModelDomain = RedDataTruncateModelDomain(
+fun RedMarketsTruncateModelUi.mapToRedDataTruncateModelDomain(): RedMarketsTruncateModelDomain = RedMarketsTruncateModelDomain(
     category, widget, startDate, endDate, timeTruncate, geo_limit, geo_ids
 )

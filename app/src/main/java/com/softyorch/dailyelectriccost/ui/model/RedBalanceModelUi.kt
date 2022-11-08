@@ -1,6 +1,6 @@
 package com.softyorch.dailyelectriccost.ui.model
 
-data class RedDefaultModelUi(
+data class RedBalanceModelUi(
     val category: String,
     val widget: String,
     val startDate: String,

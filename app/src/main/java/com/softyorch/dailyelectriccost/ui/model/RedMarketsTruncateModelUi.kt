@@ -1,6 +1,6 @@
-package com.softyorch.dailyelectriccost.domain.redUseCases.model
+package com.softyorch.dailyelectriccost.ui.model
 
-data class RedDataTruncateModelDomain(
+data class RedMarketsTruncateModelUi(
     val category: String,
     var widget: String,
     var startDate: String,

@@ -9,7 +9,7 @@ import com.softyorch.dailyelectriccost.data.network.red21Api.response.market.Inc
 import com.softyorch.dailyelectriccost.data.network.red21Api.response.market.Red21Market
 import com.softyorch.dailyelectriccost.domain.redUseCases.RedUsesCases
 import com.softyorch.dailyelectriccost.domain.redUseCases.model.mapper.mapToRedDataTruncateModelDomain
-import com.softyorch.dailyelectriccost.ui.model.RedDataTruncateModelUi
+import com.softyorch.dailyelectriccost.ui.model.RedMarketsTruncateModelUi
 import com.softyorch.dailyelectriccost.utils.Constants
 import com.softyorch.dailyelectriccost.utils.Constants.EMPTY_STRING
 import com.softyorch.dailyelectriccost.utils.funcExtensions.toDateFormatted
@@ -87,7 +87,7 @@ class MainViewModel @Inject constructor(private val redUsesCases: RedUsesCases) 
 
         viewModelScope.launch {
             redUsesCases.getDataGeoTruncate(
-                RedDataTruncateModelUi(
+                RedMarketsTruncateModelUi(
                     category = _category[5][0],
                     widget = _category[5][13],
                     startDate = _startDate.value!!,
