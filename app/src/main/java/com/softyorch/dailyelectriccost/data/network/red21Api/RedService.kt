@@ -3,7 +3,7 @@ package com.softyorch.dailyelectriccost.data.network.red21Api
 import android.util.Log
 import com.softyorch.dailyelectriccost.data.network.red21Api.entity.RedDataTruncateEntity
 import com.softyorch.dailyelectriccost.data.network.red21Api.entity.RedDefaultEntity
-import com.softyorch.dailyelectriccost.data.network.red21Api.responseMercados.Red21Response
+import com.softyorch.dailyelectriccost.data.network.red21Api.response.Red21Response
 import com.softyorch.dailyelectriccost.utils.Constants.RED21
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

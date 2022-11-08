@@ -4,6 +4,6 @@ import com.google.gson.annotations.SerializedName
 
 data class Value(
     @SerializedName("datetime") val datetime: String,
-    @SerializedName("percentage") val percentage: Double,
+    @SerializedName("percentage") val percentage: Int,
     @SerializedName("value") val value: Double
 )
