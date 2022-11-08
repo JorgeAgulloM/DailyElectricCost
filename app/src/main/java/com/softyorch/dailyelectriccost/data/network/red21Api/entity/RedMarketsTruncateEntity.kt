@@ -1,6 +1,6 @@
 package com.softyorch.dailyelectriccost.data.network.red21Api.entity
 
-data class RedDataTruncateEntity(
+data class RedMarketsTruncateEntity(
     val category: String,
     var widget: String,
     var startDate: String,

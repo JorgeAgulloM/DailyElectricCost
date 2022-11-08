@@ -1,8 +1,8 @@
 package com.softyorch.dailyelectriccost.data.network.red21Api
 
 import android.util.Log
-import com.softyorch.dailyelectriccost.data.network.red21Api.entity.RedDataTruncateEntity
-import com.softyorch.dailyelectriccost.data.network.red21Api.entity.RedDefaultEntity
+import com.softyorch.dailyelectriccost.data.network.red21Api.entity.RedMarketsTruncateEntity
+import com.softyorch.dailyelectriccost.data.network.red21Api.entity.RedBalanceEntity
 import com.softyorch.dailyelectriccost.data.network.red21Api.response.balance.Red21Balance
 import com.softyorch.dailyelectriccost.data.network.red21Api.response.generation.Red21Generation
 import com.softyorch.dailyelectriccost.data.network.red21Api.response.market.Red21Market
@@ -15,16 +15,16 @@ import javax.inject.Inject
 class RedService @Inject constructor(private val redClient: RedClient) {
     /** Asimilación de datos del balance eléctrico durante las últimas 24 horas. */
     suspend fun getDataDefault(
-        redDefaultEntity: RedDefaultEntity
+        redBalanceEntity: RedBalanceEntity
     ): Response<Red21Balance>? {
         return withContext(Dispatchers.IO) {
             try {
                 val response = redClient.getDataDefault(
-                    category = redDefaultEntity.category,
-                    widget = redDefaultEntity.widget,
-                    startDate = redDefaultEntity.startDate,
-                    endDate = redDefaultEntity.endDate,
-                    timeTruncate = redDefaultEntity.timeTruncate
+                    category = redBalanceEntity.category,
+                    widget = redBalanceEntity.widget,
+                    startDate = redBalanceEntity.startDate,
+                    endDate = redBalanceEntity.endDate,
+                    timeTruncate = redBalanceEntity.timeTruncate
                 )
                 Log.d(RED21, "Response.getDataDefault.Service ->$response")
                 response
@@ -37,16 +37,16 @@ class RedService @Inject constructor(private val redClient: RedClient) {
 
     /** Asimilación de datos de la generación de energía del último dato guardado. */
     suspend fun getGenerationDefault(
-        redDefaultEntity: RedDefaultEntity
+        redBalanceEntity: RedBalanceEntity
     ): Response<Red21Generation>? {
         return withContext(Dispatchers.IO) {
             try {
                 val response = redClient.getGenerationGeoTruncate(
-                    category = redDefaultEntity.category,
-                    widget = redDefaultEntity.widget,
-                    startDate = redDefaultEntity.startDate,
-                    endDate = redDefaultEntity.endDate,
-                    timeTruncate = redDefaultEntity.timeTruncate
+                    category = redBalanceEntity.category,
+                    widget = redBalanceEntity.widget,
+                    startDate = redBalanceEntity.startDate,
+                    endDate = redBalanceEntity.endDate,
+                    timeTruncate = redBalanceEntity.timeTruncate
                 )
                 Log.d(RED21, "Response.getGenerationDefault.Service ->$response")
                 response
@@ -59,18 +59,18 @@ class RedService @Inject constructor(private val redClient: RedClient) {
 
     /** Asimilación de datos de los mercados en tiempo real, actualizado cada hora. */
     suspend fun getMarketsGeoTruncate(
-        redDataTruncateEntity: RedDataTruncateEntity
+        redMarketsTruncateEntity: RedMarketsTruncateEntity
     ): Response<Red21Market>? {
         return withContext(Dispatchers.IO) {
             try {
                 val response = redClient.getMarketsGeoTruncate(
-                    category = redDataTruncateEntity.category,
-                    widget = redDataTruncateEntity.widget,
-                    startDate = redDataTruncateEntity.startDate,
-                    endDate = redDataTruncateEntity.endDate,
-                    timeTruncate = redDataTruncateEntity.timeTruncate,
-                    geo_limit = redDataTruncateEntity.geo_limit,
-                    geo_ids = redDataTruncateEntity.geo_ids
+                    category = redMarketsTruncateEntity.category,
+                    widget = redMarketsTruncateEntity.widget,
+                    startDate = redMarketsTruncateEntity.startDate,
+                    endDate = redMarketsTruncateEntity.endDate,
+                    timeTruncate = redMarketsTruncateEntity.timeTruncate,
+                    geo_limit = redMarketsTruncateEntity.geo_limit,
+                    geo_ids = redMarketsTruncateEntity.geo_ids
                 )
                 Log.d(RED21, "Response.getMarketsGeoTruncate.Service ->$response")
                 response

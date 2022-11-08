@@ -5,10 +5,10 @@ import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.Red
 import com.softyorch.dailyelectriccost.domain.redUseCases.model.RedDataTruncateModelDomain
 import com.softyorch.dailyelectriccost.domain.redUseCases.model.RedDefaultModelDomain
 
-fun RedDefaultModelDomain.mapToRedDefaultModel(): RedBalanceModel = RedBalanceModel(
+fun RedDefaultModelDomain.mapToRedBalanceModel(): RedBalanceModel = RedBalanceModel(
     category, widget, startDate, endDate, timeTruncate
 )
 
-fun RedDataTruncateModelDomain.mapToRedDataTruncateModel(): RedMarketsTruncateModel = RedMarketsTruncateModel(
+fun RedDataTruncateModelDomain.mapToRedMarketsTruncateModel(): RedMarketsTruncateModel = RedMarketsTruncateModel(
     category, widget, startDate, endDate, timeTruncate, geo_limit, geo_ids
 )
