@@ -5,8 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.softyorch.dailyelectriccost.data.network.red21Api.response.Included
-import com.softyorch.dailyelectriccost.data.network.red21Api.response.Red21Balance
+import com.softyorch.dailyelectriccost.data.network.red21Api.response.balance.Included
+import com.softyorch.dailyelectriccost.data.network.red21Api.response.balance.Red21Balance
 import com.softyorch.dailyelectriccost.domain.redUseCases.RedUsesCases
 import com.softyorch.dailyelectriccost.domain.redUseCases.model.mapper.mapToRedDataTruncateModelDomain
 import com.softyorch.dailyelectriccost.ui.model.RedDataTruncateModelUi
