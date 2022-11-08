@@ -5,7 +5,6 @@
 package com.softyorch.dailyelectriccost.data.network.red21Api.response.market
 
 import com.google.gson.annotations.SerializedName
-import com.softyorch.dailyelectriccost.data.network.red21Api.response.*
 import com.softyorch.dailyelectriccost.utils.Constants.EMPTY_STRING
 
 data class Red21Market(
