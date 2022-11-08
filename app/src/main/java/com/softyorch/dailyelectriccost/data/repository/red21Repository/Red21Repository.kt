@@ -1,7 +1,7 @@
 package com.softyorch.dailyelectriccost.data.repository.red21Repository
 
 import com.softyorch.dailyelectriccost.data.network.red21Api.RedService
-import com.softyorch.dailyelectriccost.data.network.red21Api.response.balance.Red21Balance
+import com.softyorch.dailyelectriccost.data.network.red21Api.response.market.Red21Balance
 import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.RedDataTruncateModel
 import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.RedDefaultModel
 import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.mapper.mapToRedDataTruncateEntity

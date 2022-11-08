@@ -1,6 +1,6 @@
 package com.softyorch.dailyelectriccost.data.network.red21Api
 
-import com.softyorch.dailyelectriccost.data.network.red21Api.response.balance.Red21Balance
+import com.softyorch.dailyelectriccost.data.network.red21Api.response.market.Red21Balance
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
