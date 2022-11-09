@@ -1,18 +1,15 @@
 package com.softyorch.dailyelectriccost.ui.screens.main
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.softyorch.dailyelectriccost.data.network.red21Api.response.market.Included
-import com.softyorch.dailyelectriccost.data.network.red21Api.response.market.Red21Market
 import com.softyorch.dailyelectriccost.domain.redUseCases.RedUsesCases
 import com.softyorch.dailyelectriccost.domain.redUseCases.model.mapper.mapToRedMarketsTruncateModelDomain
 import com.softyorch.dailyelectriccost.ui.model.RedMarketsTruncateModelUi
+import com.softyorch.dailyelectriccost.ui.model.markets.MarketsModelUi
+import com.softyorch.dailyelectriccost.ui.model.markets.mapToMarketsModelUi
 import com.softyorch.dailyelectriccost.utils.Constants
-import com.softyorch.dailyelectriccost.utils.Constants.EMPTY_STRING
-import com.softyorch.dailyelectriccost.utils.funcExtensions.toDateFormatted
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,25 +18,8 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(private val redUsesCases: RedUsesCases) : ViewModel() {
 
-    private val _defaultData = MutableLiveData<Red21Market?>(Red21Market.red21MarketEmpty)
-    val defaultData: LiveData<Red21Market?> = _defaultData
-
-    private val _includes =
-        MutableLiveData<List<Included?>>(Red21Market.red21MarketEmpty.included)
-    val includes: LiveData<List<Included?>> = _includes
-
-
-    private val _marketType = MutableLiveData<String>(EMPTY_STRING)
-    val marketType: LiveData<String> = _marketType
-
-    private val _lastUpdate = MutableLiveData<String>(EMPTY_STRING)
-    val lastUpdate: LiveData<String> = _lastUpdate
-
-    private val _price = MutableLiveData<Double>(0.0)
-    val price: LiveData<Double> = _price
-
-    private val _dateTime = MutableLiveData<String>(EMPTY_STRING)
-    val dateTime: LiveData<String> = _dateTime
+    private val _marketsData = MutableLiveData(MarketsModelUi.emptyMarketsDao)
+    val marketsData: LiveData<MarketsModelUi> = _marketsData
 
     /** Query data **********************************************/
 
@@ -54,34 +34,8 @@ class MainViewModel @Inject constructor(private val redUsesCases: RedUsesCases) 
 
     private val oneHourInMillis = 3600000L
     init {
-        //getDataDefault()
         getDataGeoTruncate()
     }
-
-    /*fun getDataDefault() {
-        viewModelScope.launch {
-            val response = redUsesCases.getDataDefault(
-                RedDefaultModelUi(
-                    category = Constants.LIST_CATEGORY[5][0],
-                    widget = Constants.LIST_CATEGORY[5][13],
-                    startDate = "2022-11-07T17:00",
-                    endDate = "2022-11-07T23:00",
-                    timeTruncate = "hour"
-                ).mapToRedDefaultModelDomain()
-            )
-            response.let {
-                if (it != null) {
-                    if (it.isSuccessful) {
-                        _defaultData.postValue(it.body())
-                        Log.d(Constants.RED21, "dataVM.default ->${it.body()}")
-                    } else {
-                        Log.d(Constants.RED21, "dataVM.default.error ->${it.errorBody()}")
-                    }
-                }
-            }
-        }
-    }*/
-
 
     fun getDataGeoTruncate() {
 
@@ -101,25 +55,7 @@ class MainViewModel @Inject constructor(private val redUsesCases: RedUsesCases) 
                     geo_ids = _geoIds.value!!
                 ).mapToRedMarketsTruncateModelDomain()
             ).let { response ->
-                if (response != null) {
-                    if (response.isSuccessful) {
-                        _defaultData.postValue(response.body())
-                        _includes.postValue(response.body()!!.included)
-
-                        response.body()?.included?.get(0)?.attributes.let { attr ->
-                            _marketType.postValue(attr?.title)
-                            _lastUpdate.postValue(attr?.lastUpdate?.toDateFormatted() ?: "Desconocido")
-                            attr?.values?.get(1).let { values ->
-                                _price.postValue(values?.value ?: 0.0)
-                                _dateTime.postValue(values?.datetime?.toDateFormatted() ?: "Desconocido")
-                            }
-                        }
-
-                        Log.d(Constants.RED21, "dataVM.geo ->${response.body()}")
-                    } else {
-                        Log.d(Constants.RED21, "dataVM.geo.error ->${response.errorBody()}")
-                    }
-                }
+                _marketsData.postValue(response.mapToMarketsModelUi())
             }
         }
     }

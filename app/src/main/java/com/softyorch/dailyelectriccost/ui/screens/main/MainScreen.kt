@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.softyorch.dailyelectriccost.R
+import com.softyorch.dailyelectriccost.ui.model.markets.MarketsModelUi
 import com.softyorch.dailyelectriccost.utils.Constants.EMPTY_STRING
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -50,11 +51,11 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel) {
 @Composable
 fun Body(navController: NavController, viewModel: MainViewModel, it: PaddingValues) {
 
-    val marketType: String by viewModel.marketType.observeAsState(initial = EMPTY_STRING)
-    val lastUpdate: String by viewModel.lastUpdate.observeAsState(initial = EMPTY_STRING)
-    val price: Double by viewModel.price.observeAsState(initial = 0.0)
-    val dateTime: String by viewModel.dateTime.observeAsState(initial = EMPTY_STRING)
+    val marketsData: MarketsModelUi by viewModel.marketsData.observeAsState(
+        initial = MarketsModelUi.emptyMarketsDao
+    )
     val geoLimit: String by viewModel.geoLimit.observeAsState(initial = EMPTY_STRING)
+
     val modifier = Modifier
         .shadow(
             elevation = 2.dp, clip = true,
@@ -83,13 +84,13 @@ fun Body(navController: NavController, viewModel: MainViewModel, it: PaddingValu
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            ActualPrice(price)
+            ActualPrice(marketsData.currentPrice)
             Spacer(modifier = Modifier.padding(vertical = 16.dp))
-            PriceCard(modifier, price * 2, "Mejor máximo", Color(0xffba1a1a))
+            PriceCard(modifier, marketsData.hiPrice, "Mejor máximo", Color(0xffba1a1a))
             Spacer(modifier = Modifier.padding(vertical = 8.dp))
-            PriceCard(modifier, price / 2, "Mejor precio del día", Color(0xffAFF1CF))//AFF1CF
+            PriceCard(modifier, marketsData.lowPrice, "Mejor precio del día", Color(0xffAFF1CF))//AFF1CF
             Spacer(modifier = Modifier.padding(vertical = 8.dp))
-            WeekResume(modifier, price * 3, price / 3)
+            WeekResume(modifier, marketsData.hiPrice, marketsData.lowPrice)
             Spacer(modifier = Modifier.padding(vertical = 8.dp))
             GoogleAddsMain(modifier)
         }
