@@ -2,7 +2,9 @@ package com.softyorch.dailyelectriccost.ui.screens.main
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.*
-import androidx.compose.foundation.Image
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationVector1D
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
@@ -21,16 +23,17 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.softyorch.dailyelectriccost.R
 import com.softyorch.dailyelectriccost.ui.model.markets.MarketsModelUi
+import com.softyorch.dailyelectriccost.ui.theme.colorAvg
+import com.softyorch.dailyelectriccost.ui.theme.colorHi
+import com.softyorch.dailyelectriccost.ui.theme.colorLow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -175,39 +178,26 @@ fun Body(navController: NavController, marketsData: MarketsModelUi, it: PaddingV
             ) {
                 PriceTodayCard(modifier, marketsData)
                 Spacer(modifier = Modifier.padding(vertical = 8.dp))
-                WeekResume(modifier, marketsData.hiPrice, marketsData.lowPrice)
+                GrafLastSevenDays(
+                    modifier,
+                    "Kwh 24Horas",
+                    marketsData,
+                    marketsData.hiPrice,
+                    marketsData.lowPrice
+                )
                 Spacer(modifier = Modifier.padding(vertical = 8.dp))
-                Row(
+                /*Row(
                     modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState(0))
                 ) {
-                    WeekResume(modifier, marketsData.hiPrice, marketsData.lowPrice)
-                    WeekResume(modifier, marketsData.hiPrice, marketsData.lowPrice)
+                    GrafLastSevenDays(modifier, "Precios mínimos" ,marketsData, marketsData.hiPrice, marketsData.lowPrice)
+                    GrafLastSevenDays(modifier,"Precios máximos" ,marketsData, marketsData.hiPrice, marketsData.lowPrice)
                     Spacer(modifier = Modifier.padding(horizontal = 16.dp))
-                }
+                }*/
                 Spacer(modifier = Modifier.padding(vertical = 8.dp))
                 GoogleAddsMain(modifier.padding(end = 16.dp))
             }
         }
     }
-}
-
-@Composable
-private fun BackgroundImageMain() {
-    Image(
-        painter = painterResource(id = R.drawable.background_main),
-        contentDescription = "MainPrincipal",
-        modifier = Modifier
-            .fillMaxSize()
-            .shadow(
-                4.dp,
-                shape = MaterialTheme.shapes.extraLarge.copy(
-                    bottomStart = ZeroCornerSize,
-                    bottomEnd = ZeroCornerSize
-                ),
-                spotColor = MaterialTheme.colorScheme.primary
-            ),
-        contentScale = ContentScale.Crop
-    )
 }
 
 @SuppressLint("CoroutineCreationDuringComposition")
@@ -300,9 +290,17 @@ fun ActualPrice(
             verticalArrangement = Arrangement.SpaceAround,
             horizontalAlignment = Alignment.Start
         ) {
-            LitlePrice(marketsData.hiPrice, "máximo", MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f))
+            LitlePrice(
+                marketsData.hiPrice,
+                "máximo",
+                MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f)
+            )
             Spacer(modifier = Modifier.padding(vertical = 4.dp))
-            LitlePrice(marketsData.lowPrice, "mínimo", MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f))
+            LitlePrice(
+                marketsData.lowPrice,
+                "mínimo",
+                MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f)
+            )
         }
     }
 }
@@ -347,6 +345,7 @@ private fun LitlePrice(
             )
         )
     }
+
 }
 
 @Composable
@@ -366,10 +365,11 @@ private fun LitleKwhPrice(
             color = color,
             textAlign = TextAlign.Start,
             style = MaterialTheme.typography.bodySmall.copy(
+                fontWeight = FontWeight.Bold,
                 shadow = Shadow(
-                    MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
-                    offset = Offset(2F, 8F),
-                    blurRadius = 4F
+                    MaterialTheme.colorScheme.onBackground.copy(alpha = 1f),
+                    offset = Offset(2F, 4F),
+                    blurRadius = 8F
                 )
             )
         )
@@ -382,15 +382,15 @@ private fun LitleKwhPrice(
                 color = color,
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.labelLarge.copy(
+                    fontWeight = FontWeight.Bold,
                     shadow = Shadow(
-                        MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
-                        offset = Offset(2F, 8F),
-                        blurRadius = 4F
+                        MaterialTheme.colorScheme.onBackground.copy(alpha = 0.95f),
+                        offset = Offset(2F, 4F),
+                        blurRadius = 8F
                     )
                 )
             )
         }
-
     }
 }
 
@@ -412,60 +412,17 @@ fun PriceTodayCard(
             fontWeight = FontWeight.SemiBold,
             style = MaterialTheme.typography.labelLarge
         )
-        LitleKwhPrice(marketsData.hiPrice, "máximo", MaterialTheme.colorScheme.error)
-        LitleKwhPrice(marketsData.currentPrice, "actual", MaterialTheme.colorScheme.tertiary)
-        LitleKwhPrice(marketsData.lowPrice, "mínimo", MaterialTheme.colorScheme.primary)
+        LitleKwhPrice(marketsData.hiPrice, "máximo", colorHi)
+        LitleKwhPrice(marketsData.currentPrice, "actual", colorAvg)
+        LitleKwhPrice(marketsData.lowPrice, "mínimo", colorLow)
     }
 }
 
 @Composable
-fun PriceCard(
+fun GrafLastSevenDays(
     modifier: Modifier,
-    price: Double = 0.0,
-    text: String = "Precio máximo",
-    color: Color = Color(0xffba1a1a)
-) {
-    Column(
-        modifier = modifier
-            .height(height = 100.dp),
-        verticalArrangement = Arrangement.SpaceAround,
-        horizontalAlignment = Alignment.Start
-    ) {
-        Text(
-            text = text,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp, start = 16.dp)
-                .width(24.dp),
-            color = Color.White.copy(alpha = 0.7f),
-            style = MaterialTheme.typography.bodyLarge,
-        )
-        AnimatedText(
-            price = price
-        ) { targetState ->
-            Text(
-                text = targetState.toString() + "€",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 32.dp),
-                textAlign = TextAlign.Start,
-                color = color,
-                style = TextStyle(
-                    fontSize = 45.sp,
-                    shadow = Shadow(
-                        Color.White,
-                        offset = Offset(2F, 2F),
-                        blurRadius = 4F
-                    )
-                )
-            )
-        }
-    }
-}
-
-@Composable
-fun WeekResume(
-    modifier: Modifier,
+    title: String,
+    marketsData: MarketsModelUi,
     priceMax: Double = 0.0,
     priceMin: Double = 0.0
 ) {
@@ -481,7 +438,7 @@ fun WeekResume(
             verticalArrangement = Arrangement.Top
         ) {
             Text(
-                text = "Resumen de la semana",
+                text = title,
                 color = Color.White.copy(alpha = 0.8f),
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier
@@ -497,28 +454,21 @@ fun WeekResume(
                 verticalAlignment = Alignment.Bottom,
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
-                Column() {
-                    Row(
-                        verticalAlignment = Alignment.Bottom,
-                        horizontalArrangement = Arrangement.Start
-                    ) {
-                        GraphicColumnDay()
-                        GraphicColumnDay(80, Color(0xffba1a1a))
-                        GraphicColumnDay(86, Color(0xffba1a1a))
-                        GraphicColumnDay(72, Color(0xffe7d800))
-                        GraphicColumnDay(62, Color(0xff2a694f))
-                        GraphicColumnDay(37, Color(0xffaff1cf))
-                        GraphicColumnDay(43, Color(0xffaff1cf))
-                    }
-
-                    Row() {
-                        GraphicTextDay("L")
-                        GraphicTextDay("M")
-                        GraphicTextDay("X")
-                        GraphicTextDay("J")
-                        GraphicTextDay("V")
-                        GraphicTextDay("S")
-                        GraphicTextDay("D")
+                Row(
+                    modifier = Modifier
+                        .horizontalScroll(rememberScrollState(0)),
+                    verticalAlignment = Alignment.Bottom,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    marketsData.values.forEach { valuesUi ->
+                        if (valuesUi.value > 0.0) Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Bottom
+                        ) {
+                            val brush = calculateBrush(marketsData, valuesUi.value)
+                            GraphicColumnDay(valuesUi.value.toInt() / 3, brush)
+                            GraphicTextDay(valuesUi.value / 1000.0)
+                        }
                     }
                 }
                 Column(
@@ -526,11 +476,12 @@ fun WeekResume(
                     verticalArrangement = Arrangement.SpaceBetween,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+
                     AnimatedText(
                         price = priceMax
                     ) { targetState ->
                         Text(
-                            text = targetState.toString() + "€",
+                            text = "$targetState + €",
                             color = Color(0xffba1a1a),
                             lineHeight = 16.sp,
                             style = MaterialTheme.typography.bodySmall.copy(
@@ -569,38 +520,106 @@ fun WeekResume(
     }
 }
 
+fun calculateBrush(marketsData: MarketsModelUi, value: Double): Brush {
+    val listColorHi = listOf(
+        colorHi.copy(alpha = 0.9f),
+        colorHi.copy(alpha = 0.1f),
+        colorHi.copy(alpha = 0.9f),
+        colorHi.copy(alpha = 0.1f)
+    )
+
+    val listColorAvg = listOf(
+        colorAvg.copy(alpha = 0.9f),
+        colorAvg.copy(alpha = 0.3f),
+        colorAvg.copy(alpha = 0.9f),
+        colorAvg.copy(alpha = 0.3f)
+    )
+
+    val listColorLow = listOf(
+        colorLow.copy(alpha = 0.9f),
+        colorLow.copy(alpha = 0.3f),
+        colorLow.copy(alpha = 0.9f),
+        colorLow.copy(alpha = 0.3f)
+    )
+
+    val result: Brush = Brush.linearGradient(
+        if (value > ((marketsData.hiPrice / 10) * 8)) {
+            listColorHi
+        } else if (value > ((marketsData.hiPrice / 10) * 5)) {
+            listColorAvg
+        } else listColorLow
+    )
+
+    return result
+}
+
 @Composable
 private fun GraphicColumnDay(
     height: Int = 96,
-    color: Color = Color(0xffba1a1a)
+    brush: Brush
 ) {
+    val scale = remember { Animatable(0f) }
+    LaunchedEffect(key1 = true,
+        block = {
+            scale.animateTo(
+                targetValue = height.toFloat(),
+                animationSpec = spring(dampingRatio = 1f, stiffness = 10f)
+            )
+        }
+    )
     Box(
         modifier = Modifier
-            .padding(12.dp)
             .width(width = 8.dp)
-            .height(height = height.dp)
+            .height(height = scale.value.dp)
             .background(
-                color = color,
+                brush = brush,
                 shape = MaterialTheme.shapes.large
             )
     )
+
 }
 
 @Composable
 private fun GraphicTextDay(
-    text: String = "L"
+    price: Double
 ) {
-    Text(
-        text = text,
-        color = Color.White,
-        textAlign = TextAlign.Center,
-        lineHeight = 24.sp,
-        style = MaterialTheme.typography.bodyLarge,
-        modifier = Modifier
-            .padding(8.dp)
-            .width(width = 16.dp)
-            .height(height = 17.dp)
+    Box(
+        modifier = Modifier.graphicsLayer(
+            rotationZ = -65f
+        )
+    ) {
+        val scale = remember { Animatable(0f) }
+        val valueScale = scaleValue(price, scale).value
+
+        val text = if (valueScale.toString().length > 6)
+            valueScale.toString().substring(0, 5)
+        else valueScale.toString()
+
+        Text(
+            text = "$text€",
+            color = Color.White,
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.labelSmall.copy(
+                fontSize = 8.sp
+            ),
+            modifier = Modifier
+                .padding(vertical = 12.dp)
+        )
+    }
+}
+
+@Composable
+private fun scaleValue(value: Double, scale: Animatable<Float, AnimationVector1D>): Animatable<Float, AnimationVector1D> {
+    LaunchedEffect(
+        key1 = true,
+        block = {
+            scale.animateTo(
+                targetValue = value.toFloat(),
+                animationSpec = spring(dampingRatio = 1f, stiffness = 10f)
+            )
+        }
     )
+    return scale
 }
 
 @Composable
