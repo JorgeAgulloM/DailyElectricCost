@@ -28,3 +28,6 @@ fun String.getHourOfDate(): String =
 
 fun String.getHourOfNowToInt(): Int =
     this.getHourOfDate().split(":")[0].toInt()
+
+fun String.getHourOfCalendarToInt(): Int =
+    this.split(" ")[3].split(":")[0].toInt()
