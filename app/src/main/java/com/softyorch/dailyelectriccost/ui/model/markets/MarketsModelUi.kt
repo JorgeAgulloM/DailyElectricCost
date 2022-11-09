@@ -13,6 +13,7 @@ data class MarketsModelUi(
     var lowPrice: Double,
     var hiPrice: Double,
     var currentPrice: Double,
+    var avgPrice: Double,
     var values: MutableList<ValuesUi>
 ) {
     companion object{
@@ -23,6 +24,7 @@ data class MarketsModelUi(
             lowPrice = 0.0,
             hiPrice = 0.0,
             currentPrice = 0.0,
+            avgPrice = 0.0,
             values = mutableListOf(
                 ValuesUi(
                     value = 0.0,

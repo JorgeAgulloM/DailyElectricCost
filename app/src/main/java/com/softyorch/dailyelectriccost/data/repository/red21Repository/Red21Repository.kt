@@ -55,17 +55,25 @@ class Red21Repository @Inject constructor(private val api: RedService) {
                             var lowPrice = 99999999.0
                             var hiPrice = 0.0
                             var currentPrices = 0.0
-                            val nowHour = Calendar.getInstance().time.toString().getHourOfCalendarToInt()
+                            var loadAverage = 0.0
+                            var divideAverage = 0.0
+                            val nowHour =
+                                Calendar.getInstance().time.toString().getHourOfCalendarToInt()
                             included.attributes.values.forEach { value ->
+                                if (value.value > 0.0) {
+                                    loadAverage *= value.value
+                                    divideAverage++
+                                }
                                 if (value.value > hiPrice) hiPrice = value.value
                                 if (value.value < lowPrice) lowPrice = value.value
-                                if (value.datetime.getHourOfNowToInt() == nowHour )
+                                if (value.datetime.getHourOfNowToInt() == nowHour)
                                     currentPrices = value.value
                                 dao.values.add(Values(value.value, value.datetime))
                             }
                             dao.lowPrice = lowPrice
                             dao.hiPrice = hiPrice
                             dao.currentPrice = currentPrices
+                            dao.avgPrice = loadAverage / divideAverage
                         }
                     }
                 } else {
