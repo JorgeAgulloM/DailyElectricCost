@@ -4,7 +4,6 @@ import android.util.Log
 import com.softyorch.dailyelectriccost.data.network.red21Api.RedService
 import com.softyorch.dailyelectriccost.data.network.red21Api.response.balance.Red21Balance
 import com.softyorch.dailyelectriccost.data.network.red21Api.response.generation.Red21Generation
-import com.softyorch.dailyelectriccost.data.network.red21Api.response.market.Red21Market
 import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.RedMarketsTruncateModel
 import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.RedBalanceModel
 import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.RedGenerationTruncateModel
@@ -34,16 +33,7 @@ class Red21Repository @Inject constructor(private val api: RedService) {
         redGenerationTruncateModel.mapToGenerationTruncateEntity()
     )
 
-    suspend fun getMarketsGeoTruncate(
-        redMarketsTruncateModel: RedMarketsTruncateModel
-    ): Response<Red21Market>? {
-        getDataMarkets(redMarketsTruncateModel)
-        return api.getMarketsGeoTruncate(
-            redMarketsTruncateModel.mapToRedMarketsTruncateEntity()
-        )
-    }
-
-    suspend fun getDataMarkets(redMarketsTruncateModel: RedMarketsTruncateModel): MarketsDao {
+    suspend fun getMarketsGeoTruncate(redMarketsTruncateModel: RedMarketsTruncateModel): MarketsDao {
         val dao = MarketsDao.emptyMarketsDao
         val responseApi =
             api.getMarketsGeoTruncate(redMarketsTruncateModel.mapToRedMarketsTruncateEntity())
