@@ -63,3 +63,7 @@ val md_theme_dark_surfaceTintColor = Color(0xFF92D96B)
 
 
 val seed = Color(0xFF276700)
+
+val colorHi = Color(0xffB83838)
+val colorAvg = Color(0xff3882B8)
+val colorLow = Color(0xff97B838)
