@@ -7,6 +7,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.ZeroCornerSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -14,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
@@ -39,6 +42,57 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel) {
     val geoLimit: String by viewModel.geoLimit.observeAsState(initial = EMPTY_STRING)
 
     Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Box(
+                        modifier = Modifier.fillMaxHeight(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = marketsData.title,
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                    }
+                },
+                modifier = Modifier.height(35.dp).padding(top = 8.dp),
+                navigationIcon = {
+                    IconButton(
+                        onClick = { }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            modifier = Modifier
+                                .background(
+                                    color = MaterialTheme.colorScheme.background,
+                                    shape = MaterialTheme.shapes.small
+                                ),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.tertiary
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(
+                        onClick = { }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.MoreHoriz,
+                            modifier = Modifier
+                                .background(
+                                    color = MaterialTheme.colorScheme.background,
+                                    shape = MaterialTheme.shapes.small
+                                ),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.tertiary
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.smallTopAppBarColors(
+                    containerColor = Color.Transparent
+                )
+            )
+        },
         containerColor = MaterialTheme.colorScheme.tertiaryContainer
     ) {
         Head(marketsData)
@@ -55,6 +109,21 @@ fun Head(marketsData: MarketsModelUi) {
 @Composable
 fun Body(navController: NavController, marketsData: MarketsModelUi, it: PaddingValues) {
 
+    val bodyBrush: Brush = Brush.linearGradient(
+        colors = listOf(
+            MaterialTheme.colorScheme.background.copy(1f),
+            MaterialTheme.colorScheme.background.copy(0.95f),
+            MaterialTheme.colorScheme.background.copy(1f),
+            MaterialTheme.colorScheme.background.copy(0.95f),
+            MaterialTheme.colorScheme.background.copy(1f),
+            MaterialTheme.colorScheme.background.copy(0.95f),
+            MaterialTheme.colorScheme.background.copy(1f),
+            MaterialTheme.colorScheme.background.copy(0.95f),
+            MaterialTheme.colorScheme.background.copy(1f),
+            MaterialTheme.colorScheme.background.copy(0.95f)
+        )
+    )
+
     val modifier = Modifier
         .shadow(
             elevation = 2.dp, clip = true,
@@ -64,7 +133,7 @@ fun Body(navController: NavController, marketsData: MarketsModelUi, it: PaddingV
             ambientColor = Color.White,
             spotColor = Color.White,
         ).background(
-            color = Color(0xff131313).copy(alpha = 0.95f),
+            color = MaterialTheme.colorScheme.background.copy(alpha = 0.95f),
             shape = MaterialTheme.shapes.extraLarge.copy(
                 topStart = CornerSize(25.dp)
             )
@@ -75,22 +144,39 @@ fun Body(navController: NavController, marketsData: MarketsModelUi, it: PaddingV
             .fillMaxSize()
             .padding(top = it.calculateTopPadding() + 110.dp)
     ) {
-        BackgroundImageMain()
+        //BackgroundImageMain()
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
+        val bgrShape = MaterialTheme.shapes.extraLarge.copy(
+            bottomStart = ZeroCornerSize,
+            bottomEnd = ZeroCornerSize
+        )
+        Box(
+            modifier = Modifier.background(
+                color = MaterialTheme.colorScheme.onBackground,
+                shape = bgrShape
+            )
         ) {
-            Spacer(modifier = Modifier.padding(vertical = 8.dp))
-            PriceCard(modifier, marketsData.hiPrice, "Precio máximo", Color(0xffba1a1a))
-            Spacer(modifier = Modifier.padding(vertical = 8.dp))
-            PriceCard(modifier, marketsData.lowPrice, "Precio mínimo del día", Color(0xffAFF1CF))
-            Spacer(modifier = Modifier.padding(vertical = 8.dp))
-            WeekResume(modifier, marketsData.hiPrice, marketsData.lowPrice)
-            Spacer(modifier = Modifier.padding(vertical = 8.dp))
-            GoogleAddsMain(modifier)
+            Column(
+                modifier = Modifier
+                    .background(brush = bodyBrush, shape = bgrShape)
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Spacer(modifier = Modifier.padding(vertical = 8.dp))
+                PriceCard(modifier, marketsData.hiPrice, "Precio máximo", Color(0xffba1a1a))
+                Spacer(modifier = Modifier.padding(vertical = 8.dp))
+                PriceCard(
+                    modifier,
+                    marketsData.lowPrice,
+                    "Precio mínimo del día",
+                    Color(0xffAFF1CF)
+                )
+                Spacer(modifier = Modifier.padding(vertical = 8.dp))
+                WeekResume(modifier, marketsData.hiPrice, marketsData.lowPrice)
+                Spacer(modifier = Modifier.padding(vertical = 8.dp))
+                GoogleAddsMain(modifier)
+            }
         }
     }
 }
@@ -157,12 +243,12 @@ fun ActualPrice(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 16.dp)
+            .padding(top = 48.dp)
             .width(width = 203.dp)
     ) {
         Column(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.SpaceEvenly,
+            verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start,
         ) {
             AnimatedText(
@@ -171,19 +257,17 @@ fun ActualPrice(
                 Text(
                     text = "$targetCount €",
                     color = Color.Black,
-                    textAlign = TextAlign.Center,
-                    lineHeight = 52.sp,
+                    textAlign = TextAlign.End,
                     style = TextStyle(
                         fontSize = 45.sp,
                         shadow = Shadow(
                             Color.Black.copy(alpha = 0.5f),
-                            offset = Offset(2F, 1F),
-                            blurRadius = 2F
+                            offset = Offset(2F, 10F),
+                            blurRadius = 8F
                         )
                     ),
                     modifier = Modifier
-                        .width(width = 203.dp)
-                        .height(height = 56.dp)
+                        .fillMaxWidth()
                 )
             }
 
@@ -195,8 +279,8 @@ fun ActualPrice(
                 style = MaterialTheme.typography.bodyMedium.copy(
                     shadow = Shadow(
                         Color.Black.copy(alpha = 0.5f),
-                        offset = Offset(2F, 1F),
-                        blurRadius = 2F
+                        offset = Offset(2F, 8F),
+                        blurRadius = 4F
                     )
                 )
             )
@@ -204,7 +288,7 @@ fun ActualPrice(
         Column(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.SpaceAround,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.Start
         ) {
             LitlePrice(marketsData.hiPrice, "máximo", Color(0xffba1a1a))
             Spacer(modifier = Modifier.padding(vertical = 4.dp))
@@ -220,8 +304,9 @@ private fun LitlePrice(
     color: Color
 ) {
     Column(
+        modifier = Modifier.padding(top = 8.dp, start = 32.dp),
         verticalArrangement = Arrangement.SpaceAround,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.Start
     ) {
         AnimatedText(
             price = price
@@ -233,8 +318,8 @@ private fun LitlePrice(
                 style = MaterialTheme.typography.labelLarge.copy(
                     shadow = Shadow(
                         Color.Black.copy(alpha = 0.5f),
-                        offset = Offset(2F, 1F),
-                        blurRadius = 2F
+                        offset = Offset(2F, 8F),
+                        blurRadius = 4F
                     )
                 )
             )
@@ -246,8 +331,8 @@ private fun LitlePrice(
             style = MaterialTheme.typography.bodySmall.copy(
                 shadow = Shadow(
                     Color.Black.copy(alpha = 0.5f),
-                    offset = Offset(2F, 1F),
-                    blurRadius = 2F
+                    offset = Offset(2F, 8F),
+                    blurRadius = 4F
                 )
             )
         )
