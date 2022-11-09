@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import androidx.compose.animation.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.material.icons.Icons
@@ -22,13 +24,13 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.softyorch.dailyelectriccost.R
 import com.softyorch.dailyelectriccost.ui.model.markets.MarketsModelUi
-import com.softyorch.dailyelectriccost.utils.Constants.EMPTY_STRING
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -39,65 +41,71 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel) {
     val marketsData: MarketsModelUi by viewModel.marketsData.observeAsState(
         initial = MarketsModelUi.emptyMarketsDao
     )
-    val geoLimit: String by viewModel.geoLimit.observeAsState(initial = EMPTY_STRING)
+    //val geoLimit: String by viewModel.geoLimit.observeAsState(initial = EMPTY_STRING)
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Box(
-                        modifier = Modifier.fillMaxHeight(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = marketsData.title,
-                            style = MaterialTheme.typography.labelSmall
-                        )
-                    }
-                },
-                modifier = Modifier.height(35.dp).padding(top = 8.dp),
-                navigationIcon = {
-                    IconButton(
-                        onClick = { }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            modifier = Modifier
-                                .background(
-                                    color = MaterialTheme.colorScheme.background,
-                                    shape = MaterialTheme.shapes.small
-                                ),
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.tertiary
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(
-                        onClick = { }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.MoreHoriz,
-                            modifier = Modifier
-                                .background(
-                                    color = MaterialTheme.colorScheme.background,
-                                    shape = MaterialTheme.shapes.small
-                                ),
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.tertiary
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.smallTopAppBarColors(
-                    containerColor = Color.Transparent
-                )
-            )
+            TopBar(marketsData, navController)
         },
         containerColor = MaterialTheme.colorScheme.tertiaryContainer
     ) {
         Head(marketsData)
         Body(navController, marketsData, it)
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun TopBar(marketsData: MarketsModelUi, navController: NavController) {
+    TopAppBar(
+        title = {
+            Box(
+                modifier = Modifier.fillMaxHeight(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = marketsData.title,
+                    style = MaterialTheme.typography.labelSmall
+                )
+            }
+        },
+        modifier = Modifier.height(35.dp).padding(top = 8.dp),
+        navigationIcon = {
+            IconButton(
+                onClick = { }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    modifier = Modifier
+                        .background(
+                            color = MaterialTheme.colorScheme.background,
+                            shape = MaterialTheme.shapes.small
+                        ),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.tertiary
+                )
+            }
+        },
+        actions = {
+            IconButton(
+                onClick = { }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.MoreHoriz,
+                    modifier = Modifier
+                        .background(
+                            color = MaterialTheme.colorScheme.background,
+                            shape = MaterialTheme.shapes.small
+                        ),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.tertiary
+                )
+            }
+        },
+        colors = TopAppBarDefaults.smallTopAppBarColors(
+            containerColor = Color.Transparent
+        )
+    )
 }
 
 @Composable
@@ -125,6 +133,7 @@ fun Body(navController: NavController, marketsData: MarketsModelUi, it: PaddingV
     )
 
     val modifier = Modifier
+        .padding(end = 16.dp)
         .shadow(
             elevation = 2.dp, clip = true,
             shape = MaterialTheme.shapes.extraLarge.copy(
@@ -137,7 +146,7 @@ fun Body(navController: NavController, marketsData: MarketsModelUi, it: PaddingV
             shape = MaterialTheme.shapes.extraLarge.copy(
                 topStart = CornerSize(25.dp)
             )
-        ).width(width = 300.dp)
+        )
 
     Box(
         modifier = Modifier
@@ -159,23 +168,24 @@ fun Body(navController: NavController, marketsData: MarketsModelUi, it: PaddingV
             Column(
                 modifier = Modifier
                     .background(brush = bodyBrush, shape = bgrShape)
-                    .fillMaxSize(),
+                    .fillMaxSize()
+                    .padding(start = 16.dp, top = 16.dp),
                 verticalArrangement = Arrangement.Top,
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.Start
             ) {
-                Spacer(modifier = Modifier.padding(vertical = 8.dp))
-                PriceCard(modifier, marketsData.hiPrice, "Precio máximo", Color(0xffba1a1a))
-                Spacer(modifier = Modifier.padding(vertical = 8.dp))
-                PriceCard(
-                    modifier,
-                    marketsData.lowPrice,
-                    "Precio mínimo del día",
-                    Color(0xffAFF1CF)
-                )
+                PriceTodayCard(modifier, marketsData)
                 Spacer(modifier = Modifier.padding(vertical = 8.dp))
                 WeekResume(modifier, marketsData.hiPrice, marketsData.lowPrice)
                 Spacer(modifier = Modifier.padding(vertical = 8.dp))
-                GoogleAddsMain(modifier)
+                Row(
+                    modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState(0))
+                ) {
+                    WeekResume(modifier, marketsData.hiPrice, marketsData.lowPrice)
+                    WeekResume(modifier, marketsData.hiPrice, marketsData.lowPrice)
+                    Spacer(modifier = Modifier.padding(horizontal = 16.dp))
+                }
+                Spacer(modifier = Modifier.padding(vertical = 8.dp))
+                GoogleAddsMain(modifier.padding(end = 16.dp))
             }
         }
     }
@@ -256,12 +266,12 @@ fun ActualPrice(
             ) { targetCount ->
                 Text(
                     text = "$targetCount €",
-                    color = Color.Black,
+                    color = MaterialTheme.colorScheme.onBackground,
                     textAlign = TextAlign.End,
                     style = TextStyle(
                         fontSize = 45.sp,
                         shadow = Shadow(
-                            Color.Black.copy(alpha = 0.5f),
+                            MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
                             offset = Offset(2F, 10F),
                             blurRadius = 8F
                         )
@@ -274,11 +284,11 @@ fun ActualPrice(
             Text(
                 text = "${marketsData.type} actual",
                 modifier = Modifier.fillMaxWidth(),
-                color = Color.Black.copy(alpha = 0.8f),
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
                 textAlign = TextAlign.End,
                 style = MaterialTheme.typography.bodyMedium.copy(
                     shadow = Shadow(
-                        Color.Black.copy(alpha = 0.5f),
+                        MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
                         offset = Offset(2F, 8F),
                         blurRadius = 4F
                     )
@@ -290,9 +300,9 @@ fun ActualPrice(
             verticalArrangement = Arrangement.SpaceAround,
             horizontalAlignment = Alignment.Start
         ) {
-            LitlePrice(marketsData.hiPrice, "máximo", Color(0xffba1a1a))
+            LitlePrice(marketsData.hiPrice, "máximo", MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f))
             Spacer(modifier = Modifier.padding(vertical = 4.dp))
-            LitlePrice(marketsData.lowPrice, "mínimo", Color.Black)
+            LitlePrice(marketsData.lowPrice, "mínimo", MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f))
         }
     }
 }
@@ -313,11 +323,11 @@ private fun LitlePrice(
         ) { targetCount ->
             Text(
                 text = "$targetCount €",
-                color = Color.Black,
+                color = color,
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.labelLarge.copy(
                     shadow = Shadow(
-                        Color.Black.copy(alpha = 0.5f),
+                        MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
                         offset = Offset(2F, 8F),
                         blurRadius = 4F
                     )
@@ -326,7 +336,7 @@ private fun LitlePrice(
         }
         Text(
             text = text,
-            color = Color.Black.copy(alpha = 0.8f),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
             textAlign = TextAlign.End,
             style = MaterialTheme.typography.bodySmall.copy(
                 shadow = Shadow(
@@ -336,6 +346,75 @@ private fun LitlePrice(
                 )
             )
         )
+    }
+}
+
+@Composable
+private fun LitleKwhPrice(
+    price: Double,
+    text: String,
+    color: Color
+) {
+    Row(
+        modifier = Modifier.padding(top = 4.dp, start = 24.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = "Precio $text",
+            modifier = Modifier.width(100.dp).fillMaxWidth(),
+            color = color,
+            textAlign = TextAlign.Start,
+            style = MaterialTheme.typography.bodySmall.copy(
+                shadow = Shadow(
+                    MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+                    offset = Offset(2F, 8F),
+                    blurRadius = 4F
+                )
+            )
+        )
+        AnimatedText(
+            price = price / 1000
+        ) { targetCount ->
+            Text(
+                text = "$targetCount €",
+                modifier = Modifier.fillMaxWidth(),
+                color = color,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.labelLarge.copy(
+                    shadow = Shadow(
+                        MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+                        offset = Offset(2F, 8F),
+                        blurRadius = 4F
+                    )
+                )
+            )
+        }
+
+    }
+}
+
+@Composable
+fun PriceTodayCard(
+    modifier: Modifier,
+    marketsData: MarketsModelUi
+) {
+    Column(
+        modifier = modifier
+            .width(width = 300.dp)
+            .height(height = 100.dp),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Precios en €/Kwh de hoy",
+            modifier = Modifier.padding(start = 16.dp, top = 4.dp).fillMaxWidth(),
+            fontWeight = FontWeight.SemiBold,
+            style = MaterialTheme.typography.labelLarge
+        )
+        LitleKwhPrice(marketsData.hiPrice, "máximo", MaterialTheme.colorScheme.error)
+        LitleKwhPrice(marketsData.currentPrice, "actual", MaterialTheme.colorScheme.tertiary)
+        LitleKwhPrice(marketsData.lowPrice, "mínimo", MaterialTheme.colorScheme.primary)
     }
 }
 
@@ -497,8 +576,8 @@ private fun GraphicColumnDay(
 ) {
     Box(
         modifier = Modifier
-            .padding(8.dp)
-            .width(width = 16.dp)
+            .padding(12.dp)
+            .width(width = 8.dp)
             .height(height = height.dp)
             .background(
                 color = color,
