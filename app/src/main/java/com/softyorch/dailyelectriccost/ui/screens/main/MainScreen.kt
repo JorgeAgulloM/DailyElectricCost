@@ -39,7 +39,7 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel) {
     val geoLimit: String by viewModel.geoLimit.observeAsState(initial = EMPTY_STRING)
 
     Scaffold(
-        containerColor = Color(0xffAFF1CF)
+        containerColor = MaterialTheme.colorScheme.tertiaryContainer
     ) {
         Head(marketsData)
         Body(navController, marketsData, it)
