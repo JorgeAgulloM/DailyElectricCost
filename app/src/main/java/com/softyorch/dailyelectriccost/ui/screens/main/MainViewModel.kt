@@ -24,8 +24,8 @@ class MainViewModel @Inject constructor(private val redUsesCases: RedUsesCases) 
     /** Query data **********************************************/
 
     private val _category = Constants.LIST_CATEGORY
-    private val _startDate = MutableLiveData("2022-11-07T00:00")
-    private val _endDate = MutableLiveData("2022-11-13T23:00")
+    private val _startDate = MutableLiveData("2022-11-09T00:00")
+    private val _endDate = MutableLiveData("2022-11-09T23:00")
     private val _timeTruncate = MutableLiveData("hour")
     private val _geoLimit = MutableLiveData("peninsular")
     val geoLimit: LiveData<String> = _geoLimit
