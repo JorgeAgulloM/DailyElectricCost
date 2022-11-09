@@ -12,7 +12,19 @@ import java.util.*
 fun String.toDate(): Date? =
     SimpleDateFormat("EE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH).parse(this)
 
-fun String.toDateFormatted(): String =
+fun String.toDateFormatted_old(): String =
     this.split("T")[0] + " - " +
             this.split("T")[1]
                 .split(".")[0]
+
+fun String.toDateFormatted(): String =
+    this.getTodayOfDate() + " - " + this.getHourOfDate()
+
+fun String.getTodayOfDate(): String =
+    this.split("T")[0]
+
+fun String.getHourOfDate(): String =
+    this.split("T")[1].split(".")[0]
+
+fun String.getHourOfNowToInt(): Int =
+    this.getHourOfDate().split(":")[0].toInt()
