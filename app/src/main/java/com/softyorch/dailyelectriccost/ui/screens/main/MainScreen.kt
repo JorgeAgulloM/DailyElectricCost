@@ -29,52 +29,51 @@ import com.softyorch.dailyelectriccost.utils.Constants.EMPTY_STRING
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(navController: NavController, viewModel: MainViewModel) {
-
-    Scaffold(
-    ) {
-
-/*        val dataDefault: Red21Response? by viewModel.defaultData.observeAsState(
-            initial = Red21Response.red21ResponseEmpty
-        )
-        val included: List<Included?> by viewModel.includes.observeAsState(
-            initial = Red21Response.red21ResponseEmpty.included
-        )*/
-
-        Body(navController, viewModel, it)
-    }
-}
-
-@SuppressLint("CoroutineCreationDuringComposition")
-@Composable
-fun Body(navController: NavController, viewModel: MainViewModel, it: PaddingValues) {
 
     val marketsData: MarketsModelUi by viewModel.marketsData.observeAsState(
         initial = MarketsModelUi.emptyMarketsDao
     )
     val geoLimit: String by viewModel.geoLimit.observeAsState(initial = EMPTY_STRING)
 
+    Scaffold(
+        containerColor = Color(0xffAFF1CF)
+    ) {
+        Head(marketsData)
+        Body(navController, marketsData, it)
+    }
+}
+
+@Composable
+fun Head(marketsData: MarketsModelUi) {
+    ActualPrice(marketsData)
+}
+
+@SuppressLint("CoroutineCreationDuringComposition")
+@Composable
+fun Body(navController: NavController, marketsData: MarketsModelUi, it: PaddingValues) {
+
     val modifier = Modifier
         .shadow(
             elevation = 2.dp, clip = true,
             shape = MaterialTheme.shapes.extraLarge.copy(
-                    topStart = CornerSize(25.dp)
-                ),
+                topStart = CornerSize(25.dp)
+            ),
             ambientColor = Color.White,
             spotColor = Color.White,
         ).background(
             color = Color(0xff131313).copy(alpha = 0.95f),
             shape = MaterialTheme.shapes.extraLarge.copy(
-                    topStart = CornerSize(25.dp)
-                )
+                topStart = CornerSize(25.dp)
+            )
         ).width(width = 300.dp)
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = it.calculateTopPadding() + 24.dp)
+            .padding(top = it.calculateTopPadding() + 110.dp)
     ) {
         BackgroundImageMain()
 
@@ -84,11 +83,10 @@ fun Body(navController: NavController, viewModel: MainViewModel, it: PaddingValu
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            ActualPrice(marketsData.currentPrice)
-            Spacer(modifier = Modifier.padding(vertical = 16.dp))
-            PriceCard(modifier, marketsData.hiPrice, "Mejor máximo", Color(0xffba1a1a))
             Spacer(modifier = Modifier.padding(vertical = 8.dp))
-            PriceCard(modifier, marketsData.lowPrice, "Mejor precio del día", Color(0xffAFF1CF))//AFF1CF
+            PriceCard(modifier, marketsData.hiPrice, "Precio máximo", Color(0xffba1a1a))
+            Spacer(modifier = Modifier.padding(vertical = 8.dp))
+            PriceCard(modifier, marketsData.lowPrice, "Precio mínimo del día", Color(0xffAFF1CF))
             Spacer(modifier = Modifier.padding(vertical = 8.dp))
             WeekResume(modifier, marketsData.hiPrice, marketsData.lowPrice)
             Spacer(modifier = Modifier.padding(vertical = 8.dp))
@@ -153,49 +151,105 @@ private fun AnimatedText(
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun ActualPrice(
-    price: Double = 0.0,
-    text: String = "Precio actual"
+    marketsData: MarketsModelUi
 ) {
 
-    Column(
-        verticalArrangement = Arrangement.SpaceEvenly,
-        horizontalAlignment = Alignment.Start,
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 16.dp)
             .width(width = 203.dp)
     ) {
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.SpaceEvenly,
+            horizontalAlignment = Alignment.Start,
+        ) {
+            AnimatedText(
+                price = marketsData.currentPrice
+            ) { targetCount ->
+                Text(
+                    text = "$targetCount €",
+                    color = Color.Black,
+                    textAlign = TextAlign.Center,
+                    lineHeight = 52.sp,
+                    style = TextStyle(
+                        fontSize = 45.sp,
+                        shadow = Shadow(
+                            Color.Black.copy(alpha = 0.5f),
+                            offset = Offset(2F, 1F),
+                            blurRadius = 2F
+                        )
+                    ),
+                    modifier = Modifier
+                        .width(width = 203.dp)
+                        .height(height = 56.dp)
+                )
+            }
+
+            Text(
+                text = "${marketsData.type} actual",
+                modifier = Modifier.fillMaxWidth(),
+                color = Color.Black.copy(alpha = 0.8f),
+                textAlign = TextAlign.End,
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    shadow = Shadow(
+                        Color.Black.copy(alpha = 0.5f),
+                        offset = Offset(2F, 1F),
+                        blurRadius = 2F
+                    )
+                )
+            )
+        }
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.SpaceAround,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            LitlePrice(marketsData.hiPrice, "máximo", Color(0xffba1a1a))
+            Spacer(modifier = Modifier.padding(vertical = 4.dp))
+            LitlePrice(marketsData.lowPrice, "mínimo", Color.Black)
+        }
+    }
+}
+
+@Composable
+private fun LitlePrice(
+    price: Double,
+    text: String,
+    color: Color
+) {
+    Column(
+        verticalArrangement = Arrangement.SpaceAround,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         AnimatedText(
             price = price
         ) { targetCount ->
             Text(
-                text = targetCount.toString() + "€",
-                color = Color(0xffE7D800),
+                text = "$targetCount €",
+                color = Color.Black,
                 textAlign = TextAlign.Center,
-                lineHeight = 52.sp,
-                style = TextStyle(
-                    fontSize = 45.sp,
+                style = MaterialTheme.typography.labelLarge.copy(
                     shadow = Shadow(
-                        Color.White,
-                        offset = Offset(2F,2F),
-                        blurRadius = 4F
+                        Color.Black.copy(alpha = 0.5f),
+                        offset = Offset(2F, 1F),
+                        blurRadius = 2F
                     )
-                ),
-                modifier = Modifier
-                    .width(width = 203.dp)
-                    .height(height = 56.dp)
+                )
             )
         }
-
         Text(
             text = text,
-            color = Color.White.copy(alpha = 0.8f),
+            color = Color.Black.copy(alpha = 0.8f),
             textAlign = TextAlign.End,
-            lineHeight = 24.sp,
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier
-                .width(width = 163.dp)
-                .height(height = 24.dp)
+            style = MaterialTheme.typography.bodySmall.copy(
+                shadow = Shadow(
+                    Color.Black.copy(alpha = 0.5f),
+                    offset = Offset(2F, 1F),
+                    blurRadius = 2F
+                )
+            )
         )
     }
 }
@@ -236,7 +290,7 @@ fun PriceCard(
                     fontSize = 45.sp,
                     shadow = Shadow(
                         Color.White,
-                        offset = Offset(2F,2F),
+                        offset = Offset(2F, 2F),
                         blurRadius = 4F
                     )
                 )
@@ -318,7 +372,7 @@ fun WeekResume(
                             style = MaterialTheme.typography.bodySmall.copy(
                                 shadow = Shadow(
                                     Color.White,
-                                    offset = Offset(1F,1F),
+                                    offset = Offset(1F, 1F),
                                     blurRadius = 1F
                                 )
                             ),
@@ -336,7 +390,7 @@ fun WeekResume(
                             style = MaterialTheme.typography.bodySmall.copy(
                                 shadow = Shadow(
                                     Color.White,
-                                    offset = Offset(1F,1F),
+                                    offset = Offset(1F, 1F),
                                     blurRadius = 1F
                                 )
                             ),
