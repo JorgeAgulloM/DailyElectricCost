@@ -13,6 +13,7 @@ import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.map
 import com.softyorch.dailyelectriccost.data.repository.red21Repository.dao.MarketsDao
 import com.softyorch.dailyelectriccost.data.repository.red21Repository.dao.Values
 import com.softyorch.dailyelectriccost.utils.Constants.RED21
+import com.softyorch.dailyelectriccost.utils.funcExtensions.getHourOfCalendarToInt
 import com.softyorch.dailyelectriccost.utils.funcExtensions.getHourOfNowToInt
 import retrofit2.Response
 import java.util.Calendar
@@ -54,11 +55,11 @@ class Red21Repository @Inject constructor(private val api: RedService) {
                             var lowPrice = 99999999.0
                             var hiPrice = 0.0
                             var currentPrices = 0.0
-                            val now = Calendar.HOUR
+                            val nowHour = Calendar.getInstance().time.toString().getHourOfCalendarToInt()
                             included.attributes.values.forEach { value ->
                                 if (value.value > hiPrice) hiPrice = value.value
                                 if (value.value < lowPrice) lowPrice = value.value
-                                if (value.datetime.getHourOfNowToInt() < now )
+                                if (value.datetime.getHourOfNowToInt() == nowHour )
                                     currentPrices = value.value
                                 dao.values.add(Values(value.value, value.datetime))
                             }
