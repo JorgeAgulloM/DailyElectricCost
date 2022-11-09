@@ -2,7 +2,7 @@
  * Copyright (c) 2022. File developed for DailyElectricCost App by Jorge Agulló Martín for SoftYorch
  */
 
-package com.softyorch.dailyelectriccost.data.repository.red21Repository.responseModel
+package com.softyorch.dailyelectriccost.data.repository.red21Repository.dao
 
 import com.softyorch.dailyelectriccost.utils.Constants.EMPTY_STRING
 

@@ -11,11 +11,9 @@ import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.Red
 import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.mapper.mapToGenerationTruncateEntity
 import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.mapper.mapToRedMarketsTruncateEntity
 import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.mapper.mapToRedBalanceEntity
-import com.softyorch.dailyelectriccost.data.repository.red21Repository.responseModel.MarketsDao
-import com.softyorch.dailyelectriccost.data.repository.red21Repository.responseModel.Values
-import com.softyorch.dailyelectriccost.utils.Constants
+import com.softyorch.dailyelectriccost.data.repository.red21Repository.dao.MarketsDao
+import com.softyorch.dailyelectriccost.data.repository.red21Repository.dao.Values
 import com.softyorch.dailyelectriccost.utils.Constants.RED21
-import com.softyorch.dailyelectriccost.utils.funcExtensions.getHourOfDate
 import com.softyorch.dailyelectriccost.utils.funcExtensions.getHourOfNowToInt
 import retrofit2.Response
 import java.util.Calendar
