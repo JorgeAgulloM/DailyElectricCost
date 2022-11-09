@@ -2,9 +2,7 @@ package com.softyorch.dailyelectriccost.ui.screens.splash
 
 
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
@@ -27,7 +25,7 @@ fun SplashScreen(navController: NavController) {
             animationSpec = spring(dampingRatio = 1f, stiffness = 10f)
         )
 
-        delay(2000)
+        delay(200)
 
         navController.navigate(AppScreenRoutes.MainScreen.route){
             navController.backQueue.clear()
