@@ -61,7 +61,7 @@ class Red21Repository @Inject constructor(private val api: RedService) {
                                 Calendar.getInstance().time.toString().getHourOfCalendarToInt()
                             included.attributes.values.forEach { value ->
                                 if (value.value > 0.0) {
-                                    loadAverage *= value.value
+                                    loadAverage += value.value
                                     divideAverage++
                                 }
                                 if (value.value > hiPrice) hiPrice = value.value
@@ -74,6 +74,9 @@ class Red21Repository @Inject constructor(private val api: RedService) {
                             dao.hiPrice = hiPrice
                             dao.currentPrice = currentPrices
                             dao.avgPrice = loadAverage / divideAverage
+                            Log.d(RED21, "getDataMarkets.loadAverage ->$loadAverage")
+                            Log.d(RED21, "getDataMarkets.divideAverage ->$divideAverage")
+                            Log.d(RED21, "getDataMarkets.avgPrice ->${dao.avgPrice}")
                         }
                     }
                 } else {
