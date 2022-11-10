@@ -11,17 +11,13 @@ import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.map
 import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.mapper.mapToRedMarketsTruncateEntity
 import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.mapper.mapToRedBalanceEntity
 import com.softyorch.dailyelectriccost.data.repository.red21Repository.dao.MarketsDao
-import com.softyorch.dailyelectriccost.data.repository.red21Repository.dao.Values
 import com.softyorch.dailyelectriccost.utils.Constants.RED21
-import com.softyorch.dailyelectriccost.utils.funcExtensions.getHourOfCalendarToInt
-import com.softyorch.dailyelectriccost.utils.funcExtensions.getHourOfNowToInt
 import retrofit2.Response
-import java.util.Calendar
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class Red21Repository @Inject constructor(private val api: RedService) {
+class Red21Repository @Inject constructor(private val api: RedService) : IRed21Repository {
     suspend fun getDataDefault(
         redBalanceModel: RedBalanceModel
     ): Response<Red21Balance>? = api.getDataDefault(
@@ -35,59 +31,8 @@ class Red21Repository @Inject constructor(private val api: RedService) {
     )
 
     suspend fun getMarketsGeoTruncate(redMarketsTruncateModel: RedMarketsTruncateModel): MarketsDao {
-        val dao = MarketsDao.emptyMarketsDao
         val responseApi =
             api.getMarketsGeoTruncate(redMarketsTruncateModel.mapToRedMarketsTruncateEntity())
-
-        /** recuperar datos del api y almacenarlos en dao */
-
-        responseApi.let { response ->
-            if (response != null) {
-                if (response.isSuccessful) {
-
-                    response.body()!!.let { body ->
-                        body.data.attributes.let { data ->
-                            dao.title = data.title
-                            dao.lastUpdate = data.lastUpdate
-                        }
-                        body.included[0].let { included ->
-                            dao.type = included.type
-                            var lowPrice = 99999999.0
-                            var hiPrice = 0.0
-                            var currentPrices = 0.0
-                            var loadAverage = 0.0
-                            var divideAverage = 0.0
-                            val nowHour =
-                                Calendar.getInstance().time.toString().getHourOfCalendarToInt()
-                            included.attributes.values.forEach { value ->
-                                if (value.value > 0.0) {
-                                    loadAverage += value.value
-                                    divideAverage++
-                                }
-                                if (value.value > hiPrice) hiPrice = value.value
-                                if (value.value < lowPrice) lowPrice = value.value
-                                if (value.datetime.getHourOfNowToInt() == nowHour)
-                                    currentPrices = value.value
-                                dao.values.add(Values(value.value, value.datetime))
-                            }
-                            dao.lowPrice = lowPrice
-                            dao.hiPrice = hiPrice
-                            dao.currentPrice = currentPrices
-                            dao.avgPrice = loadAverage / divideAverage
-                            Log.d(RED21, "getDataMarkets.loadAverage ->$loadAverage")
-                            Log.d(RED21, "getDataMarkets.divideAverage ->$divideAverage")
-                            Log.d(RED21, "getDataMarkets.avgPrice ->${dao.avgPrice}")
-                        }
-                    }
-                } else {
-                    Log.d(RED21, "getDataMarkets.error ->${response.errorBody()}")
-                }
-            } else {
-                Log.d(RED21, "getDataMarkets response is null")
-            }
-        }
-
-        Log.d(RED21, "getDataMarkets.dao -> $dao")
-        return dao
+        return loadDao(responseApi)
     }
 }
