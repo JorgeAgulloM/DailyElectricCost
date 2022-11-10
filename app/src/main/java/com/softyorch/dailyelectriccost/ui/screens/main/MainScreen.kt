@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -30,8 +31,10 @@ import com.softyorch.dailyelectriccost.ui.model.markets.MarketsModelUi
 import com.softyorch.dailyelectriccost.ui.theme.colorAvg
 import com.softyorch.dailyelectriccost.ui.theme.colorHi
 import com.softyorch.dailyelectriccost.ui.theme.colorLow
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.reflect.KFunction1
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,22 +43,74 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel) {
     val marketsData: MarketsModelUi by viewModel.marketsData.observeAsState(
         initial = MarketsModelUi.emptyMarketsDao
     )
+    val zone: ZoneQuery by viewModel.zone.observeAsState(initial = ZoneQuery.Peninsula)
     //val geoLimit: String by viewModel.geoLimit.observeAsState(initial = EMPTY_STRING)
+
+    val scope = rememberCoroutineScope()
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
 
     Scaffold(
         topBar = {
-            TopBar(marketsData, navController)
+            TopBar(marketsData, navController) {
+                scope.launch {
+                    if (drawerState.isClosed) drawerState.open() else drawerState.close()
+                }
+            }
         },
-        containerColor = MaterialTheme.colorScheme.tertiaryContainer
+        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
     ) {
         Head(marketsData)
         Body(navController, marketsData, it)
+        DrawerBody(it, scope, drawerState, viewModel::loadDataFrom, zone)
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TopBar(marketsData: MarketsModelUi, navController: NavController) {
+fun DrawerBody(
+    paddingValues: PaddingValues,
+    scope: CoroutineScope,
+    drawerState: DrawerState,
+    loadDataFrom: KFunction1<ZoneQuery, Unit>,
+    zone: ZoneQuery
+) {
+
+    val items = listOf(Icons.Default.Favorite, Icons.Default.Face, Icons.Default.Email)
+    val selectedItem = remember { mutableStateOf(items[0]) }
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            ModalDrawerSheet {
+                Spacer(Modifier.height(paddingValues.calculateTopPadding() + 8.dp))
+                SelectZone(loadDataFrom, zone)
+                Divider(modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp))
+                items.forEach { item ->
+                    NavigationDrawerItem(
+                        icon = { Icon(item, contentDescription = null) },
+                        label = { Text(item.name) },
+                        selected = item == selectedItem.value,
+                        onClick = {
+                            scope.launch { drawerState.close() }
+                            selectedItem.value = item
+                        },
+                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                    )
+                }
+            }
+        },
+        content = { }
+    )
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@SuppressLint("CoroutineCreationDuringComposition")
+@Composable
+private fun TopBar(
+    marketsData: MarketsModelUi,
+    navController: NavController,
+    onNavigationIconClick: () -> Unit
+) {
     TopAppBar(
         title = {
             Box(
@@ -71,10 +126,12 @@ private fun TopBar(marketsData: MarketsModelUi, navController: NavController) {
         modifier = Modifier.height(35.dp).padding(top = 8.dp),
         navigationIcon = {
             IconButton(
-                onClick = { }
+                onClick = {
+                    onNavigationIconClick()
+                }
             ) {
                 Icon(
-                    imageVector = Icons.Default.ArrowBack,
+                    imageVector = Icons.Default.Menu,
                     modifier = Modifier
                         .background(
                             color = MaterialTheme.colorScheme.background,
@@ -105,6 +162,7 @@ private fun TopBar(marketsData: MarketsModelUi, navController: NavController) {
             containerColor = Color.Transparent
         )
     )
+
 }
 
 @Composable
@@ -114,7 +172,25 @@ fun Head(marketsData: MarketsModelUi) {
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun Body(navController: NavController, marketsData: MarketsModelUi, it: PaddingValues) {
+fun Body(
+    navController: NavController,
+    marketsData: MarketsModelUi,
+    it: PaddingValues
+) {
+
+    val cardBrush: Brush = Brush.radialGradient(
+        colors = listOf(
+            MaterialTheme.colorScheme.onBackground.copy(0.01f),
+            MaterialTheme.colorScheme.background.copy(0.9f),
+            MaterialTheme.colorScheme.onBackground.copy(0.01f),
+            MaterialTheme.colorScheme.background.copy(0.9f),
+            MaterialTheme.colorScheme.onBackground.copy(0.01f),
+            MaterialTheme.colorScheme.background.copy(0.9f),
+        ),
+        center = Offset(-25f, 25f),
+        radius = 1000f
+    )
+    val modifier = Modifier.background(brush = cardBrush)
 
     val bodyBrush: Brush = Brush.linearGradient(
         colors = listOf(
@@ -131,26 +207,11 @@ fun Body(navController: NavController, marketsData: MarketsModelUi, it: PaddingV
         )
     )
 
-    val cardBrush: Brush = Brush.radialGradient(
-        colors = listOf(
-            MaterialTheme.colorScheme.onBackground.copy(0.01f),
-            MaterialTheme.colorScheme.background.copy(0.9f),
-            MaterialTheme.colorScheme.onBackground.copy(0.01f),
-            MaterialTheme.colorScheme.background.copy(0.9f),
-            MaterialTheme.colorScheme.onBackground.copy(0.01f),
-            MaterialTheme.colorScheme.background.copy(0.9f),
-        ),
-        center = Offset(-25f, 25f),
-        radius = 1000f
-    )
-
     val shadow = Shadow(
         MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f),
         offset = Offset(1F, 1F),
         blurRadius = 1F
     )
-
-    val modifier = Modifier.background(brush = cardBrush)
 
     val bgrShape = MaterialTheme.shapes.extraLarge.copy(
         bottomStart = ZeroCornerSize,
@@ -159,7 +220,7 @@ fun Body(navController: NavController, marketsData: MarketsModelUi, it: PaddingV
 
     Column(
         modifier = Modifier
-            .padding(top = it.calculateTopPadding() + 110.dp)
+            .padding(top = it.calculateTopPadding() + 120.dp)
             .fillMaxSize()
             .background(brush = bodyBrush, shape = bgrShape),
         verticalArrangement = Arrangement.SpaceBetween,
@@ -177,7 +238,7 @@ fun Body(navController: NavController, marketsData: MarketsModelUi, it: PaddingV
             Spacer(modifier = Modifier.padding(vertical = 8.dp))
             GrafValuesOfToday(
                 modifier,
-                "Precio en Kwh del día",
+                "Precios en €/Kwh del día",
                 marketsData
             )
             Spacer(modifier = Modifier.padding(vertical = 8.dp))
@@ -188,6 +249,63 @@ fun Body(navController: NavController, marketsData: MarketsModelUi, it: PaddingV
     }
 
 }
+
+@Composable
+fun SelectZone(loadDataFrom: KFunction1<ZoneQuery, Unit>, zone: ZoneQuery) {
+    Column(
+        modifier = Modifier.padding(8.dp),
+        verticalArrangement = Arrangement.SpaceAround,
+        horizontalAlignment = Alignment.Start
+    ) {
+        Text(
+            text = "Selecciona una región",
+            modifier = Modifier.padding(start = 16.dp, top = 4.dp, bottom = 4.dp),
+            style = MaterialTheme.typography.labelSmall
+        )
+        TextButtonMain(ZoneQuery.Peninsula, zone) { loadDataFrom(ZoneQuery.Peninsula) }
+        TextButtonMain(ZoneQuery.Baleares, zone) { loadDataFrom(ZoneQuery.Baleares) }
+        TextButtonMain(ZoneQuery.Canarias, zone) { loadDataFrom(ZoneQuery.Canarias) }
+        TextButtonMain(ZoneQuery.Ceuta, zone) { loadDataFrom(ZoneQuery.Ceuta) }
+        TextButtonMain(ZoneQuery.Melilla, zone) { loadDataFrom(ZoneQuery.Melilla) }
+    }
+
+}
+
+@Composable
+fun TextButtonMain(
+    selectedZone: ZoneQuery,
+    zone: ZoneQuery,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier.padding(end = 4.dp).height(30.dp).fillMaxWidth().clickable { onClick() },
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start
+    ) {
+        RadioButton(
+            //modifier = Modifier.size(25.dp),
+            selected = zone == selectedZone,
+            onClick = {
+                onClick()
+            }
+        )
+
+        Text(
+            text = when (selectedZone) {
+                ZoneQuery.Peninsula -> EnumZoneQuery.Peninsula.zone
+                ZoneQuery.Canarias -> EnumZoneQuery.Canarias.zone
+                ZoneQuery.Baleares -> EnumZoneQuery.Baleares.zone
+                ZoneQuery.Ceuta -> EnumZoneQuery.Ceuta.zone
+                ZoneQuery.Melilla -> EnumZoneQuery.Melilla.zone
+            },
+            modifier = Modifier.padding(top = 2.dp),
+            style = MaterialTheme.typography.labelSmall.copy(
+                textDecoration = TextDecoration.Underline
+            )
+        )
+    }
+}
+
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @OptIn(ExperimentalAnimationApi::class)
@@ -231,14 +349,13 @@ fun ActualPrice(
 
     Row(
         modifier = Modifier
-            .fillMaxWidth()
             .padding(top = 48.dp)
-            .width(width = 203.dp)
+            .width(width = 380.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
     ) {
         Column(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.Start,
         ) {
             AnimatedText(
                 price = marketsData.currentPrice
@@ -268,15 +385,15 @@ fun ActualPrice(
                 style = MaterialTheme.typography.bodyMedium.copy(
                     shadow = Shadow(
                         MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
-                        offset = Offset(2F, 8F),
-                        blurRadius = 4F
+                        offset = Offset(2F, 4F),
+                        blurRadius = 2F
                     )
                 )
             )
         }
         Column(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.SpaceAround,
+            verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
             LitlePrice(
@@ -315,8 +432,8 @@ private fun LitlePrice(
                 style = MaterialTheme.typography.labelLarge.copy(
                     shadow = Shadow(
                         MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
-                        offset = Offset(2F, 8F),
-                        blurRadius = 4F
+                        offset = Offset(1F, 2F),
+                        blurRadius = 1F
                     )
                 )
             )
@@ -328,8 +445,8 @@ private fun LitlePrice(
             style = MaterialTheme.typography.bodySmall.copy(
                 shadow = Shadow(
                     Color.Black.copy(alpha = 0.5f),
-                    offset = Offset(2F, 8F),
-                    blurRadius = 4F
+                    offset = Offset(1F, 2F),
+                    blurRadius = 1F
                 )
             )
         )
@@ -347,11 +464,11 @@ private fun LitleKwhPrice(
     Row(
         modifier = Modifier.padding(top = 4.dp, start = 24.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.Start
     ) {
         Text(
             text = "Precio $text",
-            modifier = Modifier.width(130.dp),
+            modifier = Modifier.width(100.dp),
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f),
             textAlign = TextAlign.Start,
             style = MaterialTheme.typography.bodySmall.copy(
@@ -364,7 +481,7 @@ private fun LitleKwhPrice(
         ) { targetCount ->
             Text(
                 text = "${targetCount / 1000} €",
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.width(100.dp),
                 color = color,
                 textAlign = TextAlign.Start,
                 style = MaterialTheme.typography.labelLarge.copy(
@@ -388,11 +505,11 @@ fun PriceTodayCard(
         Column(
             modifier = modifier.height(height = 100.dp),
             verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.Start
         ) {
             Text(
                 text = "Precios en €/Kwh de hoy",
-                modifier = Modifier.padding(start = 16.dp, top = 4.dp).fillMaxWidth(),
+                modifier = Modifier.padding(start = 16.dp, top = 4.dp),
                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f),
                 fontWeight = FontWeight.SemiBold,
                 style = MaterialTheme.typography.labelLarge
@@ -542,13 +659,13 @@ fun GrafBestHourOfToday(
                 colorLow,
                 shadow
             )
-            Divider(modifier = Modifier.padding(horizontal = 8.dp))
+            Divider(modifier = Modifier.padding(end = 8.dp))
 
             TextContent(text = "El rango de horas más económicas es desde la 1:00am a las 7:00am")
-            Divider(modifier = Modifier.padding(horizontal = 8.dp))
+            Divider(modifier = Modifier.padding(end = 8.dp))
 
             TextContent(text = "El mejor rango de horas es desde las 6:00am a las 10:00am")
-            Divider(modifier = Modifier.padding(horizontal = 8.dp))
+            Divider(modifier = Modifier.padding(end = 8.dp))
 
             TextPrice(
                 marketsData.lowPrice,
@@ -556,7 +673,8 @@ fun GrafBestHourOfToday(
                 colorHi,
                 shadow
             )
-            Divider(modifier = Modifier.padding(horizontal = 8.dp))
+            Divider(modifier = Modifier.padding(end = 8.dp))
+            Spacer(modifier = Modifier.padding(bottom = 8.dp))
         }
     }
 }

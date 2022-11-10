@@ -21,13 +21,16 @@ class MainViewModel @Inject constructor(private val redUsesCases: RedUsesCases) 
     private val _marketsData = MutableLiveData(MarketsModelUi.emptyMarketsDao)
     val marketsData: LiveData<MarketsModelUi> = _marketsData
 
+    private val _zone = MutableLiveData<ZoneQuery>(ZoneQuery.Peninsula)
+    val zone: LiveData<ZoneQuery> = _zone
+
     /** Query data **********************************************/
 
     private val _category = Constants.LIST_CATEGORY
     private val _startDate = MutableLiveData("2022-11-09T00:00")
     private val _endDate = MutableLiveData("2022-11-09T23:00")
     private val _timeTruncate = MutableLiveData("hour")
-    private val _geoLimit = MutableLiveData("peninsular")
+    private val _geoLimit = MutableLiveData(EnumZoneQuery.Peninsula.zone)
     val geoLimit: LiveData<String> = _geoLimit
 
     private val _geoIds = MutableLiveData("8741")
@@ -35,6 +38,16 @@ class MainViewModel @Inject constructor(private val redUsesCases: RedUsesCases) 
     private val oneHourInMillis = 3600000L
     init {
         getDataGeoTruncate()
+    }
+
+    fun loadDataFrom(zoneQuery: ZoneQuery) {
+        when (zoneQuery){
+            ZoneQuery.Peninsula -> _zone.value = ZoneQuery.Peninsula
+            ZoneQuery.Baleares -> _zone.value = ZoneQuery.Baleares
+            ZoneQuery.Canarias -> _zone.value = ZoneQuery.Canarias
+            ZoneQuery.Ceuta -> _zone.value = ZoneQuery.Ceuta
+            ZoneQuery.Melilla -> _zone.value = ZoneQuery.Melilla
+        }
     }
 
     fun getDataGeoTruncate() {
