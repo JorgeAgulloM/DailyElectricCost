@@ -135,19 +135,33 @@ fun Body(navController: NavController, marketsData: MarketsModelUi, it: PaddingV
         )
     )
 
+    val cardBrush: Brush = Brush.radialGradient(
+        colors = listOf(
+            MaterialTheme.colorScheme.onBackground.copy(0.1f),
+            MaterialTheme.colorScheme.background.copy(0.9f)
+        ),
+        radius = 600f
+    )
+
+    val shadow = Shadow(
+        MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f),
+        offset = Offset(1F, 1F),
+        blurRadius = 1F
+    )
+
     val modifier = Modifier
         .padding(end = 16.dp)
         .shadow(
             elevation = 2.dp, clip = true,
             shape = MaterialTheme.shapes.extraLarge.copy(
-                topStart = CornerSize(25.dp)
+                topStart = CornerSize(26.dp)
             ),
             ambientColor = Color.White,
             spotColor = Color.White,
         ).background(
-            color = MaterialTheme.colorScheme.background.copy(alpha = 0.95f),
+            brush = cardBrush,
             shape = MaterialTheme.shapes.extraLarge.copy(
-                topStart = CornerSize(25.dp)
+                topStart = CornerSize(26.dp)
             )
         )
 
@@ -156,8 +170,6 @@ fun Body(navController: NavController, marketsData: MarketsModelUi, it: PaddingV
             .fillMaxSize()
             .padding(top = it.calculateTopPadding() + 110.dp)
     ) {
-        //BackgroundImageMain()
-
         val bgrShape = MaterialTheme.shapes.extraLarge.copy(
             bottomStart = ZeroCornerSize,
             bottomEnd = ZeroCornerSize
@@ -176,11 +188,11 @@ fun Body(navController: NavController, marketsData: MarketsModelUi, it: PaddingV
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.Start
             ) {
-                PriceTodayCard(modifier, marketsData)
+                PriceTodayCard(modifier, marketsData, shadow)
                 Spacer(modifier = Modifier.padding(vertical = 8.dp))
-                GrafLastSevenDays(
+                GrafToday(
                     modifier,
-                    "Kwh 24Horas",
+                    "Preio en Kwh del día",
                     marketsData,
                     marketsData.hiPrice,
                     marketsData.lowPrice
@@ -352,7 +364,8 @@ private fun LitlePrice(
 private fun LitleKwhPrice(
     price: Double,
     text: String,
-    color: Color
+    color: Color,
+    shadow: Shadow
 ) {
     Row(
         modifier = Modifier.padding(top = 4.dp, start = 24.dp),
@@ -361,33 +374,25 @@ private fun LitleKwhPrice(
     ) {
         Text(
             text = "Precio $text",
-            modifier = Modifier.width(100.dp).fillMaxWidth(),
-            color = color,
+            modifier = Modifier.width(100.dp),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f),
             textAlign = TextAlign.Start,
             style = MaterialTheme.typography.bodySmall.copy(
                 fontWeight = FontWeight.Bold,
-                shadow = Shadow(
-                    MaterialTheme.colorScheme.onBackground.copy(alpha = 1f),
-                    offset = Offset(2F, 4F),
-                    blurRadius = 8F
-                )
+                shadow = shadow
             )
         )
         AnimatedText(
-            price = price / 1000
+            price = price
         ) { targetCount ->
             Text(
-                text = "$targetCount €",
+                text = "${targetCount / 1000} €",
                 modifier = Modifier.fillMaxWidth(),
                 color = color,
-                textAlign = TextAlign.Center,
+                textAlign = TextAlign.Start,
                 style = MaterialTheme.typography.labelLarge.copy(
                     fontWeight = FontWeight.Bold,
-                    shadow = Shadow(
-                        MaterialTheme.colorScheme.onBackground.copy(alpha = 0.95f),
-                        offset = Offset(2F, 4F),
-                        blurRadius = 8F
-                    )
+                    shadow = shadow
                 )
             )
         }
@@ -397,7 +402,8 @@ private fun LitleKwhPrice(
 @Composable
 fun PriceTodayCard(
     modifier: Modifier,
-    marketsData: MarketsModelUi
+    marketsData: MarketsModelUi,
+    shadow: Shadow
 ) {
     Column(
         modifier = modifier
@@ -409,17 +415,18 @@ fun PriceTodayCard(
         Text(
             text = "Precios en €/Kwh de hoy",
             modifier = Modifier.padding(start = 16.dp, top = 4.dp).fillMaxWidth(),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f),
             fontWeight = FontWeight.SemiBold,
             style = MaterialTheme.typography.labelLarge
         )
-        LitleKwhPrice(marketsData.hiPrice, "máximo", colorHi)
-        LitleKwhPrice(marketsData.currentPrice, "actual", colorAvg)
-        LitleKwhPrice(marketsData.lowPrice, "mínimo", colorLow)
+        LitleKwhPrice(marketsData.hiPrice, "máximo", colorHi, shadow)
+        LitleKwhPrice(marketsData.currentPrice, "actual", colorAvg, shadow)
+        LitleKwhPrice(marketsData.lowPrice, "mínimo", colorLow, shadow)
     }
 }
 
 @Composable
-fun GrafLastSevenDays(
+fun GrafToday(
     modifier: Modifier,
     title: String,
     marketsData: MarketsModelUi,
@@ -430,7 +437,8 @@ fun GrafLastSevenDays(
         verticalArrangement = Arrangement.SpaceAround,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
-            .width(width = 300.dp)
+            .fillMaxWidth()
+        //.width(width = 300.dp)
     ) {
         Column(
             modifier = Modifier
@@ -442,7 +450,7 @@ fun GrafLastSevenDays(
                 color = Color.White.copy(alpha = 0.8f),
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(start = 16.dp, top = 8.dp)
                     .fillMaxWidth(),
                 textAlign = TextAlign.Start
             )
@@ -454,12 +462,51 @@ fun GrafLastSevenDays(
                 verticalAlignment = Alignment.Bottom,
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
+                Column(
+                    modifier = Modifier.fillMaxHeight().width(70.dp),
+                    verticalArrangement = Arrangement.SpaceBetween,
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    val shadow = Shadow(
+                        MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f),
+                        offset = Offset(1F, 1F),
+                        blurRadius = 1F
+                    )
+                    AnimatedText(
+                        price = priceMax
+                    ) { targetState ->
+                        Text(
+                            text = "${targetState / 1000} €",
+                            color = colorHi,
+                            lineHeight = 16.sp,
+                            style = MaterialTheme.typography.bodySmall.copy(shadow = shadow),
+                            textAlign = TextAlign.Start,
+                            modifier = Modifier
+                                .padding(start = 8.dp, top = 8.dp)
+                        )
+                    }
+                    AnimatedText(
+                        price = priceMin
+                    ) { targetState ->
+                        Text(
+                            text = "${targetState / 1000} €",
+                            color = colorLow,
+                            lineHeight = 16.sp,
+                            style = MaterialTheme.typography.bodySmall.copy(shadow = shadow),
+                            textAlign = TextAlign.Start,
+                            modifier = Modifier
+                                //.fillMaxWidth()
+                                .padding(start = 8.dp, bottom = 32.dp)
+                        )
+                    }
+                }
                 Row(
                     modifier = Modifier
                         .horizontalScroll(rememberScrollState(0)),
                     verticalAlignment = Alignment.Bottom,
                     horizontalArrangement = Arrangement.Center
                 ) {
+
                     marketsData.values.forEach { valuesUi ->
                         if (valuesUi.value > 0.0) Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
@@ -470,50 +517,7 @@ fun GrafLastSevenDays(
                             GraphicTextDay(valuesUi.value / 1000.0)
                         }
                     }
-                }
-                Column(
-                    modifier = Modifier.fillMaxHeight(),
-                    verticalArrangement = Arrangement.SpaceBetween,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
 
-                    AnimatedText(
-                        price = priceMax
-                    ) { targetState ->
-                        Text(
-                            text = "$targetState + €",
-                            color = Color(0xffba1a1a),
-                            lineHeight = 16.sp,
-                            style = MaterialTheme.typography.bodySmall.copy(
-                                shadow = Shadow(
-                                    Color.White,
-                                    offset = Offset(1F, 1F),
-                                    blurRadius = 1F
-                                )
-                            ),
-                            textAlign = TextAlign.Start,
-                            modifier = Modifier.fillMaxWidth().padding(start = 8.dp, top = 16.dp)
-                        )
-                    }
-                    AnimatedText(
-                        price = priceMin
-                    ) { targetState ->
-                        Text(
-                            text = targetState.toString() + "€",
-                            color = Color(0xffaff1cf),
-                            lineHeight = 16.sp,
-                            style = MaterialTheme.typography.bodySmall.copy(
-                                shadow = Shadow(
-                                    Color.White,
-                                    offset = Offset(1F, 1F),
-                                    blurRadius = 1F
-                                )
-                            ),
-                            textAlign = TextAlign.Start,
-                            modifier = Modifier.fillMaxWidth()
-                                .padding(start = 8.dp, bottom = 40.dp)
-                        )
-                    }
                 }
             }
         }
@@ -609,7 +613,10 @@ private fun GraphicTextDay(
 }
 
 @Composable
-private fun scaleValue(value: Double, scale: Animatable<Float, AnimationVector1D>): Animatable<Float, AnimationVector1D> {
+private fun scaleValue(
+    value: Double,
+    scale: Animatable<Float, AnimationVector1D>
+): Animatable<Float, AnimationVector1D> {
     LaunchedEffect(
         key1 = true,
         block = {
