@@ -5,11 +5,8 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -18,7 +15,6 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -137,10 +133,15 @@ fun Body(navController: NavController, marketsData: MarketsModelUi, it: PaddingV
 
     val cardBrush: Brush = Brush.radialGradient(
         colors = listOf(
-            MaterialTheme.colorScheme.onBackground.copy(0.1f),
-            MaterialTheme.colorScheme.background.copy(0.9f)
+            MaterialTheme.colorScheme.onBackground.copy(0.01f),
+            MaterialTheme.colorScheme.background.copy(0.9f),
+            MaterialTheme.colorScheme.onBackground.copy(0.01f),
+            MaterialTheme.colorScheme.background.copy(0.9f),
+            MaterialTheme.colorScheme.onBackground.copy(0.01f),
+            MaterialTheme.colorScheme.background.copy(0.9f),
         ),
-        radius = 600f
+        center = Offset(-25f,25f),
+        radius = 1000f
     )
 
     val shadow = Shadow(
@@ -149,21 +150,7 @@ fun Body(navController: NavController, marketsData: MarketsModelUi, it: PaddingV
         blurRadius = 1F
     )
 
-    val modifier = Modifier
-        .padding(end = 16.dp)
-        .shadow(
-            elevation = 2.dp, clip = true,
-            shape = MaterialTheme.shapes.extraLarge.copy(
-                topStart = CornerSize(26.dp)
-            ),
-            ambientColor = Color.White,
-            spotColor = Color.White,
-        ).background(
-            brush = cardBrush,
-            shape = MaterialTheme.shapes.extraLarge.copy(
-                topStart = CornerSize(26.dp)
-            )
-        )
+    val modifier = Modifier.background(brush = cardBrush)
 
     Box(
         modifier = Modifier
@@ -405,23 +392,27 @@ fun PriceTodayCard(
     marketsData: MarketsModelUi,
     shadow: Shadow
 ) {
-    Column(
-        modifier = modifier
-            .width(width = 300.dp)
-            .height(height = 100.dp),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
+    ElevatedCard(
+        elevation = CardDefaults.elevatedCardElevation(2.dp)
     ) {
-        Text(
-            text = "Precios en €/Kwh de hoy",
-            modifier = Modifier.padding(start = 16.dp, top = 4.dp).fillMaxWidth(),
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f),
-            fontWeight = FontWeight.SemiBold,
-            style = MaterialTheme.typography.labelLarge
-        )
-        LitleKwhPrice(marketsData.hiPrice, "máximo", colorHi, shadow)
-        LitleKwhPrice(marketsData.currentPrice, "actual", colorAvg, shadow)
-        LitleKwhPrice(marketsData.lowPrice, "mínimo", colorLow, shadow)
+        Column(
+            modifier = modifier
+                .width(width = 300.dp)
+                .height(height = 100.dp),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Precios en €/Kwh de hoy",
+                modifier = Modifier.padding(start = 16.dp, top = 4.dp).fillMaxWidth(),
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f),
+                fontWeight = FontWeight.SemiBold,
+                style = MaterialTheme.typography.labelLarge
+            )
+            LitleKwhPrice(marketsData.hiPrice, "máximo", colorHi, shadow)
+            LitleKwhPrice(marketsData.currentPrice, "actual", colorAvg, shadow)
+            LitleKwhPrice(marketsData.lowPrice, "mínimo", colorLow, shadow)
+        }
     }
 }
 
@@ -433,91 +424,95 @@ fun GrafToday(
     priceMax: Double = 0.0,
     priceMin: Double = 0.0
 ) {
-    Column(
-        verticalArrangement = Arrangement.SpaceAround,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
-            .fillMaxWidth()
-        //.width(width = 300.dp)
+    ElevatedCard(
+        modifier = modifier.padding(end = 16.dp),
+        elevation = CardDefaults.elevatedCardElevation(2.dp)
     ) {
         Column(
-            modifier = Modifier
-                .height(height = 215.dp),
-            verticalArrangement = Arrangement.Top
+            verticalArrangement = Arrangement.SpaceAround,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = modifier
+                .fillMaxWidth()
+                .height(height = 215.dp)
+            //.width(width = 300.dp)
         ) {
-            Text(
-                text = title,
-                color = Color.White.copy(alpha = 0.8f),
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier
-                    .padding(start = 16.dp, top = 8.dp)
-                    .fillMaxWidth(),
-                textAlign = TextAlign.Start
-            )
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .weight(1f)
-                    .padding(start = 8.dp, bottom = 8.dp),
-                verticalAlignment = Alignment.Bottom,
-                horizontalArrangement = Arrangement.SpaceAround
+            Column(
+                verticalArrangement = Arrangement.Top
             ) {
-                Column(
-                    modifier = Modifier.fillMaxHeight().width(70.dp),
-                    verticalArrangement = Arrangement.SpaceBetween,
-                    horizontalAlignment = Alignment.Start
-                ) {
-                    val shadow = Shadow(
-                        MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f),
-                        offset = Offset(1F, 1F),
-                        blurRadius = 1F
-                    )
-                    AnimatedText(
-                        price = priceMax
-                    ) { targetState ->
-                        Text(
-                            text = "${targetState / 1000} €",
-                            color = colorHi,
-                            lineHeight = 16.sp,
-                            style = MaterialTheme.typography.bodySmall.copy(shadow = shadow),
-                            textAlign = TextAlign.Start,
-                            modifier = Modifier
-                                .padding(start = 8.dp, top = 8.dp)
-                        )
-                    }
-                    AnimatedText(
-                        price = priceMin
-                    ) { targetState ->
-                        Text(
-                            text = "${targetState / 1000} €",
-                            color = colorLow,
-                            lineHeight = 16.sp,
-                            style = MaterialTheme.typography.bodySmall.copy(shadow = shadow),
-                            textAlign = TextAlign.Start,
-                            modifier = Modifier
-                                //.fillMaxWidth()
-                                .padding(start = 8.dp, bottom = 32.dp)
-                        )
-                    }
-                }
+                Text(
+                    text = title,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f),
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier
+                        .padding(start = 16.dp, top = 8.dp)
+                        .fillMaxWidth(),
+                    textAlign = TextAlign.Start
+                )
                 Row(
                     modifier = Modifier
-                        .horizontalScroll(rememberScrollState(0)),
+                        .fillMaxSize()
+                        .weight(1f)
+                        .padding(start = 8.dp, bottom = 8.dp),
                     verticalAlignment = Alignment.Bottom,
-                    horizontalArrangement = Arrangement.Center
+                    horizontalArrangement = Arrangement.SpaceAround
                 ) {
-
-                    marketsData.values.forEach { valuesUi ->
-                        if (valuesUi.value > 0.0) Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Bottom
-                        ) {
-                            val brush = calculateBrush(marketsData, valuesUi.value)
-                            GraphicColumnDay(valuesUi.value.toInt() / 3, brush)
-                            GraphicTextDay(valuesUi.value / 1000.0)
+                    Column(
+                        modifier = Modifier.fillMaxHeight().width(70.dp),
+                        verticalArrangement = Arrangement.SpaceBetween,
+                        horizontalAlignment = Alignment.Start
+                    ) {
+                        val shadow = Shadow(
+                            MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f),
+                            offset = Offset(1F, 1F),
+                            blurRadius = 1F
+                        )
+                        AnimatedText(
+                            price = priceMax
+                        ) { targetState ->
+                            Text(
+                                text = "${targetState / 1000} €",
+                                color = colorHi,
+                                lineHeight = 16.sp,
+                                style = MaterialTheme.typography.bodySmall.copy(shadow = shadow),
+                                textAlign = TextAlign.Start,
+                                modifier = Modifier
+                                    .padding(start = 8.dp, top = 8.dp)
+                            )
+                        }
+                        AnimatedText(
+                            price = priceMin
+                        ) { targetState ->
+                            Text(
+                                text = "${targetState / 1000} €",
+                                color = colorLow,
+                                lineHeight = 16.sp,
+                                style = MaterialTheme.typography.bodySmall.copy(shadow = shadow),
+                                textAlign = TextAlign.Start,
+                                modifier = Modifier
+                                    //.fillMaxWidth()
+                                    .padding(start = 8.dp, bottom = 32.dp)
+                            )
                         }
                     }
+                    Row(
+                        modifier = Modifier
+                            .horizontalScroll(rememberScrollState(0)),
+                        verticalAlignment = Alignment.Bottom,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
 
+                        marketsData.values.forEach { valuesUi ->
+                            if (valuesUi.value > 0.0) Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Bottom
+                            ) {
+                                val brush = calculateBrush(marketsData, valuesUi.value)
+                                GraphicColumnDay(valuesUi.value.toInt() / 3, brush)
+                                GraphicTextDay(valuesUi.value / 1000.0)
+                            }
+                        }
+
+                    }
                 }
             }
         }
@@ -577,7 +572,11 @@ private fun GraphicColumnDay(
             .height(height = scale.value.dp)
             .background(
                 brush = brush,
-                shape = MaterialTheme.shapes.large
+                shape = MaterialTheme.shapes.large.copy(
+                    bottomStart = ZeroCornerSize,
+                    bottomEnd = ZeroCornerSize
+                ),
+                alpha = 0.9f
             )
     )
 
@@ -601,7 +600,7 @@ private fun GraphicTextDay(
 
         Text(
             text = "$text€",
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.labelSmall.copy(
                 fontSize = 8.sp
@@ -633,10 +632,15 @@ private fun scaleValue(
 private fun GoogleAddsMain(
     modifier: Modifier
 ) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(height = 100.dp),
-        contentAlignment = Alignment.Center
-    ) { Text(text = "Google Adds") }
+    ElevatedCard(
+        modifier = Modifier.padding(end = 16.dp),
+        elevation = CardDefaults.elevatedCardElevation(2.dp)
+    ) {
+        Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .height(height = 100.dp),
+            contentAlignment = Alignment.Center
+        ) { Text(text = "Google Adds") }
+    }
 }
