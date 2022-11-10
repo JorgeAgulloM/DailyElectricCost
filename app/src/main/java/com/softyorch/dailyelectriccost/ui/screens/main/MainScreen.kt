@@ -48,11 +48,13 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel) {
 
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
+    var isDrawerOpen by remember { mutableStateOf(value = false) }
 
     Scaffold(
         topBar = {
             TopBar(marketsData, navController) {
                 scope.launch {
+                    isDrawerOpen = !isDrawerOpen
                     if (drawerState.isClosed) drawerState.open() else drawerState.close()
                 }
             }
@@ -61,7 +63,7 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel) {
     ) {
         Head(marketsData)
         Body(navController, marketsData, it)
-        DrawerBody(it, scope, drawerState, viewModel::loadDataFrom, zone)
+        if (isDrawerOpen || drawerState.isOpen) DrawerBody(it, scope, drawerState, viewModel::loadDataFrom, zone)
     }
 }
 
