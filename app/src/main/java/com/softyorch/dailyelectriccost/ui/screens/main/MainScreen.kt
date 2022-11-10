@@ -425,14 +425,13 @@ fun GrafToday(
     priceMin: Double = 0.0
 ) {
     ElevatedCard(
-        modifier = modifier.padding(end = 16.dp),
+        modifier = Modifier.padding(end = 16.dp),
         elevation = CardDefaults.elevatedCardElevation(2.dp)
     ) {
         Column(
             verticalArrangement = Arrangement.SpaceAround,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = modifier
-                .fillMaxWidth()
                 .height(height = 215.dp)
             //.width(width = 300.dp)
         ) {
