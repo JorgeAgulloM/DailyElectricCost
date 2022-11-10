@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.substring
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -140,7 +141,7 @@ fun Body(navController: NavController, marketsData: MarketsModelUi, it: PaddingV
             MaterialTheme.colorScheme.onBackground.copy(0.01f),
             MaterialTheme.colorScheme.background.copy(0.9f),
         ),
-        center = Offset(-25f,25f),
+        center = Offset(-25f, 25f),
         radius = 1000f
     )
 
@@ -179,10 +180,8 @@ fun Body(navController: NavController, marketsData: MarketsModelUi, it: PaddingV
                 Spacer(modifier = Modifier.padding(vertical = 8.dp))
                 GrafToday(
                     modifier,
-                    "Preio en Kwh del día",
-                    marketsData,
-                    marketsData.hiPrice,
-                    marketsData.lowPrice
+                    "Precio en Kwh del día",
+                    marketsData
                 )
                 Spacer(modifier = Modifier.padding(vertical = 8.dp))
                 /*Row(
@@ -420,10 +419,16 @@ fun PriceTodayCard(
 fun GrafToday(
     modifier: Modifier,
     title: String,
-    marketsData: MarketsModelUi,
-    priceMax: Double = 0.0,
-    priceMin: Double = 0.0
+    marketsData: MarketsModelUi
 ) {
+    val avgPrice = "*Precio medio ${
+        (marketsData.avgPrice / 1000).let {
+            if (it.toString().length > 7) {
+                it.toString().substring(0, 7)
+            } else it.toString()
+        }
+    } €"
+
     ElevatedCard(
         modifier = Modifier.padding(end = 16.dp),
         elevation = CardDefaults.elevatedCardElevation(2.dp)
@@ -438,15 +443,28 @@ fun GrafToday(
             Column(
                 verticalArrangement = Arrangement.Top
             ) {
-                Text(
-                    text = title,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f),
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier
-                        .padding(start = 16.dp, top = 8.dp)
-                        .fillMaxWidth(),
-                    textAlign = TextAlign.Start
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start
+                ) {
+                    Text(
+                        text = title,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f),
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier
+                            .padding(start = 16.dp, top = 8.dp),
+                        textAlign = TextAlign.Start
+                    )
+                    Text(
+                        text = avgPrice,
+                        color = colorAvg.copy(alpha = 0.9f),
+                        style = MaterialTheme.typography.labelSmall,
+                        modifier = Modifier
+                            .padding(start = 8.dp, top = 8.dp),
+                        textAlign = TextAlign.Start
+                    )
+                }
                 Row(
                     modifier = Modifier
                         .fillMaxSize()
@@ -466,7 +484,7 @@ fun GrafToday(
                             blurRadius = 1F
                         )
                         AnimatedText(
-                            price = priceMax
+                            price = marketsData.hiPrice
                         ) { targetState ->
                             Text(
                                 text = "${targetState / 1000} €",
@@ -479,7 +497,7 @@ fun GrafToday(
                             )
                         }
                         AnimatedText(
-                            price = priceMin
+                            price = marketsData.lowPrice
                         ) { targetState ->
                             Text(
                                 text = "${targetState / 1000} €",
@@ -499,7 +517,6 @@ fun GrafToday(
                         verticalAlignment = Alignment.Bottom,
                         horizontalArrangement = Arrangement.Center
                     ) {
-
                         marketsData.values.forEach { valuesUi ->
                             if (valuesUi.value > 0.0) Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -510,7 +527,6 @@ fun GrafToday(
                                 GraphicTextDay(valuesUi.value / 1000.0)
                             }
                         }
-
                     }
                 }
             }
@@ -543,7 +559,7 @@ fun calculateBrush(marketsData: MarketsModelUi, value: Double): Brush {
     val result: Brush = Brush.linearGradient(
         if (value > ((marketsData.hiPrice / 10) * 8)) {
             listColorHi
-        } else if (value > ((marketsData.hiPrice / 10) * 5)) {
+        } else if (value > marketsData.avgPrice) {
             listColorAvg
         } else listColorLow
     )
