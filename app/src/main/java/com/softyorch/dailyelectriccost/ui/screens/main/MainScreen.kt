@@ -23,7 +23,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.substring
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -178,21 +177,15 @@ fun Body(navController: NavController, marketsData: MarketsModelUi, it: PaddingV
             ) {
                 PriceTodayCard(modifier, marketsData, shadow)
                 Spacer(modifier = Modifier.padding(vertical = 8.dp))
-                GrafToday(
+                GrafValuesOfToday(
                     modifier,
                     "Precio en Kwh del día",
                     marketsData
                 )
                 Spacer(modifier = Modifier.padding(vertical = 8.dp))
-                /*Row(
-                    modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState(0))
-                ) {
-                    GrafLastSevenDays(modifier, "Precios mínimos" ,marketsData, marketsData.hiPrice, marketsData.lowPrice)
-                    GrafLastSevenDays(modifier,"Precios máximos" ,marketsData, marketsData.hiPrice, marketsData.lowPrice)
-                    Spacer(modifier = Modifier.padding(horizontal = 16.dp))
-                }*/
+                GrafBestHourOfToday(modifier, marketsData)
                 Spacer(modifier = Modifier.padding(vertical = 8.dp))
-                GoogleAddsMain(modifier.padding(end = 16.dp))
+                Footer(modifier.padding(end = 16.dp))
             }
         }
     }
@@ -360,7 +353,7 @@ private fun LitleKwhPrice(
     ) {
         Text(
             text = "Precio $text",
-            modifier = Modifier.width(100.dp),
+            modifier = Modifier.width(130.dp),
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f),
             textAlign = TextAlign.Start,
             style = MaterialTheme.typography.bodySmall.copy(
@@ -416,7 +409,7 @@ fun PriceTodayCard(
 }
 
 @Composable
-fun GrafToday(
+fun GrafValuesOfToday(
     modifier: Modifier,
     title: String,
     marketsData: MarketsModelUi
@@ -534,37 +527,80 @@ fun GrafToday(
     }
 }
 
-fun calculateBrush(marketsData: MarketsModelUi, value: Double): Brush {
-    val listColorHi = listOf(
-        colorHi.copy(alpha = 0.9f),
-        colorHi.copy(alpha = 0.1f),
-        colorHi.copy(alpha = 0.9f),
-        colorHi.copy(alpha = 0.1f)
+@Composable
+fun GrafBestHourOfToday(
+    modifier: Modifier,
+    marketsData: MarketsModelUi
+) {
+    val shadow = Shadow(
+        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+        offset = Offset(1f,2f),
+        blurRadius = 2f
     )
+    ElevatedCard(
+        modifier = Modifier.padding(end = 16.dp),
+        elevation = CardDefaults.elevatedCardElevation(2.dp)
+    ) {
+        Column(modifier = modifier.padding(start = 8.dp)){
+            TextPrice(marketsData.lowPrice, "La hora más económica es a las 6:00am:", colorLow, shadow)
+            Divider(modifier = Modifier.padding(vertical = 2.dp))
 
-    val listColorAvg = listOf(
-        colorAvg.copy(alpha = 0.9f),
-        colorAvg.copy(alpha = 0.3f),
-        colorAvg.copy(alpha = 0.9f),
-        colorAvg.copy(alpha = 0.3f)
+            TextContent(text = "El rango de horas más económicas es desde la 1:00am a las 7:00am")
+            Divider(modifier = Modifier.padding(vertical = 2.dp))
+
+            TextContent(text = "El mejor rango de horas es desde las 6:00am a las 10:00am")
+            Divider(modifier = Modifier.padding(vertical = 2.dp))
+
+            TextPrice(marketsData.lowPrice, "La hora más cara de hoy es a las 12:00 pm:", colorHi, shadow)
+            Divider(modifier = Modifier.padding(vertical = 2.dp))
+        }
+    }
+}
+
+@Composable
+fun TextContent(
+    text: String
+) {
+    Text(
+        text = text,
+        modifier = Modifier.fillMaxWidth().padding(start = 8.dp, top = 4.dp),
+        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f),
+        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold)
     )
+}
 
-    val listColorLow = listOf(
-        colorLow.copy(alpha = 0.9f),
-        colorLow.copy(alpha = 0.3f),
-        colorLow.copy(alpha = 0.9f),
-        colorLow.copy(alpha = 0.3f)
-    )
-
-    val result: Brush = Brush.linearGradient(
-        if (value > ((marketsData.hiPrice / 10) * 8)) {
-            listColorHi
-        } else if (value > marketsData.avgPrice) {
-            listColorAvg
-        } else listColorLow
-    )
-
-    return result
+@Composable
+private fun TextPrice(
+    price: Double,
+    text: String,
+    color: Color,
+    shadow: Shadow
+) {
+    Row(
+        verticalAlignment = Alignment.Bottom,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = text,
+            modifier = Modifier.padding(start = 8.dp, top = 8.dp),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f),
+            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold)
+        )
+        Spacer(modifier = Modifier.padding(horizontal = 4.dp))
+        AnimatedText(
+            price = price
+        ) { targetCount ->
+            Text(
+                text = "${targetCount / 1000} €",
+                color = color,
+                textAlign = TextAlign.Start,
+                style = MaterialTheme.typography.labelLarge.copy(
+                    fontWeight = FontWeight.Bold,
+                    shadow = shadow
+                )
+            )
+        }
+    }
 }
 
 @Composable
@@ -626,6 +662,39 @@ private fun GraphicTextDay(
     }
 }
 
+fun calculateBrush(marketsData: MarketsModelUi, value: Double): Brush {
+    val listColorHi = listOf(
+        colorHi.copy(alpha = 0.9f),
+        colorHi.copy(alpha = 0.1f),
+        colorHi.copy(alpha = 0.9f),
+        colorHi.copy(alpha = 0.1f)
+    )
+
+    val listColorAvg = listOf(
+        colorAvg.copy(alpha = 0.9f),
+        colorAvg.copy(alpha = 0.3f),
+        colorAvg.copy(alpha = 0.9f),
+        colorAvg.copy(alpha = 0.3f)
+    )
+
+    val listColorLow = listOf(
+        colorLow.copy(alpha = 0.9f),
+        colorLow.copy(alpha = 0.3f),
+        colorLow.copy(alpha = 0.9f),
+        colorLow.copy(alpha = 0.3f)
+    )
+
+    val result: Brush = Brush.linearGradient(
+        if (value > ((marketsData.hiPrice / 10) * 8)) {
+            listColorHi
+        } else if (value > marketsData.avgPrice) {
+            listColorAvg
+        } else listColorLow
+    )
+
+    return result
+}
+
 @Composable
 private fun scaleValue(
     value: Double,
@@ -644,9 +713,10 @@ private fun scaleValue(
 }
 
 @Composable
-private fun GoogleAddsMain(
+private fun Footer(
     modifier: Modifier
 ) {
+    /** Google Adds */
     ElevatedCard(
         modifier = Modifier.padding(end = 16.dp),
         elevation = CardDefaults.elevatedCardElevation(2.dp)
