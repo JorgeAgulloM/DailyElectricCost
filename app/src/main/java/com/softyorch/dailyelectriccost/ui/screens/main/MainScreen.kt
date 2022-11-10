@@ -152,43 +152,41 @@ fun Body(navController: NavController, marketsData: MarketsModelUi, it: PaddingV
 
     val modifier = Modifier.background(brush = cardBrush)
 
-    Box(
+    val bgrShape = MaterialTheme.shapes.extraLarge.copy(
+        bottomStart = ZeroCornerSize,
+        bottomEnd = ZeroCornerSize
+    )
+
+    Column(
         modifier = Modifier
-            .fillMaxSize()
             .padding(top = it.calculateTopPadding() + 110.dp)
+            .fillMaxSize()
+            .background(brush = bodyBrush, shape = bgrShape),
+        verticalArrangement = Arrangement.SpaceBetween,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val bgrShape = MaterialTheme.shapes.extraLarge.copy(
-            bottomStart = ZeroCornerSize,
-            bottomEnd = ZeroCornerSize
-        )
-        Box(
-            modifier = Modifier.background(
-                color = MaterialTheme.colorScheme.onBackground,
-                shape = bgrShape
-            )
+        Column(
+            modifier = Modifier
+                .verticalScroll(rememberScrollState(0))
+                .fillMaxSize()
+                .padding(start = 16.dp, end = 16.dp, top = 16.dp),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.Start
         ) {
-            Column(
-                modifier = Modifier
-                    .background(brush = bodyBrush, shape = bgrShape)
-                    .fillMaxSize()
-                    .padding(start = 16.dp, top = 16.dp),
-                verticalArrangement = Arrangement.Top,
-                horizontalAlignment = Alignment.Start
-            ) {
-                PriceTodayCard(modifier, marketsData, shadow)
-                Spacer(modifier = Modifier.padding(vertical = 8.dp))
-                GrafValuesOfToday(
-                    modifier,
-                    "Precio en Kwh del día",
-                    marketsData
-                )
-                Spacer(modifier = Modifier.padding(vertical = 8.dp))
-                GrafBestHourOfToday(modifier, marketsData)
-                Spacer(modifier = Modifier.padding(vertical = 8.dp))
-                Footer(modifier.padding(end = 16.dp))
-            }
+            PriceTodayCard(modifier, marketsData, shadow)
+            Spacer(modifier = Modifier.padding(vertical = 8.dp))
+            GrafValuesOfToday(
+                modifier,
+                "Precio en Kwh del día",
+                marketsData
+            )
+            Spacer(modifier = Modifier.padding(vertical = 8.dp))
+            GrafBestHourOfToday(modifier, marketsData)
+            Spacer(modifier = Modifier.padding(vertical = 8.dp))
         }
+        Footer(modifier.padding(end = 16.dp))
     }
+
 }
 
 @SuppressLint("CoroutineCreationDuringComposition")
@@ -388,9 +386,7 @@ fun PriceTodayCard(
         elevation = CardDefaults.elevatedCardElevation(2.dp)
     ) {
         Column(
-            modifier = modifier
-                .width(width = 300.dp)
-                .height(height = 100.dp),
+            modifier = modifier.height(height = 100.dp),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -423,7 +419,6 @@ fun GrafValuesOfToday(
     } €"
 
     ElevatedCard(
-        modifier = Modifier.padding(end = 16.dp),
         elevation = CardDefaults.elevatedCardElevation(2.dp)
     ) {
         Column(
@@ -446,7 +441,7 @@ fun GrafValuesOfToday(
                         color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f),
                         style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier
-                            .padding(start = 16.dp, top = 8.dp),
+                            .padding(start = 16.dp),
                         textAlign = TextAlign.Start
                     )
                     Text(
@@ -534,25 +529,34 @@ fun GrafBestHourOfToday(
 ) {
     val shadow = Shadow(
         color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
-        offset = Offset(1f,2f),
+        offset = Offset(1f, 2f),
         blurRadius = 2f
     )
     ElevatedCard(
-        modifier = Modifier.padding(end = 16.dp),
         elevation = CardDefaults.elevatedCardElevation(2.dp)
     ) {
-        Column(modifier = modifier.padding(start = 8.dp)){
-            TextPrice(marketsData.lowPrice, "La hora más económica es a las 6:00am:", colorLow, shadow)
-            Divider(modifier = Modifier.padding(vertical = 2.dp))
+        Column(modifier = modifier.padding(start = 8.dp)) {
+            TextPrice(
+                marketsData.lowPrice,
+                "La hora más económica es a las 6:00am:",
+                colorLow,
+                shadow
+            )
+            Divider(modifier = Modifier.padding(horizontal = 8.dp))
 
             TextContent(text = "El rango de horas más económicas es desde la 1:00am a las 7:00am")
-            Divider(modifier = Modifier.padding(vertical = 2.dp))
+            Divider(modifier = Modifier.padding(horizontal = 8.dp))
 
             TextContent(text = "El mejor rango de horas es desde las 6:00am a las 10:00am")
-            Divider(modifier = Modifier.padding(vertical = 2.dp))
+            Divider(modifier = Modifier.padding(horizontal = 8.dp))
 
-            TextPrice(marketsData.lowPrice, "La hora más cara de hoy es a las 12:00 pm:", colorHi, shadow)
-            Divider(modifier = Modifier.padding(vertical = 2.dp))
+            TextPrice(
+                marketsData.lowPrice,
+                "La hora más cara de hoy es a las 12:00 pm:",
+                colorHi,
+                shadow
+            )
+            Divider(modifier = Modifier.padding(horizontal = 8.dp))
         }
     }
 }
@@ -718,7 +722,7 @@ private fun Footer(
 ) {
     /** Google Adds */
     ElevatedCard(
-        modifier = Modifier.padding(end = 16.dp),
+        modifier = Modifier.padding(16.dp),
         elevation = CardDefaults.elevatedCardElevation(2.dp)
     ) {
         Box(
