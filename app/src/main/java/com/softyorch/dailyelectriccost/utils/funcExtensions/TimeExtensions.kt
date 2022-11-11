@@ -12,6 +12,13 @@ import java.util.*
 fun String.toDate(): Date? =
     SimpleDateFormat("EE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH).parse(this)
 
+@SuppressLint("SimpleDateFormat")
+fun Date.toDateFormattedISO8601():String {
+    val sdf = SimpleDateFormat("yyyy-MM-dd HH:MM")
+    val currentDate = sdf.format(this)
+    return currentDate.split(" ")[0] + "T" + currentDate.split(" ")[1]
+}
+
 fun String.toDateFormatted_old(): String =
     this.split("T")[0] + " - " +
             this.split("T")[1]
