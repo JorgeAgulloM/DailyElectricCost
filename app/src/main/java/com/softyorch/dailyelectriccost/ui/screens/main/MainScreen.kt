@@ -1,7 +1,6 @@
 package com.softyorch.dailyelectriccost.ui.screens.main
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.animation.*
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D
@@ -24,6 +23,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -31,10 +31,10 @@ import com.softyorch.dailyelectriccost.ui.model.markets.MarketsModelUi
 import com.softyorch.dailyelectriccost.ui.theme.colorAvg
 import com.softyorch.dailyelectriccost.ui.theme.colorHi
 import com.softyorch.dailyelectriccost.ui.theme.colorLow
-import com.softyorch.dailyelectriccost.utils.Constants.RED21
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.*
 import kotlin.reflect.KFunction1
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,6 +48,7 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel) {
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     var isDrawerOpen by remember { mutableStateOf(value = false) }
+    if (drawerState.isClosed) isDrawerOpen = false
 
     Scaffold(
         topBar = {
@@ -158,9 +159,12 @@ private fun TopBar(
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.tertiary
                 )
-                SelectZone(expanded, loadDataFrom) {
+                /** no se puede utilizar ya que la API devuelve
+                 * los mismos valores utilizando cualquier filtrado en este ambito
+                 * */
+                /*SelectZone(expanded, loadDataFrom) {
                     expanded = false
-                }
+                }*/
             }
         },
         colors = TopAppBarDefaults.smallTopAppBarColors(
@@ -267,21 +271,29 @@ fun SelectZone(
     ) {
         Text(
             text = "Selecciona una región",
-            modifier = Modifier.padding(start = 16.dp, top = 4.dp, bottom = 4.dp),
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
             style = MaterialTheme.typography.labelSmall
         )
-        val listOfZones = ZoneQuery.listOfZones
-        listOfZones.forEach {
+        Divider(modifier = Modifier.padding(vertical = 2.dp, horizontal = 4.dp))
+        ZoneQuery.listOfZones.forEach {
             DropdownMenuItem(
-                text = { Text(text = it.zone) },
+                text = {
+                    Text(
+                        text = it.zone.replaceFirstChar {
+                            if (it.isLowerCase()) it.titlecase(
+                                Locale.ROOT
+                            ) else it.toString()
+                        },
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            textDecoration = TextDecoration.Underline
+                        )
+                    )
+                },
                 onClick = { loadDataFrom(it) },
                 contentPadding = PaddingValues(start = 16.dp)
             )
         }
-        Log.d(RED21, "listOfZones -> $listOfZones")
-
     }
-
 }
 
 @SuppressLint("CoroutineCreationDuringComposition")

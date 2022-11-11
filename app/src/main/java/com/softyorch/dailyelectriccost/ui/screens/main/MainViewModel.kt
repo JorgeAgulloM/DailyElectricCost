@@ -36,23 +36,45 @@ class MainViewModel @Inject constructor(private val redUsesCases: RedUsesCases) 
     private val _geoIds = MutableLiveData("8741")
 
     private val oneHourInMillis = 3600000L
+
     init {
         getDataGeoTruncate()
     }
 
     fun loadDataFrom(zoneQuery: ZoneQuery) {
-        when (zoneQuery){
-            ZoneQuery.Peninsula -> _zone.value = ZoneQuery.Peninsula.zone
-            ZoneQuery.Baleares -> _zone.value = ZoneQuery.Baleares.zone
-            ZoneQuery.Canarias -> _zone.value = ZoneQuery.Canarias.zone
-            ZoneQuery.Ceuta -> _zone.value = ZoneQuery.Ceuta.zone
-            ZoneQuery.Melilla -> _zone.value = ZoneQuery.Melilla.zone
+        /** no se puede utilizar ya que la API devuelve
+         * los mismos valores utilizando cualquier filtrado en este ambito
+         * */
+        /*val zone = when (zoneQuery) {
+            ZoneQuery.Peninsula -> ZoneQuery.Peninsula
+            ZoneQuery.Canarias -> ZoneQuery.Canarias
+            ZoneQuery.Baleares -> ZoneQuery.Baleares
+            ZoneQuery.Ceuta -> ZoneQuery.Ceuta
+            ZoneQuery.Melilla -> ZoneQuery.Melilla
         }
-        Log.d(RED21,"zoneQuery.zone -> ${zone.value}")
-        Log.d(RED21,"zoneQuery -> ${zone.value}")
+        _zone.value = zone.zone
+        _geoIds.value = zone.geoId
+        getDataGeoTruncate()*/
     }
 
-    fun getDataGeoTruncate() {
+    private fun getDataGeoTruncate() {
+        Log.d(
+            RED21, "dataSend -> ${
+                RedMarketsTruncateModelUi(
+                    category = _category[5][0],
+                    widget = _category[5][13],
+                    startDate = _startDate.value!!,
+                    endDate = _endDate.value!!,/*if (sdk26AndUp) {
+                        (Date.from(Instant.now())).toString()
+                    } else {
+                        LocalDateTime.now().toString()
+                    },//_endDate.value!!,*/
+                    timeTruncate = _timeTruncate.value!!,
+                    geo_limit = _zone.value!!,
+                    geo_ids = _geoIds.value!!
+                )
+            }"
+        )
 
         viewModelScope.launch {
             redUsesCases.getDataMarketsTruncate(

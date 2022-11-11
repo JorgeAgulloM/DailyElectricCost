@@ -4,16 +4,16 @@
 
 package com.softyorch.dailyelectriccost.ui.screens.main
 
-sealed class ZoneQuery(val zone: String) {
-    object Peninsula : ZoneQuery("peninsular")
-    object Baleares : ZoneQuery("baleares")
-    object Canarias : ZoneQuery("canarias")
-    object Ceuta : ZoneQuery("ceuta")
-    object Melilla : ZoneQuery("melilla")
+sealed class ZoneQuery(val zone: String, val geoId:String) {
+    object Peninsula : ZoneQuery("peninsular", "8741")
+    object Canarias : ZoneQuery("canarias", "8742")
+    object Baleares : ZoneQuery("baleares", "8743")
+    object Ceuta : ZoneQuery("ceuta", "8744")
+    object Melilla : ZoneQuery("melilla", "8745")
 
     companion object {
         val listOfZones = listOf(
-            Peninsula, Baleares, Canarias, Ceuta, Melilla
+            Peninsula, Canarias, Baleares, Ceuta, Melilla
         )
     }
 }
