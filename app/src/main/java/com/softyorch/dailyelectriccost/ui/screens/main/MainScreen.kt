@@ -1,6 +1,7 @@
 package com.softyorch.dailyelectriccost.ui.screens.main
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.animation.*
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D
@@ -23,7 +24,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -31,6 +31,7 @@ import com.softyorch.dailyelectriccost.ui.model.markets.MarketsModelUi
 import com.softyorch.dailyelectriccost.ui.theme.colorAvg
 import com.softyorch.dailyelectriccost.ui.theme.colorHi
 import com.softyorch.dailyelectriccost.ui.theme.colorLow
+import com.softyorch.dailyelectriccost.utils.Constants.RED21
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -43,8 +44,6 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel) {
     val marketsData: MarketsModelUi by viewModel.marketsData.observeAsState(
         initial = MarketsModelUi.emptyMarketsDao
     )
-    val zone: ZoneQuery by viewModel.zone.observeAsState(initial = ZoneQuery.Peninsula)
-    //val geoLimit: String by viewModel.geoLimit.observeAsState(initial = EMPTY_STRING)
 
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
@@ -52,7 +51,7 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel) {
 
     Scaffold(
         topBar = {
-            TopBar(marketsData, navController) {
+            TopBar(marketsData, navController, viewModel::loadDataFrom) {
                 scope.launch {
                     isDrawerOpen = !isDrawerOpen
                     if (drawerState.isClosed) drawerState.open() else drawerState.close()
@@ -63,7 +62,7 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel) {
     ) {
         Head(marketsData)
         Body(navController, marketsData, it)
-        if (isDrawerOpen || drawerState.isOpen) DrawerBody(it, scope, drawerState, viewModel::loadDataFrom, zone)
+        if (isDrawerOpen || drawerState.isOpen) DrawerBody(it, scope, drawerState)
     }
 }
 
@@ -72,9 +71,7 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel) {
 fun DrawerBody(
     paddingValues: PaddingValues,
     scope: CoroutineScope,
-    drawerState: DrawerState,
-    loadDataFrom: KFunction1<ZoneQuery, Unit>,
-    zone: ZoneQuery
+    drawerState: DrawerState
 ) {
 
     val items = listOf(Icons.Default.Favorite, Icons.Default.Face, Icons.Default.Email)
@@ -84,7 +81,6 @@ fun DrawerBody(
         drawerContent = {
             ModalDrawerSheet {
                 Spacer(Modifier.height(paddingValues.calculateTopPadding() + 8.dp))
-                SelectZone(loadDataFrom, zone)
                 Divider(modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp))
                 items.forEach { item ->
                     NavigationDrawerItem(
@@ -111,6 +107,7 @@ fun DrawerBody(
 private fun TopBar(
     marketsData: MarketsModelUi,
     navController: NavController,
+    loadDataFrom: KFunction1<ZoneQuery, Unit>,
     onNavigationIconClick: () -> Unit
 ) {
     TopAppBar(
@@ -145,8 +142,11 @@ private fun TopBar(
             }
         },
         actions = {
+            var expanded by remember { mutableStateOf(value = false) }
             IconButton(
-                onClick = { }
+                onClick = {
+                    expanded = true
+                }
             ) {
                 Icon(
                     imageVector = Icons.Default.MoreHoriz,
@@ -158,6 +158,9 @@ private fun TopBar(
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.tertiary
                 )
+                SelectZone(expanded, loadDataFrom) {
+                    expanded = false
+                }
             }
         },
         colors = TopAppBarDefaults.smallTopAppBarColors(
@@ -253,61 +256,33 @@ fun Body(
 }
 
 @Composable
-fun SelectZone(loadDataFrom: KFunction1<ZoneQuery, Unit>, zone: ZoneQuery) {
-    Column(
-        modifier = Modifier.padding(8.dp),
-        verticalArrangement = Arrangement.SpaceAround,
-        horizontalAlignment = Alignment.Start
+fun SelectZone(
+    expanded: Boolean,
+    loadDataFrom: KFunction1<ZoneQuery, Unit>,
+    onDismiss: () -> Unit
+) {
+    DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = { onDismiss() }
     ) {
         Text(
             text = "Selecciona una región",
             modifier = Modifier.padding(start = 16.dp, top = 4.dp, bottom = 4.dp),
             style = MaterialTheme.typography.labelSmall
         )
-        TextButtonMain(ZoneQuery.Peninsula, zone) { loadDataFrom(ZoneQuery.Peninsula) }
-        TextButtonMain(ZoneQuery.Baleares, zone) { loadDataFrom(ZoneQuery.Baleares) }
-        TextButtonMain(ZoneQuery.Canarias, zone) { loadDataFrom(ZoneQuery.Canarias) }
-        TextButtonMain(ZoneQuery.Ceuta, zone) { loadDataFrom(ZoneQuery.Ceuta) }
-        TextButtonMain(ZoneQuery.Melilla, zone) { loadDataFrom(ZoneQuery.Melilla) }
-    }
-
-}
-
-@Composable
-fun TextButtonMain(
-    selectedZone: ZoneQuery,
-    zone: ZoneQuery,
-    onClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier.padding(end = 4.dp).height(30.dp).fillMaxWidth().clickable { onClick() },
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start
-    ) {
-        RadioButton(
-            //modifier = Modifier.size(25.dp),
-            selected = zone == selectedZone,
-            onClick = {
-                onClick()
-            }
-        )
-
-        Text(
-            text = when (selectedZone) {
-                ZoneQuery.Peninsula -> EnumZoneQuery.Peninsula.zone
-                ZoneQuery.Canarias -> EnumZoneQuery.Canarias.zone
-                ZoneQuery.Baleares -> EnumZoneQuery.Baleares.zone
-                ZoneQuery.Ceuta -> EnumZoneQuery.Ceuta.zone
-                ZoneQuery.Melilla -> EnumZoneQuery.Melilla.zone
-            },
-            modifier = Modifier.padding(top = 2.dp),
-            style = MaterialTheme.typography.labelSmall.copy(
-                textDecoration = TextDecoration.Underline
+        val listOfZones = ZoneQuery.listOfZones
+        listOfZones.forEach {
+            DropdownMenuItem(
+                text = { Text(text = it.zone) },
+                onClick = { loadDataFrom(it) },
+                contentPadding = PaddingValues(start = 16.dp)
             )
-        )
-    }
-}
+        }
+        Log.d(RED21, "listOfZones -> $listOfZones")
 
+    }
+
+}
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @OptIn(ExperimentalAnimationApi::class)

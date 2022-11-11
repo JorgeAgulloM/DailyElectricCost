@@ -1,5 +1,6 @@
 package com.softyorch.dailyelectriccost.ui.screens.main
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,6 +11,7 @@ import com.softyorch.dailyelectriccost.ui.model.RedMarketsTruncateModelUi
 import com.softyorch.dailyelectriccost.ui.model.markets.MarketsModelUi
 import com.softyorch.dailyelectriccost.ui.model.markets.mapToMarketsModelUi
 import com.softyorch.dailyelectriccost.utils.Constants
+import com.softyorch.dailyelectriccost.utils.Constants.RED21
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,8 +23,8 @@ class MainViewModel @Inject constructor(private val redUsesCases: RedUsesCases) 
     private val _marketsData = MutableLiveData(MarketsModelUi.emptyMarketsDao)
     val marketsData: LiveData<MarketsModelUi> = _marketsData
 
-    private val _zone = MutableLiveData<ZoneQuery>(ZoneQuery.Peninsula)
-    val zone: LiveData<ZoneQuery> = _zone
+    private val _zone = MutableLiveData<String>("peninsular")
+    val zone: LiveData<String> = _zone
 
     /** Query data **********************************************/
 
@@ -30,8 +32,6 @@ class MainViewModel @Inject constructor(private val redUsesCases: RedUsesCases) 
     private val _startDate = MutableLiveData("2022-11-09T00:00")
     private val _endDate = MutableLiveData("2022-11-09T23:00")
     private val _timeTruncate = MutableLiveData("hour")
-    private val _geoLimit = MutableLiveData(EnumZoneQuery.Peninsula.zone)
-    val geoLimit: LiveData<String> = _geoLimit
 
     private val _geoIds = MutableLiveData("8741")
 
@@ -42,12 +42,14 @@ class MainViewModel @Inject constructor(private val redUsesCases: RedUsesCases) 
 
     fun loadDataFrom(zoneQuery: ZoneQuery) {
         when (zoneQuery){
-            ZoneQuery.Peninsula -> _zone.value = ZoneQuery.Peninsula
-            ZoneQuery.Baleares -> _zone.value = ZoneQuery.Baleares
-            ZoneQuery.Canarias -> _zone.value = ZoneQuery.Canarias
-            ZoneQuery.Ceuta -> _zone.value = ZoneQuery.Ceuta
-            ZoneQuery.Melilla -> _zone.value = ZoneQuery.Melilla
+            ZoneQuery.Peninsula -> _zone.value = ZoneQuery.Peninsula.zone
+            ZoneQuery.Baleares -> _zone.value = ZoneQuery.Baleares.zone
+            ZoneQuery.Canarias -> _zone.value = ZoneQuery.Canarias.zone
+            ZoneQuery.Ceuta -> _zone.value = ZoneQuery.Ceuta.zone
+            ZoneQuery.Melilla -> _zone.value = ZoneQuery.Melilla.zone
         }
+        Log.d(RED21,"zoneQuery.zone -> ${zone.value}")
+        Log.d(RED21,"zoneQuery -> ${zone.value}")
     }
 
     fun getDataGeoTruncate() {
@@ -64,7 +66,7 @@ class MainViewModel @Inject constructor(private val redUsesCases: RedUsesCases) 
                         LocalDateTime.now().toString()
                     },//_endDate.value!!,*/
                     timeTruncate = _timeTruncate.value!!,
-                    geo_limit = _geoLimit.value!!,
+                    geo_limit = _zone.value!!,
                     geo_ids = _geoIds.value!!
                 ).mapToRedMarketsTruncateModelDomain()
             ).let { response ->
