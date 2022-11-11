@@ -14,6 +14,9 @@ data class MarketsModelUi(
     var hiPrice: Double,
     var currentPrice: Double,
     var avgPrice: Double,
+    var lowHour: String,
+    var hiHour: String,
+    var bestLowRange: String,
     var values: MutableList<ValuesUi>
 ) {
     companion object{
@@ -25,6 +28,9 @@ data class MarketsModelUi(
             hiPrice = 0.0,
             currentPrice = 0.0,
             avgPrice = 0.0,
+            lowHour = Constants.EMPTY_STRING,
+            hiHour = Constants.EMPTY_STRING,
+            bestLowRange = Constants.EMPTY_STRING,
             values = mutableListOf(
                 ValuesUi(
                     value = 0.0,

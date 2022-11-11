@@ -13,7 +13,7 @@ fun Values.mapToValuesUi(): ValuesUi = ValuesUi(
 
 
 fun MarketsDao.mapToMarketsModelUi(): MarketsModelUi = MarketsModelUi(
-    title, lastUpdate, type, lowPrice, hiPrice, currentPrice, avgPrice, values.map{
+    title, lastUpdate, type, lowPrice, hiPrice, currentPrice, avgPrice, lowHour, hiHour, bestLowRange, values.map{
         it.mapToValuesUi()
     } as MutableList<ValuesUi>
 )

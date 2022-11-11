@@ -14,6 +14,9 @@ data class MarketsDao(
     var hiPrice: Double,
     var currentPrice: Double,
     var avgPrice: Double,
+    var lowHour: String,
+    var hiHour: String,
+    var bestLowRange: String,
     var values: MutableList<Values>
 ){
     companion object{
@@ -25,6 +28,9 @@ data class MarketsDao(
             hiPrice = 0.0,
             currentPrice = 0.0,
             avgPrice = 0.0,
+            lowHour = EMPTY_STRING,
+            hiHour = EMPTY_STRING,
+            bestLowRange = EMPTY_STRING,
             values = mutableListOf(
                 Values(
                     value = 0.0,
