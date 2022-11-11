@@ -1,6 +1,8 @@
 package com.softyorch.dailyelectriccost.ui.screens.main
 
 import android.annotation.SuppressLint
+import android.app.DatePickerDialog
+import android.widget.DatePicker
 import androidx.compose.animation.*
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D
@@ -20,6 +22,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -27,10 +31,13 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.softyorch.dailyelectriccost.R
 import com.softyorch.dailyelectriccost.ui.model.markets.MarketsModelUi
 import com.softyorch.dailyelectriccost.ui.theme.colorAvg
 import com.softyorch.dailyelectriccost.ui.theme.colorHi
 import com.softyorch.dailyelectriccost.ui.theme.colorLow
+import com.softyorch.dailyelectriccost.utils.Constants.EMPTY_STRING
+import com.softyorch.dailyelectriccost.utils.funcExtensions.getTodayOfDate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -44,6 +51,7 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel) {
     val marketsData: MarketsModelUi by viewModel.marketsData.observeAsState(
         initial = MarketsModelUi.emptyMarketsDao
     )
+    val date: String by viewModel.startDate.observeAsState(EMPTY_STRING)
 
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
@@ -62,7 +70,9 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel) {
         containerColor = MaterialTheme.colorScheme.tertiaryContainer,
     ) {
         Head(marketsData)
-        Body(navController, marketsData, it)
+        Body(navController, marketsData, date, it) { date ->
+            viewModel.loadData(date)
+        }
         if (isDrawerOpen || drawerState.isOpen) DrawerBody(it, scope, drawerState)
     }
 }
@@ -101,6 +111,47 @@ fun DrawerBody(
     )
 }
 
+@Composable
+fun MainDatePicker(date: String, onClickDatePicker: (String) -> Unit) {
+    val mContext = LocalContext.current
+
+    val mCalendar = Calendar.getInstance()
+    val mYear = mCalendar.get(Calendar.YEAR)
+    val mMonth = mCalendar.get(Calendar.MONTH)
+    val mDay = mCalendar.get(Calendar.DAY_OF_MONTH)
+    mCalendar.time = Date()
+
+    var mDate by remember { mutableStateOf("") }
+
+    val datePicker = DatePickerDialog(
+        mContext, { listener: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
+            mDate = "$dayOfMonth/${month + 1}/$year"
+            listener.setOnClickListener {
+                //onClickDatePicker(mDate)
+            }
+        },
+        mYear, mMonth, mDay
+    )
+
+    datePicker.setOnDismissListener {
+        onClickDatePicker(mDate)
+    }
+
+
+
+
+    Box(modifier = Modifier.width(100.dp), contentAlignment = Alignment.Center) {
+        TextButton(
+            onClick = {
+                datePicker.show()
+            }
+        ) {
+            Text(text = if (mDate.isEmpty()) date.getTodayOfDate() else mDate)
+        }
+    }
+
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("CoroutineCreationDuringComposition")
@@ -118,8 +169,11 @@ private fun TopBar(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = marketsData.title,
-                    style = MaterialTheme.typography.labelSmall
+                    text = stringResource(R.string.app_name),//marketsData.title,
+                    modifier = Modifier.fillMaxWidth(),
+                    style = MaterialTheme.typography.labelLarge.copy(
+                        textAlign = TextAlign.Center
+                    )
                 )
             }
         },
@@ -184,7 +238,9 @@ fun Head(marketsData: MarketsModelUi) {
 fun Body(
     navController: NavController,
     marketsData: MarketsModelUi,
-    it: PaddingValues
+    date: String,
+    it: PaddingValues,
+    onClickDatePicker: (String) -> Unit
 ) {
 
     val cardBrush: Brush = Brush.radialGradient(
@@ -243,7 +299,14 @@ fun Body(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
-            PriceTodayCard(modifier, marketsData, shadow)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                PriceTodayCard(modifier, marketsData, shadow)
+                MainDatePicker(date){ onClickDatePicker(it) }
+            }
             Spacer(modifier = Modifier.padding(vertical = 8.dp))
             GrafValuesOfToday(
                 modifier,
@@ -567,7 +630,7 @@ fun GrafValuesOfToday(
                     verticalAlignment = Alignment.Bottom,
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    Column(
+                    /*Column(
                         modifier = Modifier.fillMaxHeight().width(70.dp),
                         verticalArrangement = Arrangement.SpaceBetween,
                         horizontalAlignment = Alignment.Start
@@ -604,7 +667,7 @@ fun GrafValuesOfToday(
                                     .padding(start = 8.dp, bottom = 32.dp)
                             )
                         }
-                    }
+                    }*/
                     Row(
                         modifier = Modifier
                             .horizontalScroll(rememberScrollState(0)),
@@ -644,21 +707,18 @@ fun GrafBestHourOfToday(
         Column(modifier = modifier.padding(start = 8.dp)) {
             TextPrice(
                 marketsData.lowPrice,
-                "La hora más económica es a las 6:00am:",
+                "La hora más económica es a las ${marketsData.lowHour} am:",
                 colorLow,
                 shadow
             )
             Divider(modifier = Modifier.padding(end = 8.dp))
 
-            TextContent(text = "El rango de horas más económicas es desde la 1:00am a las 7:00am")
-            Divider(modifier = Modifier.padding(end = 8.dp))
-
-            TextContent(text = "El mejor rango de horas es desde las 6:00am a las 10:00am")
+            TextContent(text = marketsData.bestLowRange)
             Divider(modifier = Modifier.padding(end = 8.dp))
 
             TextPrice(
-                marketsData.lowPrice,
-                "La hora más cara de hoy es a las 12:00 pm:",
+                marketsData.hiPrice,
+                "La hora más cara de hoy es a las ${marketsData.hiHour} pm:",
                 colorHi,
                 shadow
             )
