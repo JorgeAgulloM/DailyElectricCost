@@ -1,6 +1,5 @@
 package com.softyorch.dailyelectriccost.data.repository.red21Repository
 
-import android.util.Log
 import com.softyorch.dailyelectriccost.data.network.red21Api.RedService
 import com.softyorch.dailyelectriccost.data.network.red21Api.response.balance.Red21Balance
 import com.softyorch.dailyelectriccost.data.network.red21Api.response.generation.Red21Generation
@@ -11,7 +10,6 @@ import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.map
 import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.mapper.mapToRedMarketsTruncateEntity
 import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.mapper.mapToRedBalanceEntity
 import com.softyorch.dailyelectriccost.data.repository.red21Repository.dao.MarketsDao
-import com.softyorch.dailyelectriccost.utils.Constants.RED21
 import retrofit2.Response
 import javax.inject.Inject
 import javax.inject.Singleton
