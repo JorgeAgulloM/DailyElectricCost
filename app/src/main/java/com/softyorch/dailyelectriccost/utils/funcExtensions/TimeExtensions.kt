@@ -19,13 +19,15 @@ fun Date.toDateFormattedISO8601():String {
     return currentDate.split(" ")[0] + "T" + currentDate.split(" ")[1]
 }
 
-fun String.toDateFormatted_old(): String =
-    this.split("T")[0] + " - " +
-            this.split("T")[1]
-                .split(".")[0]
+fun String.datePickerToISO8601(): String =
+    this.split("/")[2] + "-" +
+            this.split("/")[1] + "-" +
+            this.split("/")[0]
 
-fun String.toDateFormatted(): String =
-    this.getTodayOfDate() + " - " + this.getHourOfDate()
+fun String.iSO8601ToDatePicker(): String = //2022-11-09T00:00
+    this.split("-")[2].split("T")[0] + "/" +
+            this.split("-")[1] + "/" +
+            this.split("-")[0]
 
 fun String.getTodayOfDate(): String =
     this.split("T")[0]
