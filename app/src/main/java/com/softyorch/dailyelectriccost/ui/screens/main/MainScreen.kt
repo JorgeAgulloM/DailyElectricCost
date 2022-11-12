@@ -38,6 +38,7 @@ import com.softyorch.dailyelectriccost.ui.theme.colorHi
 import com.softyorch.dailyelectriccost.ui.theme.colorLow
 import com.softyorch.dailyelectriccost.utils.Constants.EMPTY_STRING
 import com.softyorch.dailyelectriccost.utils.funcExtensions.iSO8601ToDatePicker
+import com.softyorch.dailyelectriccost.utils.funcExtensions.limitLengthToString
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -409,7 +410,7 @@ fun ActualPrice(
                 price = marketsData.currentPrice
             ) { targetCount ->
                 Text(
-                    text = "$targetCount €",
+                    text = "${targetCount.limitLengthToString()} €",
                     color = MaterialTheme.colorScheme.onBackground,
                     textAlign = TextAlign.End,
                     style = TextStyle(
@@ -474,7 +475,7 @@ private fun LitlePrice(
             price = price
         ) { targetCount ->
             Text(
-                text = "$targetCount €",
+                text = "${targetCount.limitLengthToString()} €",
                 color = color,
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.labelLarge.copy(
@@ -528,7 +529,7 @@ private fun LitleKwhPrice(
             price = price
         ) { targetCount ->
             Text(
-                text = "${targetCount / 1000} €",
+                text = "${(targetCount / 1000).limitLengthToString()} €",
                 modifier = Modifier.width(100.dp),
                 color = color,
                 textAlign = TextAlign.Start,
@@ -576,11 +577,7 @@ fun GrafValuesOfToday(
     marketsData: MarketsModelUi
 ) {
     val avgPrice = "*Precio medio ${
-        (marketsData.avgPrice / 1000).let {
-            if (it.toString().length > 7) {
-                it.toString().substring(0, 7)
-            } else it.toString()
-        }
+        (marketsData.avgPrice / 1000).limitLengthToString()
     } €"
 
     ElevatedCard(
@@ -758,7 +755,7 @@ private fun TextPrice(
             price = price
         ) { targetCount ->
             Text(
-                text = "${targetCount / 1000} €",
+                text = "${(targetCount / 1000).limitLengthToString()} €",
                 color = color,
                 textAlign = TextAlign.Start,
                 style = MaterialTheme.typography.labelLarge.copy(
@@ -812,12 +809,8 @@ private fun GraphicTextDay(
         val scale = remember { Animatable(0f) }
         val valueScale = scaleValue(price, scale).value
 
-        val text = if (valueScale.toString().length > 6)
-            valueScale.toString().substring(0, 5)
-        else valueScale.toString()
-
         Text(
-            text = "$text€",
+            text = "${valueScale.limitLengthToString()}€",
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.labelSmall.copy(
