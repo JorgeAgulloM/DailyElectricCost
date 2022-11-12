@@ -37,7 +37,7 @@ import com.softyorch.dailyelectriccost.ui.theme.colorAvg
 import com.softyorch.dailyelectriccost.ui.theme.colorHi
 import com.softyorch.dailyelectriccost.ui.theme.colorLow
 import com.softyorch.dailyelectriccost.utils.Constants.EMPTY_STRING
-import com.softyorch.dailyelectriccost.utils.funcExtensions.getTodayOfDate
+import com.softyorch.dailyelectriccost.utils.funcExtensions.iSO8601ToDatePicker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -71,7 +71,7 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel) {
     ) {
         Head(marketsData)
         Body(navController, marketsData, date, it) { date ->
-            viewModel.loadData(date)
+            viewModel.changeDate(date)
         }
         if (isDrawerOpen || drawerState.isOpen) DrawerBody(it, scope, drawerState)
     }
@@ -121,23 +121,19 @@ fun MainDatePicker(date: String, onClickDatePicker: (String) -> Unit) {
     val mDay = mCalendar.get(Calendar.DAY_OF_MONTH)
     mCalendar.time = Date()
 
-    var mDate by remember { mutableStateOf("") }
+    var mDate by remember { mutableStateOf(date.iSO8601ToDatePicker()) }
 
     val datePicker = DatePickerDialog(
-        mContext, { listener: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
+        mContext, { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
             mDate = "$dayOfMonth/${month + 1}/$year"
-            listener.setOnClickListener {
-                //onClickDatePicker(mDate)
-            }
         },
         mYear, mMonth, mDay
     )
-
     datePicker.setOnDismissListener {
-        onClickDatePicker(mDate)
+        if (mDate != date.iSO8601ToDatePicker()) onClickDatePicker(mDate)
     }
 
-
+    datePicker.datePicker.maxDate = Date().time
 
 
     Box(modifier = Modifier.width(100.dp), contentAlignment = Alignment.Center) {
@@ -146,7 +142,7 @@ fun MainDatePicker(date: String, onClickDatePicker: (String) -> Unit) {
                 datePicker.show()
             }
         ) {
-            Text(text = if (mDate.isEmpty()) date.getTodayOfDate() else mDate)
+            Text(text = mDate)
         }
     }
 

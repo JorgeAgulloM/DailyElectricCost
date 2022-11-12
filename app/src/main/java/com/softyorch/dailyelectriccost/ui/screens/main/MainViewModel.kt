@@ -1,9 +1,5 @@
 package com.softyorch.dailyelectriccost.ui.screens.main
 
-import android.annotation.SuppressLint
-import android.os.Build
-import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -14,15 +10,10 @@ import com.softyorch.dailyelectriccost.ui.model.RedMarketsTruncateModelUi
 import com.softyorch.dailyelectriccost.ui.model.markets.MarketsModelUi
 import com.softyorch.dailyelectriccost.ui.model.markets.mapToMarketsModelUi
 import com.softyorch.dailyelectriccost.utils.Constants
-import com.softyorch.dailyelectriccost.utils.Constants.RED21
+import com.softyorch.dailyelectriccost.utils.funcExtensions.datePickerToISO8601
 import com.softyorch.dailyelectriccost.utils.funcExtensions.toDateFormattedISO8601
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.time.OffsetDateTime
-import java.time.ZoneId
-import java.time.ZoneOffset
-import java.time.ZonedDateTime
 import java.util.*
 import javax.inject.Inject
 
@@ -52,14 +43,18 @@ class MainViewModel @Inject constructor(private val redUsesCases: RedUsesCases) 
         getDataGeoTruncate()
     }
 
-    fun loadData(date: String) {
-        Log.d(RED21, "date ->$date")
+    fun changeDate(date: String) {
+        setDate(date.datePickerToISO8601())
+        getDataGeoTruncate()
     }
 
     private fun startDate() {
-        val date = Date().toDateFormattedISO8601()
-        _startDate.value = date.split("T")[0] + "T00:00"
-        _endDate.value = date.split("T")[0] + "T23:00"
+        setDate(Date().toDateFormattedISO8601())
+    }
+
+    private fun setDate(dateFormattedISO8601: String) {
+        _startDate.value = dateFormattedISO8601.split("T")[0] + "T00:00"
+        _endDate.value = dateFormattedISO8601.split("T")[0] + "T23:00"
     }
 
     fun loadDataFrom(zoneQuery: ZoneQuery) {
