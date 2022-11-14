@@ -10,7 +10,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
@@ -20,6 +19,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextAlign
@@ -41,6 +41,8 @@ fun GrafValuesOfToday(
         (marketsData.avgPrice / 1000).limitLengthToString()
     } €"
 
+    val height = marketsData.hiPrice
+
     ElevatedCard(
         elevation = CardDefaults.elevatedCardElevation(2.dp)
     ) {
@@ -48,7 +50,7 @@ fun GrafValuesOfToday(
             verticalArrangement = Arrangement.SpaceAround,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = modifier
-                .height(height = 215.dp)
+                .height(height = height.dp)
             //.width(width = 300.dp)
         ) {
             Column(
@@ -96,8 +98,8 @@ fun GrafValuesOfToday(
                                 verticalArrangement = Arrangement.Bottom
                             ) {
                                 val brush = calculateBrush(marketsData, valuesUi.value)
-                                GraphicColumnDay(valuesUi.value.toInt() / 3, brush)
-                                GraphicTextDay(valuesUi.value / 1000.0)
+                                GraphicColumnDay(valuesUi.value.toInt(), brush)
+                                GraphicTextDay(valuesUi.value)
                             }
                         }
                     }
@@ -113,29 +115,24 @@ private fun GraphicColumnDay(
     height: Int = 96,
     brush: Brush
 ) {
+    val calculateHeight = ((height / 5) * 3).toFloat()
     val scale = remember { Animatable(0f) }
     LaunchedEffect(key1 = true,
         block = {
             scale.animateTo(
-                targetValue = height.toFloat(),
+                targetValue = calculateHeight,
                 animationSpec = spring(dampingRatio = 1f, stiffness = 10f)
             )
         }
     )
     Box(
         modifier = Modifier
-            .width(width = 8.dp)
+            .width(width = 24.dp)
             .height(height = scale.value.dp)
-            .background(
-                brush = brush,
-                shape = MaterialTheme.shapes.large.copy(
-                    bottomStart = ZeroCornerSize,
-                    bottomEnd = ZeroCornerSize
-                ),
-                alpha = 0.9f
-            )
+            .padding(bottom = 2.dp)
+            .shadow(elevation = 4.dp, shape = MaterialTheme.shapes.large)
+            .background(brush = brush, shape = MaterialTheme.shapes.large, alpha = 0.9f)
     )
-
 }
 
 @Composable
@@ -143,22 +140,26 @@ private fun GraphicTextDay(
     price: Double
 ) {
     Box(
-        modifier = Modifier.graphicsLayer(
-            rotationZ = -65f
-        )
+        modifier = Modifier
+            .graphicsLayer(
+                rotationZ = -65f
+            )
+            .padding(vertical = 10.dp)
+            .height(20.dp),
+        contentAlignment = Alignment.TopEnd
     ) {
+        val calculatePrice = price / 1000
         val scale = remember { Animatable(0f) }
-        val valueScale = scaleValue(price, scale).value
+        val valueScale = scaleValue(calculatePrice, scale).value
 
         Text(
             text = "${valueScale.limitLengthToString()}€",
+            modifier = Modifier.height(20.dp),
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f),
-            textAlign = TextAlign.Center,
+            textAlign = TextAlign.Start,
             style = MaterialTheme.typography.labelSmall.copy(
                 fontSize = 8.sp
-            ),
-            modifier = Modifier
-                .padding(vertical = 12.dp)
+            )
         )
     }
 }
