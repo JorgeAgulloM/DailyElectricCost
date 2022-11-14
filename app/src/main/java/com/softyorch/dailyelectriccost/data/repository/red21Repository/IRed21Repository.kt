@@ -9,6 +9,7 @@ import com.softyorch.dailyelectriccost.data.network.red21Api.response.market.Red
 import com.softyorch.dailyelectriccost.data.network.red21Api.response.market.Value
 import com.softyorch.dailyelectriccost.data.repository.red21Repository.dao.MarketsDao
 import com.softyorch.dailyelectriccost.data.repository.red21Repository.dao.Values
+import com.softyorch.dailyelectriccost.utils.Constants
 import com.softyorch.dailyelectriccost.utils.Constants.RED21
 import com.softyorch.dailyelectriccost.utils.funcExtensions.getHourOfCalendarToInt
 import com.softyorch.dailyelectriccost.utils.funcExtensions.getHourOfDate
@@ -19,7 +20,7 @@ import kotlin.collections.ArrayList
 
 interface IRed21Repository {
     fun loadDao(responseApi: Response<Red21Market>?): MarketsDao {
-        val dao = MarketsDao.emptyMarketsDao
+        val dao: MarketsDao = newMarketDao()
         responseApi.let { response ->
             if (response != null) {
                 if (response.isSuccessful) {
@@ -54,8 +55,6 @@ interface IRed21Repository {
     ) {
         body.included[0].let { included ->
             dao.type = included.type
-
-
             var currentPrices = 0.0
             var loadAverage = 0.0
             var divideAverage = 0.0
@@ -118,5 +117,24 @@ interface IRed21Repository {
         } pm"
 
     }
+
+    fun newMarketDao(): MarketsDao = MarketsDao(
+        title = Constants.EMPTY_STRING,
+        lastUpdate = Constants.EMPTY_STRING,
+        type = Constants.EMPTY_STRING,
+        lowPrice = 0.0,
+        hiPrice = 0.0,
+        currentPrice = 0.0,
+        avgPrice = 0.0,
+        lowHour = Constants.EMPTY_STRING,
+        hiHour = Constants.EMPTY_STRING,
+        bestLowRange = Constants.EMPTY_STRING,
+        values = mutableListOf(
+            Values(
+                value = 0.0,
+                dateTime = Constants.EMPTY_STRING
+            )
+        )
+    )
 
 }
