@@ -13,9 +13,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.softyorch.dailyelectriccost.R
 import com.softyorch.dailyelectriccost.ui.model.markets.MarketsModelUi
 import com.softyorch.dailyelectriccost.ui.screens.main.components.*
 import kotlinx.coroutines.CoroutineScope
@@ -178,4 +182,85 @@ fun MenuDrawerBody(
         },
         content = { }
     )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@SuppressLint("CoroutineCreationDuringComposition")
+@Composable
+private fun TopBar(
+    onNavigationIconClick: () -> Unit
+) {
+    TopAppBar(
+        title = {
+            Box(
+                modifier = Modifier.fillMaxHeight(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = stringResource(R.string.app_name),//marketsData.title,
+                    modifier = Modifier.fillMaxWidth(),
+                    style = MaterialTheme.typography.labelLarge.copy(
+                        textAlign = TextAlign.Center
+                    )
+                )
+            }
+        },
+        modifier = Modifier.height(35.dp).padding(top = 8.dp),
+        navigationIcon = {
+            IconButton(
+                onClick = {
+                    onNavigationIconClick()
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Menu,
+                    modifier = Modifier
+                        .background(
+                            color = MaterialTheme.colorScheme.background,
+                            shape = MaterialTheme.shapes.small
+                        ),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.tertiary
+                )
+            }
+        },
+        actions = {
+            var expanded by remember { mutableStateOf(value = false) }
+            IconButton(
+                onClick = {
+                    expanded = true
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.MoreHoriz,
+                    modifier = Modifier
+                        .background(
+                            color = MaterialTheme.colorScheme.background,
+                            shape = MaterialTheme.shapes.small
+                        ),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.tertiary
+                )
+                /** no se puede utilizar ya que la API devuelve
+                 * los mismos valores utilizando cualquier filtrado en este ambito
+                 * */
+                /** no se puede utilizar ya que la API devuelve
+                 * los mismos valores utilizando cualquier filtrado en este ambito
+                 * */
+                /** no se puede utilizar ya que la API devuelve
+                 * los mismos valores utilizando cualquier filtrado en este ambito
+                 * */
+                /** no se puede utilizar ya que la API devuelve
+                 * los mismos valores utilizando cualquier filtrado en este ambito
+                 * */
+                /*SelectZone(expanded, loadDataFrom) {
+                    expanded = false
+                }*/
+            }
+        },
+        colors = TopAppBarDefaults.smallTopAppBarColors(
+            containerColor = Color.Transparent
+        )
+    )
+
 }
