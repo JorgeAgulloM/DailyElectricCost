@@ -1,6 +1,8 @@
 package com.softyorch.dailyelectriccost.data.network.red21Api
 
-import com.softyorch.dailyelectriccost.data.network.red21Api.response.Red21
+import com.softyorch.dailyelectriccost.data.network.red21Api.response.balance.Red21Balance
+import com.softyorch.dailyelectriccost.data.network.red21Api.response.generation.Red21Generation
+import com.softyorch.dailyelectriccost.data.network.red21Api.response.market.Red21Market
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -16,51 +18,40 @@ interface RedClient {
 
     @GET(URL)
     suspend fun getDataDefault(
+        @Path("category") category: String = "balance",
         @Path("widget") widget: String = "balance-electrico",
-        @Query("start_date") startDate: String = "2019-01-01T00:00",
-        @Query("end_date") endDate: String = "2019-01-31T23:59",
+        @Query("start_date") startDate: String = "2022-11-07T00:00",
+        @Query("end_date") endDate: String = "2022-11-13T23:59",
         @Query("time_trunc") timeTruncate: String = "day"
-    ): Response<Red21>
+    ): Response<Red21Balance>
 
     @GET(URL)
-    suspend fun getDataGeoTruncate(
-        @Path("widget") widget: String = "balance-electrico",
-        @Query("start_date") startDate: String = "2019-01-01T00:00",
-        @Query("end_date") endDate: String = "2019-01-31T23:59",
-        @Query("time_trunc") timeTruncate: String = "day",
+    suspend fun getGenerationGeoTruncate(
+        @Path("category") category: String = "estructura-generacion",
+        @Path("widget") widget: String = "generacion",
+        @Query("start_date") startDate: String = "2022-11-07T00:00",
+        @Query("end_date") endDate: String = "2022-11-13T23:59",
+        @Query("time_trunc") timeTruncate: String = "month",
         @Query("geo_trunc") geoTruncate: String = GEO_TRUNCATE,
         @Query("geo_limit") geo_limit: String = "peninsular",
         @Query("geo_ids") geo_ids: String = "8741"
-    ): Response<Red21>
+    ): Response<Red21Generation>
 
-
-    //Pruebas....
-/*    @GET(URL)
-    suspend fun getDataPrueba(
-        redGeoTruncateEntity: RedGeoTruncateEntity
-    ): Response<Red21>*/
+    @GET(URL)
+    suspend fun getMarketsGeoTruncate(
+        @Path("category") category: String = "precios-mercados-tiempo-real",
+        @Path("widget") widget: String = "mercados",
+        @Query("start_date") startDate: String = "2022-11-07T00:00",
+        @Query("end_date") endDate: String = "2022-11-13T23:59",
+        @Query("time_trunc") timeTruncate: String = "month",
+        @Query("geo_trunc") geoTruncate: String = GEO_TRUNCATE,
+        @Query("geo_limit") geo_limit: String = "peninsular",
+        @Query("geo_ids") geo_ids: String = "8741"
+    ): Response<Red21Market>
 
     companion object {
-        const val URL = "es/datos/balance/{widget}"
+        const val URL = "es/datos/{category}/{widget}"
         const val GEO_TRUNCATE = "electric_system"
     }
 
 }
-
-/*data class RedDefaultEntity(
-    @Path("widget") var widget: String = "balance-electrico",
-    @Query("start_date") var startDate: String = "2019-01-01T00:00",
-    @Query("end_date") var endDate: String = "2019-01-31T23:59",
-    @Query("time_trunc") var timeTruncate: String = "day"
-)*/
-
-/*
-data class RedGeoTruncateEntity(
-    @Path("widget") var widget: String = "balance-electrico",
-    @Query("start_date") var startDate: String = "2019-01-01T00:00",
-    @Query("end_date") var endDate: String = "2019-01-31T23:59",
-    @Query("time_trunc") var timeTruncate: String = "day",
-    @Query("geo_trunc") var geoTruncate: String = RedClient.GEO_TRUNCATE,
-    @Query("geo_limit") var geo_limit: String = "peninsular",
-    @Query("geo_ids") var geo_ids: String = "8741"
-)*/

@@ -1,14 +1,20 @@
 package com.softyorch.dailyelectriccost.data.repository.red21Repository.model.mapper
 
-import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.RedDataTruncateModel
-import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.RedDefaultModel
-import com.softyorch.dailyelectriccost.domain.redUseCases.model.RedDataTruncateModelDomain
-import com.softyorch.dailyelectriccost.domain.redUseCases.model.RedDefaultModelDomain
+import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.RedMarketsTruncateModel
+import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.RedBalanceModel
+import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.RedGenerationTruncateModel
+import com.softyorch.dailyelectriccost.domain.redUseCases.model.RedMarketsTruncateModelDomain
+import com.softyorch.dailyelectriccost.domain.redUseCases.model.RedBalanceModelDomain
+import com.softyorch.dailyelectriccost.domain.redUseCases.model.RedGenerationTruncateDomain
 
-fun RedDefaultModelDomain.mapToRedDefaultModel(): RedDefaultModel = RedDefaultModel(
-    widget, startDate, endDate, timeTruncate
+fun RedBalanceModelDomain.mapToRedBalanceModel(): RedBalanceModel = RedBalanceModel(
+    category, widget, startDate, endDate, timeTruncate
 )
 
-fun RedDataTruncateModelDomain.mapToRedDataTruncateModel(): RedDataTruncateModel = RedDataTruncateModel(
-    widget, startDate, endDate, timeTruncate, geo_limit, geo_ids
+fun RedGenerationTruncateDomain.mapToRedGenerationTruncateModel(): RedGenerationTruncateModel = RedGenerationTruncateModel(
+    category, widget, startDate, endDate, timeTruncate, geo_limit, geo_ids
+)
+
+fun RedMarketsTruncateModelDomain.mapToRedMarketsTruncateModel(): RedMarketsTruncateModel = RedMarketsTruncateModel(
+    category, widget, startDate, endDate, timeTruncate, geo_limit, geo_ids
 )
