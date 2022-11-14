@@ -11,8 +11,9 @@ import com.softyorch.dailyelectriccost.data.repository.datastore.model.SettingsM
 import com.softyorch.dailyelectriccost.data.repository.datastore.model.mapToSettingsModel
 import com.softyorch.dailyelectriccost.utils.Constants.RED21
 import kotlinx.coroutines.flow.*
+import javax.inject.Inject
 
-class DsRepository(private val datastore: Datastore) {
+class DsRepository @Inject constructor(private val datastore: Datastore) {
 
     suspend fun saveData(settingsModel: SettingsModel) {
         datastore.saveData(settingsModel.mapToSettings())

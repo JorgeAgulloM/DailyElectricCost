@@ -15,6 +15,7 @@ import com.softyorch.dailyelectriccost.domain.redUseCases.RedUsesCases
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -33,7 +34,7 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun providesDatastore(context: Context): Datastore = Datastore(context)
+    fun providesDatastore(@ApplicationContext context: Context): Datastore = Datastore(context)
 
     @Singleton
     @Provides

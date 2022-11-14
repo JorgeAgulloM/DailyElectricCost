@@ -10,8 +10,9 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
 import com.softyorch.dailyelectriccost.data.local.entity.Settings
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
-class Datastore(private val context: Context) {
+class Datastore @Inject constructor(private val context: Context) {
 
     suspend fun saveData(settings: Settings) {
         context.datastore.edit { ds ->
