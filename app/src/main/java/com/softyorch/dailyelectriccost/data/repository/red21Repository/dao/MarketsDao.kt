@@ -18,25 +18,4 @@ data class MarketsDao(
     var hiHour: String,
     var bestLowRange: String,
     var values: MutableList<Values>
-){
-    companion object{
-        val emptyMarketsDao: MarketsDao = MarketsDao(
-            title = EMPTY_STRING,
-            lastUpdate = EMPTY_STRING,
-            type = EMPTY_STRING,
-            lowPrice = 0.0,
-            hiPrice = 0.0,
-            currentPrice = 0.0,
-            avgPrice = 0.0,
-            lowHour = EMPTY_STRING,
-            hiHour = EMPTY_STRING,
-            bestLowRange = EMPTY_STRING,
-            values = mutableListOf(
-                Values(
-                    value = 0.0,
-                    dateTime = EMPTY_STRING
-                )
-            )
-        )
-    }
-}
+)
