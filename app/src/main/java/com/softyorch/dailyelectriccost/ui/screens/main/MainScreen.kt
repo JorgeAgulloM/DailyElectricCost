@@ -6,8 +6,6 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.rounded.Email
-import androidx.compose.material.icons.rounded.GetApp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -17,7 +15,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -26,7 +23,8 @@ import com.softyorch.dailyelectriccost.R
 import com.softyorch.dailyelectriccost.core.SendEmail
 import com.softyorch.dailyelectriccost.ui.model.markets.MarketsModelUi
 import com.softyorch.dailyelectriccost.ui.screens.main.components.*
-import kotlinx.coroutines.CoroutineScope
+import com.softyorch.dailyelectriccost.ui.screens.main.menuDrawer.MenuDrawerBody
+import com.softyorch.dailyelectriccost.ui.screens.main.menuDrawer.MenuDrawerItems
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -152,68 +150,6 @@ fun Footer(
                 .height(height = 100.dp),
             contentAlignment = Alignment.Center
         ) { Text(text = "Google Adds") }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun MenuDrawerBody(
-    items: List<MenuDrawerItems> = MenuDrawerItems.itemList,
-    paddingValues: PaddingValues,
-    scope: CoroutineScope,
-    drawerState: DrawerState,
-    sendEmail: SendEmail
-) {
-    val selectedItem = remember { mutableStateOf(items[0]) }
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        drawerContent = {
-            ModalDrawerSheet {
-                Spacer(Modifier.height(paddingValues.calculateTopPadding() + 8.dp))
-                Divider(modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp))
-                items.forEach { item ->
-                    NavigationDrawerItem(
-                        icon = { Icon(item.icon, contentDescription = item.contentDescription) },
-                        label = { Text(text = item.text) },
-                        selected = item == selectedItem.value,
-                        onClick = {
-                            scope.launch {
-                                drawerState.close()
-                                if (item.id == 1) sendEmail()
-                            }
-                            selectedItem.value = item
-                        },
-                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
-                    )
-                }
-            }
-        },
-        content = {}
-    )
-}
-
-data class MenuDrawerItems(
-    val id: Int,
-    val text: String,
-    val contentDescription: String,
-    val icon: ImageVector
-) {
-    companion object {
-        val itemList: List<MenuDrawerItems> =
-            listOf(
-                MenuDrawerItems(
-                    id = 0,
-                    text = "DailyElectricCost",
-                    contentDescription = "Nombre de la aplicación",
-                    icon = Icons.Rounded.GetApp
-                ),
-                MenuDrawerItems(
-                    id = 1,
-                    text = "Contacta con el desarrollador",
-                    contentDescription = "Envia eMail al desarrollador",
-                    icon = Icons.Rounded.Email
-                )
-            )
     }
 }
 
