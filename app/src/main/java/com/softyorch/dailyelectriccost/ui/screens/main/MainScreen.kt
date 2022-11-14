@@ -59,6 +59,20 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel) {
     var isDrawerOpen by remember { mutableStateOf(value = false) }
     if (drawerState.isClosed) isDrawerOpen = false
 
+    val cardBrush: Brush = Brush.radialGradient(
+        colors = listOf(
+            MaterialTheme.colorScheme.onBackground.copy(0.01f),
+            MaterialTheme.colorScheme.background.copy(0.9f),
+            MaterialTheme.colorScheme.onBackground.copy(0.01f),
+            MaterialTheme.colorScheme.background.copy(0.9f),
+            MaterialTheme.colorScheme.onBackground.copy(0.01f),
+            MaterialTheme.colorScheme.background.copy(0.9f),
+        ),
+        center = Offset(-25f, 25f),
+        radius = 1000f
+    )
+    val modifier = Modifier.background(brush = cardBrush)
+
     Scaffold(
         topBar = {
             TopBar(marketsData, navController, viewModel::loadDataFrom) {
@@ -70,9 +84,17 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel) {
         },
         containerColor = MaterialTheme.colorScheme.tertiaryContainer,
     ) {
-        Head(marketsData)
-        Body(navController, marketsData, date, it) { date ->
-            viewModel.changeDate(date)
+        Column(modifier = Modifier.fillMaxSize()) {
+            Head(marketsData)
+            Column(
+                modifier = Modifier.fillMaxSize().padding(top = it.calculateTopPadding()),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Body(navController, modifier, marketsData, date, it) { date ->
+                    viewModel.changeDate(date)
+                }
+                Footer(modifier)
+            }
         }
         if (isDrawerOpen || drawerState.isOpen) DrawerBody(it, scope, drawerState)
     }
@@ -234,25 +256,12 @@ fun Head(marketsData: MarketsModelUi) {
 @Composable
 fun Body(
     navController: NavController,
+    modifier: Modifier,
     marketsData: MarketsModelUi,
     date: String,
     it: PaddingValues,
     onClickDatePicker: (String) -> Unit
 ) {
-
-    val cardBrush: Brush = Brush.radialGradient(
-        colors = listOf(
-            MaterialTheme.colorScheme.onBackground.copy(0.01f),
-            MaterialTheme.colorScheme.background.copy(0.9f),
-            MaterialTheme.colorScheme.onBackground.copy(0.01f),
-            MaterialTheme.colorScheme.background.copy(0.9f),
-            MaterialTheme.colorScheme.onBackground.copy(0.01f),
-            MaterialTheme.colorScheme.background.copy(0.9f),
-        ),
-        center = Offset(-25f, 25f),
-        radius = 1000f
-    )
-    val modifier = Modifier.background(brush = cardBrush)
 
     val bodyBrush: Brush = Brush.linearGradient(
         colors = listOf(
@@ -282,9 +291,8 @@ fun Body(
 
     Column(
         modifier = Modifier
-            .padding(top = it.calculateTopPadding() + 120.dp)
-            .fillMaxSize()
-            .background(brush = bodyBrush, shape = bgrShape),
+            .fillMaxWidth(),
+            //.background(brush = bodyBrush, shape = bgrShape),
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -296,14 +304,15 @@ fun Body(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
-            Row(
+            /*Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
                 PriceTodayCard(modifier, marketsData, shadow)
                 MainDatePicker(date){ onClickDatePicker(it) }
-            }
+            }*/
+            PriceTodayCard(modifier, marketsData, shadow)
             Spacer(modifier = Modifier.padding(vertical = 8.dp))
             GrafValuesOfToday(
                 modifier,
@@ -314,7 +323,7 @@ fun Body(
             GrafBestHourOfToday(modifier, marketsData)
             Spacer(modifier = Modifier.padding(vertical = 8.dp))
         }
-        Footer(modifier.padding(end = 16.dp))
+        //Footer(modifier.padding(end = 16.dp))
     }
 
 }
@@ -623,44 +632,6 @@ fun GrafValuesOfToday(
                     verticalAlignment = Alignment.Bottom,
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    /*Column(
-                        modifier = Modifier.fillMaxHeight().width(70.dp),
-                        verticalArrangement = Arrangement.SpaceBetween,
-                        horizontalAlignment = Alignment.Start
-                    ) {
-                        val shadow = Shadow(
-                            MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f),
-                            offset = Offset(1F, 1F),
-                            blurRadius = 1F
-                        )
-                        AnimatedText(
-                            price = marketsData.hiPrice
-                        ) { targetState ->
-                            Text(
-                                text = "${targetState / 1000} €",
-                                color = colorHi,
-                                lineHeight = 16.sp,
-                                style = MaterialTheme.typography.bodySmall.copy(shadow = shadow),
-                                textAlign = TextAlign.Start,
-                                modifier = Modifier
-                                    .padding(start = 8.dp, top = 8.dp)
-                            )
-                        }
-                        AnimatedText(
-                            price = marketsData.lowPrice
-                        ) { targetState ->
-                            Text(
-                                text = "${targetState / 1000} €",
-                                color = colorLow,
-                                lineHeight = 16.sp,
-                                style = MaterialTheme.typography.bodySmall.copy(shadow = shadow),
-                                textAlign = TextAlign.Start,
-                                modifier = Modifier
-                                    //.fillMaxWidth()
-                                    .padding(start = 8.dp, bottom = 32.dp)
-                            )
-                        }
-                    }*/
                     Row(
                         modifier = Modifier
                             .horizontalScroll(rememberScrollState(0)),
@@ -825,9 +796,9 @@ private fun GraphicTextDay(
 fun calculateBrush(marketsData: MarketsModelUi, value: Double): Brush {
     val listColorHi = listOf(
         colorHi.copy(alpha = 0.9f),
-        colorHi.copy(alpha = 0.1f),
+        colorHi.copy(alpha = 0.3f),
         colorHi.copy(alpha = 0.9f),
-        colorHi.copy(alpha = 0.1f)
+        colorHi.copy(alpha = 0.3f)
     )
 
     val listColorAvg = listOf(
@@ -847,7 +818,7 @@ fun calculateBrush(marketsData: MarketsModelUi, value: Double): Brush {
     val result: Brush = Brush.linearGradient(
         if (value > ((marketsData.hiPrice / 10) * 8)) {
             listColorHi
-        } else if (value > marketsData.avgPrice) {
+        } else if (value > (marketsData.avgPrice / 10) * 9) {
             listColorAvg
         } else listColorLow
     )
