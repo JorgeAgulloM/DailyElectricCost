@@ -1,15 +1,9 @@
 package com.softyorch.dailyelectriccost.ui.screens.main
 
 import android.annotation.SuppressLint
-import android.app.DatePickerDialog
-import android.widget.DatePicker
 import androidx.compose.animation.*
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.AnimationVector1D
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -19,31 +13,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.softyorch.dailyelectriccost.R
 import com.softyorch.dailyelectriccost.ui.model.markets.MarketsModelUi
-import com.softyorch.dailyelectriccost.ui.theme.colorAvg
-import com.softyorch.dailyelectriccost.ui.theme.colorHi
-import com.softyorch.dailyelectriccost.ui.theme.colorLow
-import com.softyorch.dailyelectriccost.utils.Constants.EMPTY_STRING
-import com.softyorch.dailyelectriccost.utils.funcExtensions.iSO8601ToDatePicker
-import com.softyorch.dailyelectriccost.utils.funcExtensions.limitLengthToString
+import com.softyorch.dailyelectriccost.ui.screens.main.components.*
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.*
-import kotlin.reflect.KFunction1
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,7 +29,6 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel) {
     val marketsData: MarketsModelUi by viewModel.marketsData.observeAsState(
         initial = MarketsModelUi.emptyMarketsDao
     )
-    val date: String by viewModel.startDate.observeAsState(EMPTY_STRING)
 
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
@@ -75,7 +51,7 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel) {
 
     Scaffold(
         topBar = {
-            TopBar(marketsData, navController, viewModel::loadDataFrom) {
+            TopBar {
                 scope.launch {
                     isDrawerOpen = !isDrawerOpen
                     if (drawerState.isClosed) drawerState.open() else drawerState.close()
@@ -90,161 +66,12 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel) {
                 modifier = Modifier.fillMaxSize().padding(top = it.calculateTopPadding()),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                Body(navController, modifier, marketsData, date, it) { date ->
-                    viewModel.changeDate(date)
-                }
+                Body(modifier, marketsData)
                 Footer(modifier)
             }
         }
-        if (isDrawerOpen || drawerState.isOpen) DrawerBody(it, scope, drawerState)
+        if (isDrawerOpen || drawerState.isOpen) MenuDrawerBody(it, scope, drawerState)
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun DrawerBody(
-    paddingValues: PaddingValues,
-    scope: CoroutineScope,
-    drawerState: DrawerState
-) {
-
-    val items = listOf(Icons.Default.Favorite, Icons.Default.Face, Icons.Default.Email)
-    val selectedItem = remember { mutableStateOf(items[0]) }
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        drawerContent = {
-            ModalDrawerSheet {
-                Spacer(Modifier.height(paddingValues.calculateTopPadding() + 8.dp))
-                Divider(modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp))
-                items.forEach { item ->
-                    NavigationDrawerItem(
-                        icon = { Icon(item, contentDescription = null) },
-                        label = { Text(item.name) },
-                        selected = item == selectedItem.value,
-                        onClick = {
-                            scope.launch { drawerState.close() }
-                            selectedItem.value = item
-                        },
-                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
-                    )
-                }
-            }
-        },
-        content = { }
-    )
-}
-
-@Composable
-fun MainDatePicker(date: String, onClickDatePicker: (String) -> Unit) {
-    val mContext = LocalContext.current
-
-    val mCalendar = Calendar.getInstance()
-    val mYear = mCalendar.get(Calendar.YEAR)
-    val mMonth = mCalendar.get(Calendar.MONTH)
-    val mDay = mCalendar.get(Calendar.DAY_OF_MONTH)
-    mCalendar.time = Date()
-
-    var mDate by remember { mutableStateOf(date.iSO8601ToDatePicker()) }
-
-    val datePicker = DatePickerDialog(
-        mContext, { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
-            mDate = "$dayOfMonth/${month + 1}/$year"
-        },
-        mYear, mMonth, mDay
-    )
-    datePicker.setOnDismissListener {
-        if (mDate != date.iSO8601ToDatePicker()) onClickDatePicker(mDate)
-    }
-
-    datePicker.datePicker.maxDate = Date().time
-
-
-    Box(modifier = Modifier.width(100.dp), contentAlignment = Alignment.Center) {
-        TextButton(
-            onClick = {
-                datePicker.show()
-            }
-        ) {
-            Text(text = mDate)
-        }
-    }
-
-}
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@SuppressLint("CoroutineCreationDuringComposition")
-@Composable
-private fun TopBar(
-    marketsData: MarketsModelUi,
-    navController: NavController,
-    loadDataFrom: KFunction1<ZoneQuery, Unit>,
-    onNavigationIconClick: () -> Unit
-) {
-    TopAppBar(
-        title = {
-            Box(
-                modifier = Modifier.fillMaxHeight(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = stringResource(R.string.app_name),//marketsData.title,
-                    modifier = Modifier.fillMaxWidth(),
-                    style = MaterialTheme.typography.labelLarge.copy(
-                        textAlign = TextAlign.Center
-                    )
-                )
-            }
-        },
-        modifier = Modifier.height(35.dp).padding(top = 8.dp),
-        navigationIcon = {
-            IconButton(
-                onClick = {
-                    onNavigationIconClick()
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Menu,
-                    modifier = Modifier
-                        .background(
-                            color = MaterialTheme.colorScheme.background,
-                            shape = MaterialTheme.shapes.small
-                        ),
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.tertiary
-                )
-            }
-        },
-        actions = {
-            var expanded by remember { mutableStateOf(value = false) }
-            IconButton(
-                onClick = {
-                    expanded = true
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.MoreHoriz,
-                    modifier = Modifier
-                        .background(
-                            color = MaterialTheme.colorScheme.background,
-                            shape = MaterialTheme.shapes.small
-                        ),
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.tertiary
-                )
-                /** no se puede utilizar ya que la API devuelve
-                 * los mismos valores utilizando cualquier filtrado en este ambito
-                 * */
-                /*SelectZone(expanded, loadDataFrom) {
-                    expanded = false
-                }*/
-            }
-        },
-        colors = TopAppBarDefaults.smallTopAppBarColors(
-            containerColor = Color.Transparent
-        )
-    )
-
 }
 
 @Composable
@@ -255,44 +82,18 @@ fun Head(marketsData: MarketsModelUi) {
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun Body(
-    navController: NavController,
     modifier: Modifier,
-    marketsData: MarketsModelUi,
-    date: String,
-    it: PaddingValues,
-    onClickDatePicker: (String) -> Unit
+    marketsData: MarketsModelUi
 ) {
-
-    val bodyBrush: Brush = Brush.linearGradient(
-        colors = listOf(
-            MaterialTheme.colorScheme.background.copy(1f),
-            MaterialTheme.colorScheme.background.copy(0.95f),
-            MaterialTheme.colorScheme.background.copy(1f),
-            MaterialTheme.colorScheme.background.copy(0.95f),
-            MaterialTheme.colorScheme.background.copy(1f),
-            MaterialTheme.colorScheme.background.copy(0.95f),
-            MaterialTheme.colorScheme.background.copy(1f),
-            MaterialTheme.colorScheme.background.copy(0.95f),
-            MaterialTheme.colorScheme.background.copy(1f),
-            MaterialTheme.colorScheme.background.copy(0.95f)
-        )
-    )
-
     val shadow = Shadow(
         MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f),
         offset = Offset(1F, 1F),
         blurRadius = 1F
     )
 
-    val bgrShape = MaterialTheme.shapes.extraLarge.copy(
-        bottomStart = ZeroCornerSize,
-        bottomEnd = ZeroCornerSize
-    )
-
     Column(
         modifier = Modifier
             .fillMaxWidth(),
-            //.background(brush = bodyBrush, shape = bgrShape),
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -323,528 +124,12 @@ fun Body(
             GrafBestHourOfToday(modifier, marketsData)
             Spacer(modifier = Modifier.padding(vertical = 8.dp))
         }
-        //Footer(modifier.padding(end = 16.dp))
     }
 
 }
 
 @Composable
-fun SelectZone(
-    expanded: Boolean,
-    loadDataFrom: KFunction1<ZoneQuery, Unit>,
-    onDismiss: () -> Unit
-) {
-    DropdownMenu(
-        expanded = expanded,
-        onDismissRequest = { onDismiss() }
-    ) {
-        Text(
-            text = "Selecciona una región",
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-            style = MaterialTheme.typography.labelSmall
-        )
-        Divider(modifier = Modifier.padding(vertical = 2.dp, horizontal = 4.dp))
-        ZoneQuery.listOfZones.forEach {
-            DropdownMenuItem(
-                text = {
-                    Text(
-                        text = it.zone.replaceFirstChar {
-                            if (it.isLowerCase()) it.titlecase(
-                                Locale.ROOT
-                            ) else it.toString()
-                        },
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            textDecoration = TextDecoration.Underline
-                        )
-                    )
-                },
-                onClick = { loadDataFrom(it) },
-                contentPadding = PaddingValues(start = 16.dp)
-            )
-        }
-    }
-}
-
-@SuppressLint("CoroutineCreationDuringComposition")
-@OptIn(ExperimentalAnimationApi::class)
-@Composable
-private fun AnimatedText(
-    price: Double = 0.0,
-    animatedScope: @Composable (Double) -> Unit
-) {
-    val scope = rememberCoroutineScope()
-    var animatedPrice by remember { mutableStateOf(0.0) }
-    scope.launch {
-        while (animatedPrice < price) {
-            delay(200)
-            animatedPrice++
-        }
-        animatedPrice = price
-    }
-    AnimatedContent(
-        targetState = animatedPrice,
-        transitionSpec = {
-            if (animatedPrice > 0.0) {
-                slideInVertically { height -> height } + fadeIn() with
-                        slideOutVertically { height -> -height } + fadeOut()
-            } else {
-                slideInVertically { height -> -height } + fadeIn() with
-                        slideOutVertically { height -> height } + fadeOut()
-            }.using(
-                SizeTransform(clip = false)
-            )
-        }
-    ) { targetState ->
-        animatedScope(targetState)
-    }
-}
-
-@SuppressLint("CoroutineCreationDuringComposition")
-@Composable
-fun ActualPrice(
-    marketsData: MarketsModelUi
-) {
-
-    Row(
-        modifier = Modifier
-            .padding(top = 48.dp)
-            .width(width = 380.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-    ) {
-        Column(
-            modifier = Modifier.weight(1f),
-        ) {
-            AnimatedText(
-                price = marketsData.currentPrice
-            ) { targetCount ->
-                Text(
-                    text = "${targetCount.limitLengthToString()} €",
-                    color = MaterialTheme.colorScheme.onBackground,
-                    textAlign = TextAlign.End,
-                    style = TextStyle(
-                        fontSize = 45.sp,
-                        shadow = Shadow(
-                            MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
-                            offset = Offset(2F, 10F),
-                            blurRadius = 8F
-                        )
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
-            }
-
-            Text(
-                text = "${marketsData.type} actual",
-                modifier = Modifier.fillMaxWidth(),
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
-                textAlign = TextAlign.End,
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    shadow = Shadow(
-                        MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
-                        offset = Offset(2F, 4F),
-                        blurRadius = 2F
-                    )
-                )
-            )
-        }
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.Start
-        ) {
-            LitlePrice(
-                marketsData.hiPrice,
-                "máximo",
-                MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f)
-            )
-            Spacer(modifier = Modifier.padding(vertical = 4.dp))
-            LitlePrice(
-                marketsData.lowPrice,
-                "mínimo",
-                MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f)
-            )
-        }
-    }
-}
-
-@Composable
-private fun LitlePrice(
-    price: Double,
-    text: String,
-    color: Color
-) {
-    Column(
-        modifier = Modifier.padding(top = 8.dp, start = 32.dp),
-        verticalArrangement = Arrangement.SpaceAround,
-        horizontalAlignment = Alignment.Start
-    ) {
-        AnimatedText(
-            price = price
-        ) { targetCount ->
-            Text(
-                text = "${targetCount.limitLengthToString()} €",
-                color = color,
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.labelLarge.copy(
-                    shadow = Shadow(
-                        MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
-                        offset = Offset(1F, 2F),
-                        blurRadius = 1F
-                    )
-                )
-            )
-        }
-        Text(
-            text = text,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
-            textAlign = TextAlign.End,
-            style = MaterialTheme.typography.bodySmall.copy(
-                shadow = Shadow(
-                    Color.Black.copy(alpha = 0.5f),
-                    offset = Offset(1F, 2F),
-                    blurRadius = 1F
-                )
-            )
-        )
-    }
-
-}
-
-@Composable
-private fun LitleKwhPrice(
-    price: Double,
-    text: String,
-    color: Color,
-    shadow: Shadow
-) {
-    Row(
-        modifier = Modifier.padding(top = 4.dp, start = 24.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start
-    ) {
-        Text(
-            text = "Precio $text",
-            modifier = Modifier.width(100.dp),
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f),
-            textAlign = TextAlign.Start,
-            style = MaterialTheme.typography.bodySmall.copy(
-                fontWeight = FontWeight.Bold,
-                shadow = shadow
-            )
-        )
-        AnimatedText(
-            price = price
-        ) { targetCount ->
-            Text(
-                text = "${(targetCount / 1000).limitLengthToString()} €",
-                modifier = Modifier.width(100.dp),
-                color = color,
-                textAlign = TextAlign.Start,
-                style = MaterialTheme.typography.labelLarge.copy(
-                    fontWeight = FontWeight.Bold,
-                    shadow = shadow
-                )
-            )
-        }
-    }
-}
-
-@Composable
-fun PriceTodayCard(
-    modifier: Modifier,
-    marketsData: MarketsModelUi,
-    shadow: Shadow
-) {
-    ElevatedCard(
-        elevation = CardDefaults.elevatedCardElevation(2.dp)
-    ) {
-        Column(
-            modifier = modifier.height(height = 100.dp),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.Start
-        ) {
-            Text(
-                text = "Precios en €/Kwh de hoy",
-                modifier = Modifier.padding(start = 16.dp, top = 4.dp),
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f),
-                fontWeight = FontWeight.SemiBold,
-                style = MaterialTheme.typography.labelLarge
-            )
-            LitleKwhPrice(marketsData.hiPrice, "máximo", colorHi, shadow)
-            LitleKwhPrice(marketsData.currentPrice, "actual", colorAvg, shadow)
-            LitleKwhPrice(marketsData.lowPrice, "mínimo", colorLow, shadow)
-        }
-    }
-}
-
-@Composable
-fun GrafValuesOfToday(
-    modifier: Modifier,
-    title: String,
-    marketsData: MarketsModelUi
-) {
-    val avgPrice = "*Precio medio ${
-        (marketsData.avgPrice / 1000).limitLengthToString()
-    } €"
-
-    ElevatedCard(
-        elevation = CardDefaults.elevatedCardElevation(2.dp)
-    ) {
-        Column(
-            verticalArrangement = Arrangement.SpaceAround,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = modifier
-                .height(height = 215.dp)
-            //.width(width = 300.dp)
-        ) {
-            Column(
-                verticalArrangement = Arrangement.Top
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Start
-                ) {
-                    Text(
-                        text = title,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f),
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier
-                            .padding(start = 16.dp),
-                        textAlign = TextAlign.Start
-                    )
-                    Text(
-                        text = avgPrice,
-                        color = colorAvg.copy(alpha = 0.9f),
-                        style = MaterialTheme.typography.labelSmall,
-                        modifier = Modifier
-                            .padding(start = 8.dp, top = 8.dp),
-                        textAlign = TextAlign.Start
-                    )
-                }
-                Row(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f)
-                        .padding(start = 8.dp, bottom = 8.dp),
-                    verticalAlignment = Alignment.Bottom,
-                    horizontalArrangement = Arrangement.SpaceAround
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .horizontalScroll(rememberScrollState(0)),
-                        verticalAlignment = Alignment.Bottom,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        marketsData.values.forEach { valuesUi ->
-                            if (valuesUi.value > 0.0) Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Bottom
-                            ) {
-                                val brush = calculateBrush(marketsData, valuesUi.value)
-                                GraphicColumnDay(valuesUi.value.toInt() / 3, brush)
-                                GraphicTextDay(valuesUi.value / 1000.0)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun GrafBestHourOfToday(
-    modifier: Modifier,
-    marketsData: MarketsModelUi
-) {
-    val shadow = Shadow(
-        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
-        offset = Offset(1f, 2f),
-        blurRadius = 2f
-    )
-    ElevatedCard(
-        elevation = CardDefaults.elevatedCardElevation(2.dp)
-    ) {
-        Column(modifier = modifier.padding(start = 8.dp)) {
-            TextPrice(
-                marketsData.lowPrice,
-                "La hora más económica es a las ${marketsData.lowHour} am:",
-                colorLow,
-                shadow
-            )
-            Divider(modifier = Modifier.padding(end = 8.dp))
-
-            TextContent(text = marketsData.bestLowRange)
-            Divider(modifier = Modifier.padding(end = 8.dp))
-
-            TextPrice(
-                marketsData.hiPrice,
-                "La hora más cara de hoy es a las ${marketsData.hiHour} pm:",
-                colorHi,
-                shadow
-            )
-            Divider(modifier = Modifier.padding(end = 8.dp))
-            Spacer(modifier = Modifier.padding(bottom = 8.dp))
-        }
-    }
-}
-
-@Composable
-fun TextContent(
-    text: String
-) {
-    Text(
-        text = text,
-        modifier = Modifier.fillMaxWidth().padding(start = 8.dp, top = 4.dp),
-        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f),
-        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold)
-    )
-}
-
-@Composable
-private fun TextPrice(
-    price: Double,
-    text: String,
-    color: Color,
-    shadow: Shadow
-) {
-    Row(
-        verticalAlignment = Alignment.Bottom,
-        horizontalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = text,
-            modifier = Modifier.padding(start = 8.dp, top = 8.dp),
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f),
-            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold)
-        )
-        Spacer(modifier = Modifier.padding(horizontal = 4.dp))
-        AnimatedText(
-            price = price
-        ) { targetCount ->
-            Text(
-                text = "${(targetCount / 1000).limitLengthToString()} €",
-                color = color,
-                textAlign = TextAlign.Start,
-                style = MaterialTheme.typography.labelLarge.copy(
-                    fontWeight = FontWeight.Bold,
-                    shadow = shadow
-                )
-            )
-        }
-    }
-}
-
-@Composable
-private fun GraphicColumnDay(
-    height: Int = 96,
-    brush: Brush
-) {
-    val scale = remember { Animatable(0f) }
-    LaunchedEffect(key1 = true,
-        block = {
-            scale.animateTo(
-                targetValue = height.toFloat(),
-                animationSpec = spring(dampingRatio = 1f, stiffness = 10f)
-            )
-        }
-    )
-    Box(
-        modifier = Modifier
-            .width(width = 8.dp)
-            .height(height = scale.value.dp)
-            .background(
-                brush = brush,
-                shape = MaterialTheme.shapes.large.copy(
-                    bottomStart = ZeroCornerSize,
-                    bottomEnd = ZeroCornerSize
-                ),
-                alpha = 0.9f
-            )
-    )
-
-}
-
-@Composable
-private fun GraphicTextDay(
-    price: Double
-) {
-    Box(
-        modifier = Modifier.graphicsLayer(
-            rotationZ = -65f
-        )
-    ) {
-        val scale = remember { Animatable(0f) }
-        val valueScale = scaleValue(price, scale).value
-
-        Text(
-            text = "${valueScale.limitLengthToString()}€",
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.labelSmall.copy(
-                fontSize = 8.sp
-            ),
-            modifier = Modifier
-                .padding(vertical = 12.dp)
-        )
-    }
-}
-
-fun calculateBrush(marketsData: MarketsModelUi, value: Double): Brush {
-    val listColorHi = listOf(
-        colorHi.copy(alpha = 0.9f),
-        colorHi.copy(alpha = 0.3f),
-        colorHi.copy(alpha = 0.9f),
-        colorHi.copy(alpha = 0.3f)
-    )
-
-    val listColorAvg = listOf(
-        colorAvg.copy(alpha = 0.9f),
-        colorAvg.copy(alpha = 0.3f),
-        colorAvg.copy(alpha = 0.9f),
-        colorAvg.copy(alpha = 0.3f)
-    )
-
-    val listColorLow = listOf(
-        colorLow.copy(alpha = 0.9f),
-        colorLow.copy(alpha = 0.3f),
-        colorLow.copy(alpha = 0.9f),
-        colorLow.copy(alpha = 0.3f)
-    )
-
-    val result: Brush = Brush.linearGradient(
-        if (value > ((marketsData.hiPrice / 10) * 8)) {
-            listColorHi
-        } else if (value > (marketsData.avgPrice / 10) * 9) {
-            listColorAvg
-        } else listColorLow
-    )
-
-    return result
-}
-
-@Composable
-private fun scaleValue(
-    value: Double,
-    scale: Animatable<Float, AnimationVector1D>
-): Animatable<Float, AnimationVector1D> {
-    LaunchedEffect(
-        key1 = true,
-        block = {
-            scale.animateTo(
-                targetValue = value.toFloat(),
-                animationSpec = spring(dampingRatio = 1f, stiffness = 10f)
-            )
-        }
-    )
-    return scale
-}
-
-@Composable
-private fun Footer(
+fun Footer(
     modifier: Modifier
 ) {
     /** Google Adds */
@@ -859,4 +144,38 @@ private fun Footer(
             contentAlignment = Alignment.Center
         ) { Text(text = "Google Adds") }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MenuDrawerBody(
+    paddingValues: PaddingValues,
+    scope: CoroutineScope,
+    drawerState: DrawerState
+) {
+
+    val items = listOf(Icons.Default.Favorite, Icons.Default.Face, Icons.Default.Email)
+    val selectedItem = remember { mutableStateOf(items[0]) }
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            ModalDrawerSheet {
+                Spacer(Modifier.height(paddingValues.calculateTopPadding() + 8.dp))
+                Divider(modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp))
+                items.forEach { item ->
+                    NavigationDrawerItem(
+                        icon = { Icon(item, contentDescription = null) },
+                        label = { Text(item.name) },
+                        selected = item == selectedItem.value,
+                        onClick = {
+                            scope.launch { drawerState.close() }
+                            selectedItem.value = item
+                        },
+                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                    )
+                }
+            }
+        },
+        content = { }
+    )
 }
