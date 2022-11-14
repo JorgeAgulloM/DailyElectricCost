@@ -6,6 +6,8 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.rounded.Email
+import androidx.compose.material.icons.rounded.GetApp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -15,11 +17,13 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.softyorch.dailyelectriccost.R
+import com.softyorch.dailyelectriccost.core.SendEmail
 import com.softyorch.dailyelectriccost.ui.model.markets.MarketsModelUi
 import com.softyorch.dailyelectriccost.ui.screens.main.components.*
 import kotlinx.coroutines.CoroutineScope
@@ -28,7 +32,7 @@ import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(navController: NavController, viewModel: MainViewModel) {
+fun MainScreen(navController: NavController, viewModel: MainViewModel, sendEmail: SendEmail) {
 
     val marketsData: MarketsModelUi by viewModel.marketsData.observeAsState(
         initial = MarketsModelUi.emptyMarketsDao
@@ -74,7 +78,8 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel) {
                 Footer(modifier)
             }
         }
-        if (isDrawerOpen || drawerState.isOpen) MenuDrawerBody(it, scope, drawerState)
+        if (isDrawerOpen || drawerState.isOpen)
+            MenuDrawerBody(MenuDrawerItems.itemList, it, scope, drawerState, sendEmail)
     }
 }
 
@@ -153,12 +158,12 @@ fun Footer(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MenuDrawerBody(
+    items: List<MenuDrawerItems> = MenuDrawerItems.itemList,
     paddingValues: PaddingValues,
     scope: CoroutineScope,
-    drawerState: DrawerState
+    drawerState: DrawerState,
+    sendEmail: SendEmail
 ) {
-
-    val items = listOf(Icons.Default.Favorite, Icons.Default.Face, Icons.Default.Email)
     val selectedItem = remember { mutableStateOf(items[0]) }
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -168,11 +173,14 @@ fun MenuDrawerBody(
                 Divider(modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp))
                 items.forEach { item ->
                     NavigationDrawerItem(
-                        icon = { Icon(item, contentDescription = null) },
-                        label = { Text(item.name) },
+                        icon = { Icon(item.icon, contentDescription = item.contentDescription) },
+                        label = { Text(text = item.text) },
                         selected = item == selectedItem.value,
                         onClick = {
-                            scope.launch { drawerState.close() }
+                            scope.launch {
+                                drawerState.close()
+                                if (item.id == 1) sendEmail()
+                            }
                             selectedItem.value = item
                         },
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
@@ -180,8 +188,33 @@ fun MenuDrawerBody(
                 }
             }
         },
-        content = { }
+        content = {}
     )
+}
+
+data class MenuDrawerItems(
+    val id: Int,
+    val text: String,
+    val contentDescription: String,
+    val icon: ImageVector
+) {
+    companion object {
+        val itemList: List<MenuDrawerItems> =
+            listOf(
+                MenuDrawerItems(
+                    id = 0,
+                    text = "DailyElectricCost",
+                    contentDescription = "Nombre de la aplicación",
+                    icon = Icons.Rounded.GetApp
+                ),
+                MenuDrawerItems(
+                    id = 1,
+                    text = "Contacta con el desarrollador",
+                    contentDescription = "Envia eMail al desarrollador",
+                    icon = Icons.Rounded.Email
+                )
+            )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

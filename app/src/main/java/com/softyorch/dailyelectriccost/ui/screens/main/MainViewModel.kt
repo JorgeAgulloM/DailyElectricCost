@@ -12,7 +12,6 @@ import com.softyorch.dailyelectriccost.ui.model.markets.MarketsModelUi
 import com.softyorch.dailyelectriccost.ui.model.markets.mapToMarketsModelUi
 import com.softyorch.dailyelectriccost.utils.Constants
 import com.softyorch.dailyelectriccost.utils.Constants.RED21
-import com.softyorch.dailyelectriccost.utils.funcExtensions.datePickerToISO8601
 import com.softyorch.dailyelectriccost.utils.funcExtensions.toDateFormattedISO8601
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -20,13 +19,15 @@ import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor(private val redUsesCases: RedUsesCases) : ViewModel() {
+class MainViewModel @Inject constructor(
+    private val redUsesCases: RedUsesCases
+) : ViewModel() {
 
     private val _marketsData = MutableLiveData(MarketsModelUi.emptyMarketsDao)
     val marketsData: LiveData<MarketsModelUi> = _marketsData
 
     private val _zone = MutableLiveData<String>("peninsular")
-    val zone: LiveData<String> = _zone
+    //val zone: LiveData<String> = _zone
 
     /** Query data **********************************************/
 
@@ -38,17 +39,17 @@ class MainViewModel @Inject constructor(private val redUsesCases: RedUsesCases) 
 
     private val _geoIds = MutableLiveData("8741")
 
-    private val oneHourInMillis = 3600000L
+    //private val oneHourInMillis = 3600000L
 
     init {
         startDate()
         getDataGeoTruncate()
     }
 
-    fun changeDate(date: String) {
+    /*fun changeDate(date: String) {
         setDate(date.datePickerToISO8601())
         getDataGeoTruncate()
-    }
+    }*/
 
     private fun startDate() {
         setDate(Date().toDateFormattedISO8601())
@@ -58,10 +59,6 @@ class MainViewModel @Inject constructor(private val redUsesCases: RedUsesCases) 
         _startDate.value = dateFormattedISO8601.split("T")[0] + "T00:00"
         _endDate.value = dateFormattedISO8601.split("T")[0] + "T23:00"
         Log.d(RED21, "Values start -> ${_startDate.value} y end ->${_endDate.value}")
-    }
-
-    fun loadDataFrom(zoneQuery: ZoneQuery) {
-       //
     }
 
     //Fri Nov 11 16:52:24 GMT 2022
