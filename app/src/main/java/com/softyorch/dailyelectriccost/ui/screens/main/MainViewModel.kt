@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.softyorch.dailyelectriccost.domain.dsUseCases.DsUseCases
 import com.softyorch.dailyelectriccost.domain.redUseCases.RedUsesCases
 import com.softyorch.dailyelectriccost.domain.redUseCases.model.mapper.mapToRedMarketsTruncateModelDomain
 import com.softyorch.dailyelectriccost.ui.model.RedMarketsTruncateModelUi
@@ -20,7 +21,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val redUsesCases: RedUsesCases
+    private val redUsesCases: RedUsesCases,
+    private val dsUseCases: DsUseCases
 ) : ViewModel() {
 
     private val _marketsData = MutableLiveData(MarketsModelUi.emptyMarketsDao)
