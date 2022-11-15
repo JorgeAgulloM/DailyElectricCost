@@ -5,10 +5,12 @@
 package com.softyorch.dailyelectriccost.data.local
 
 import android.content.Context
+import android.util.Log
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
 import com.softyorch.dailyelectriccost.data.local.entity.Settings
+import com.softyorch.dailyelectriccost.utils.Constants.RED21
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -22,19 +24,14 @@ class Datastore @Inject constructor(private val context: Context) {
         }
     }
 
-    fun getData() = try {
-        Result.success(
-            context.datastore.data.map { ds ->
-                Settings(
-                    autoLightDark = ds[booleanPreferencesKey("autoLightDark")] ?: false,
-                    manualLightDark = ds[booleanPreferencesKey("manualLightDark")] ?: false,
-                    autoColors = ds[booleanPreferencesKey("autoColors")] ?: false
-                )
-            }
+    fun getData() = context.datastore.data.map { ds ->
+        Settings(
+            autoLightDark = ds[booleanPreferencesKey("autoLightDark")] ?: false,
+            manualLightDark = ds[booleanPreferencesKey("manualLightDark")] ?: false,
+            autoColors = ds[booleanPreferencesKey("autoColors")] ?: false
         )
-    } catch (ex: Exception) {
-        Result.failure(ex.fillInStackTrace())
     }
+
 
     suspend fun deleteData() {
         context.datastore.edit { ds ->

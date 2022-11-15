@@ -19,8 +19,8 @@ class DsRepository @Inject constructor(private val datastore: Datastore) {
         datastore.saveData(settingsModel.mapToSettings())
     }
 
-    fun getData() = datastore.getData().map { flow ->
-        flow.conflate().catch {
+    fun getData() = datastore.getData()
+        .catch {
             Log.d(RED21, "Error al recuperar datastore")
             SettingsModel(
                 autoLightDark = false,
@@ -28,9 +28,10 @@ class DsRepository @Inject constructor(private val datastore: Datastore) {
                 autoColors = false
             )
         }.map {
+            Log.d(RED21, "DsRepo datos recuperados")
             it.mapToSettingsModel()
         }
-    }
+
 
     suspend fun deleteData() {
         datastore.deleteData()
