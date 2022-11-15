@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.softyorch.dailyelectriccost.R
 import com.softyorch.dailyelectriccost.core.SendEmail
+import com.softyorch.dailyelectriccost.ui.model.datastore.SettingsUi
 import com.softyorch.dailyelectriccost.ui.model.markets.MarketsModelUi
 import com.softyorch.dailyelectriccost.ui.screens.main.components.*
 import com.softyorch.dailyelectriccost.ui.screens.main.menuDrawer.MenuDrawerBody
@@ -35,6 +36,11 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel, sendEmail
     val marketsData: MarketsModelUi by viewModel.marketsData.observeAsState(
         initial = MarketsModelUi.emptyMarketsDao
     )
+    val settings: SettingsUi by viewModel.settings.observeAsState(SettingsUi(
+        autoLightDark = false,
+        manualLightDark = false,
+        autoColors = false
+    ))
 
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
@@ -77,7 +83,16 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel, sendEmail
             }
         }
         if (isDrawerOpen || drawerState.isOpen)
-            MenuDrawerBody(MenuDrawerItems.itemList, it, scope, drawerState, sendEmail)
+            MenuDrawerBody(
+                settings = settings,
+                items = MenuDrawerItems.itemList,
+                paddingValues = it,
+                scope = scope,
+                drawerState = drawerState,
+                sendEmail = sendEmail
+            ){ settings ->
+                viewModel.saveSettings(settings)
+            }
     }
 }
 
