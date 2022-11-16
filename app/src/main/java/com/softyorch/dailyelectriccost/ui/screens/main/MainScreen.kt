@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.softyorch.dailyelectriccost.R
 import com.softyorch.dailyelectriccost.core.SendEmail
+import com.softyorch.dailyelectriccost.ui.screens.main.components.BackgroundS
 import com.softyorch.dailyelectriccost.ui.model.datastore.SettingsUi
 import com.softyorch.dailyelectriccost.ui.model.markets.MarketsModelUi
 import com.softyorch.dailyelectriccost.ui.screens.main.components.*
@@ -60,7 +61,6 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel, sendEmail
         radius = 1000f
     )
     val modifier = Modifier.background(brush = cardBrush)
-
     Scaffold(
         topBar = {
             TopBar {
@@ -72,14 +72,17 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel, sendEmail
         },
         containerColor = MaterialTheme.colorScheme.tertiaryContainer,
     ) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            Head(marketsData)
-            Column(
-                modifier = Modifier.fillMaxSize().padding(top = it.calculateTopPadding()),
-                verticalArrangement = Arrangement.SpaceBetween
-            ) {
-                Body(modifier, marketsData)
-                Footer(modifier)
+        Box(contentAlignment = Alignment.Center){
+            BackgroundS() //Background S form
+            Column(modifier = Modifier.fillMaxSize()) {
+                Head(marketsData)
+                Column(
+                    modifier = Modifier.fillMaxSize().padding(top = 8.dp),
+                    verticalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Body(modifier, marketsData)
+                    Footer(modifier)
+                }
             }
         }
         if (isDrawerOpen || drawerState.isOpen)
@@ -123,7 +126,7 @@ fun Body(
             modifier = Modifier
                 .verticalScroll(rememberScrollState(0))
                 .fillMaxSize()
-                .padding(start = 16.dp, end = 16.dp, top = 16.dp),
+                .padding(start = 16.dp, end = 16.dp),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
@@ -135,7 +138,8 @@ fun Body(
                 PriceTodayCard(modifier, marketsData, shadow)
                 MainDatePicker(date){ onClickDatePicker(it) }
             }*/
-            PriceTodayCard(modifier, marketsData, shadow)
+            //PriceTodayCard(modifier, marketsData, shadow)
+            CircleTodayPrice(marketsData, shadow)
             Spacer(modifier = Modifier.padding(vertical = 8.dp))
             GrafValuesOfToday(
                 modifier,

@@ -4,10 +4,7 @@
 
 package com.softyorch.dailyelectriccost.ui.screens.main.components
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,6 +15,7 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.softyorch.dailyelectriccost.utils.funcExtensions.limitLengthToString
 
 @Composable
@@ -27,18 +25,17 @@ fun LitleKwhPrice(
     color: Color,
     shadow: Shadow
 ) {
-    Row(
-        modifier = Modifier.padding(top = 4.dp, start = 24.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start
+    Column(
+        modifier = Modifier.padding(4.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = "Precio $text",
-            modifier = Modifier.width(100.dp),
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f),
-            textAlign = TextAlign.Start,
+            modifier = Modifier.fillMaxWidth(),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
+            textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodySmall.copy(
-                fontWeight = FontWeight.Bold,
                 shadow = shadow
             )
         )
@@ -47,10 +44,10 @@ fun LitleKwhPrice(
         ) { targetCount ->
             Text(
                 text = "${(targetCount / 1000).limitLengthToString()} €",
-                modifier = Modifier.width(100.dp),
+                modifier = Modifier.fillMaxWidth(),
                 color = color,
-                textAlign = TextAlign.Start,
-                style = MaterialTheme.typography.labelLarge.copy(
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleLarge.copy(
                     fontWeight = FontWeight.Bold,
                     shadow = shadow
                 )

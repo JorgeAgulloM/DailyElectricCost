@@ -11,7 +11,7 @@ import com.softyorch.dailyelectriccost.utils.sdk29AndUp
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity: ComponentActivity() {
+class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -30,3 +30,4 @@ class MainActivity: ComponentActivity() {
         }
     }
 }
+
