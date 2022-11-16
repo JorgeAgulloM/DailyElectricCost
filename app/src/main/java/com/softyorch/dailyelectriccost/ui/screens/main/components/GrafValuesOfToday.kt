@@ -7,70 +7,47 @@ package com.softyorch.dailyelectriccost.ui.screens.main.components
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupProperties
 import com.softyorch.dailyelectriccost.ui.model.markets.MarketsModelUi
 import com.softyorch.dailyelectriccost.ui.screens.main.utils.calculateBrush
 import com.softyorch.dailyelectriccost.ui.screens.main.utils.scaleValue
-import com.softyorch.dailyelectriccost.ui.theme.colorAvg
+import com.softyorch.dailyelectriccost.utils.funcExtensions.getHourOfDate
 import com.softyorch.dailyelectriccost.utils.funcExtensions.limitLengthToString
+import com.softyorch.dailyelectriccost.utils.funcExtensions.simpleHorizontalScrollBar
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun GrafValuesOfToday(
-    //modifier: Modifier,
-    title: String,
     marketsData: MarketsModelUi
 ) {
-    val avgPrice = "*Precio medio ${
-        (marketsData.avgPrice / 1000).limitLengthToString()
-    } €"
-
     val height = marketsData.hiPrice
 
     Column(
         verticalArrangement = Arrangement.SpaceAround,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .height(height = height.dp)
-        //.width(width = 300.dp)
+        modifier = Modifier.height(height = height.dp)
     ) {
         Column(
             verticalArrangement = Arrangement.Top
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start
-            ) {
-                Text(
-                    text = title,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f),
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier
-                        .padding(start = 16.dp),
-                    textAlign = TextAlign.Start
-                )
-                Text(
-                    text = avgPrice,
-                    color = colorAvg.copy(alpha = 0.9f),
-                    style = MaterialTheme.typography.labelSmall,
-                    modifier = Modifier.padding(top = 8.dp),
-                    textAlign = TextAlign.Start
-                )
-            }
             Row(
                 modifier = Modifier
                     .fillMaxSize()
@@ -79,19 +56,27 @@ fun GrafValuesOfToday(
                 verticalAlignment = Alignment.Bottom,
                 horizontalArrangement = Arrangement.Start
             ) {
-                Row(
-                    modifier = Modifier
-                        .horizontalScroll(rememberScrollState(0)),
+                val scrollState = rememberLazyListState()
+
+                LazyRow(
+                    modifier = Modifier.simpleHorizontalScrollBar(scrollState),
+                    state = scrollState,
                     verticalAlignment = Alignment.Bottom,
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    marketsData.values.forEach { valuesUi ->
+                    items(marketsData.values) { valuesUi ->
                         if (valuesUi.value > 0.0) Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Bottom
                         ) {
                             val brush = calculateBrush(marketsData, valuesUi.value)
-                            GraphicColumnDay(valuesUi.value.toInt(), height, brush)
+                            GraphicColumnDay(
+                                value = valuesUi.value,
+                                hour = valuesUi.dateTime,
+                                isCurrentHour = valuesUi.value == marketsData.currentPrice,
+                                maxHeight = height,
+                                brush = brush
+                            )
                             GraphicTextDay(valuesUi.value)
                         }
                     }
@@ -105,14 +90,19 @@ fun GrafValuesOfToday(
 
 @Composable
 private fun GraphicColumnDay(
-    height: Int = 96,
+    value: Double,
+    hour: String,
+    isCurrentHour: Boolean,
     maxHeight: Double,
     brush: Brush
 ) {
-    val calculateHeight = ((height / 5) * 3).toFloat()
+    val calculateHeight = ((value / 5) * 3).toFloat()
     val calcMaxHeight = ((maxHeight / 5) * 3).toFloat()
     val scale = remember { Animatable(0f) }
-    val modifier = Modifier.width(width = 4.dp).padding(bottom = 2.dp)
+    var showPopup by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
+    val modifier = Modifier.width(width = if (isCurrentHour) 16.dp else 4.dp).padding(bottom = 2.dp)
 
     LaunchedEffect(key1 = true,
         block = {
@@ -123,7 +113,13 @@ private fun GraphicColumnDay(
         }
     )
     Box(
-        modifier = Modifier.padding(top = 16.dp),
+        modifier = Modifier.padding(top = 16.dp).clickable {
+            showPopup = true
+            scope.launch {
+                delay(2000)
+                showPopup = false
+            }
+        },
         contentAlignment = Alignment.BottomCenter
     ) {
         Box(
@@ -136,6 +132,31 @@ private fun GraphicColumnDay(
                 .height(height = scale.value.dp)
                 .background(brush = brush, shape = MaterialTheme.shapes.large, alpha = 0.9f)
         )
+    }
+    if (showPopup) {
+        Popup(
+            properties = PopupProperties(focusable = true)
+        ) {
+            Column(
+                modifier = Modifier
+                    .shadow(4.dp, shape = MaterialTheme.shapes.medium)
+                    .background(
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        shape = MaterialTheme.shapes.medium
+                    )
+            ) {
+                Text(
+                    text = "Hora: ${hour.getHourOfDate()}",
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                    style = MaterialTheme.typography.labelSmall
+                )
+                Text(
+                    text = "Precio: ${(value / 1000).limitLengthToString()}€",
+                    modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 4.dp),
+                    style = MaterialTheme.typography.labelSmall
+                )
+            }
+        }
     }
 }
 
@@ -167,3 +188,23 @@ private fun GraphicTextDay(
         )
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

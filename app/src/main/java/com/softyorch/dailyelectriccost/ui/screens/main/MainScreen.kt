@@ -13,7 +13,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.res.stringResource
@@ -22,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.softyorch.dailyelectriccost.R
 import com.softyorch.dailyelectriccost.core.SendEmail
-import com.softyorch.dailyelectriccost.ui.screens.main.components.BackgroundS
 import com.softyorch.dailyelectriccost.ui.model.datastore.SettingsUi
 import com.softyorch.dailyelectriccost.ui.model.markets.MarketsModelUi
 import com.softyorch.dailyelectriccost.ui.screens.main.components.*
@@ -51,19 +49,6 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel, sendEmail
     var isDrawerOpen by remember { mutableStateOf(value = false) }
     if (drawerState.isClosed) isDrawerOpen = false
 
-    val cardBrush: Brush = Brush.radialGradient(
-        colors = listOf(
-            MaterialTheme.colorScheme.onBackground.copy(0.01f),
-            MaterialTheme.colorScheme.background.copy(0.9f),
-            MaterialTheme.colorScheme.onBackground.copy(0.01f),
-            MaterialTheme.colorScheme.background.copy(0.9f),
-            MaterialTheme.colorScheme.onBackground.copy(0.01f),
-            MaterialTheme.colorScheme.background.copy(0.9f),
-        ),
-        center = Offset(-25f, 25f),
-        radius = 1000f
-    )
-    val modifier = Modifier.background(brush = cardBrush)
     Scaffold(
         topBar = {
             TopBar {
@@ -84,7 +69,7 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel, sendEmail
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
                     Body(marketsData)
-                    Footer(modifier)
+                    Footer()
                 }
             }
         }
@@ -107,7 +92,6 @@ fun Head(marketsData: MarketsModelUi) {
     ActualPrice(marketsData)
 }
 
-@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun Body(
     marketsData: MarketsModelUi
@@ -131,30 +115,23 @@ fun Body(
             horizontalAlignment = Alignment.Start
         ) {
             CircleTodayPrice(marketsData, shadow)
-            Spacer(modifier = Modifier.padding(vertical = 8.dp))
-            GrafValuesOfToday(
-                "Precios en €/Kwh del día",
-                marketsData
-            )
+            GrafValuesOfToday(marketsData)
             Spacer(modifier = Modifier.padding(vertical = 8.dp))
             GrafBestHourOfToday(marketsData)
             Spacer(modifier = Modifier.padding(vertical = 8.dp))
         }
     }
-
 }
 
 @Composable
-fun Footer(
-    modifier: Modifier
-) {
+fun Footer() {
     /** Google Adds */
     ElevatedCard(
         modifier = Modifier.padding(16.dp),
         elevation = CardDefaults.elevatedCardElevation(2.dp)
     ) {
         Box(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .height(height = 100.dp),
             contentAlignment = Alignment.Center

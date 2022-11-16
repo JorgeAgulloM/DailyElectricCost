@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.softyorch.dailyelectriccost.core.SendEmail
 import com.softyorch.dailyelectriccost.ui.model.datastore.SettingsUi
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,6 +49,10 @@ fun MenuDrawerBody(
                     iconOff = Icons.Filled.WbSunny
                 ) {
                     onCheckedChange(settings.copy(autoLightDark = it))
+                    scope.launch {
+                        delay(500)
+                        drawerState.close()
+                    }
                 }
 
                 AnimatedVisibility(!settings.autoLightDark) {
@@ -58,6 +63,10 @@ fun MenuDrawerBody(
                         iconOff = Icons.Rounded.WbSunny
                     ) {
                         onCheckedChange(settings.copy(manualLightDark = it))
+                        scope.launch {
+                            delay(500)
+                            drawerState.close()
+                        }
                     }
                 }
 
@@ -68,6 +77,10 @@ fun MenuDrawerBody(
                     iconOff = Icons.Rounded.InvertColorsOff
                 ) {
                     onCheckedChange(settings.copy(autoColors = it))
+                    scope.launch {
+                        delay(500)
+                        drawerState.close()
+                    }
                 }
 
                 Divider(modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp))

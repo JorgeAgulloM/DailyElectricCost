@@ -34,9 +34,7 @@ fun LitleKwhPrice(
             modifier = Modifier.fillMaxWidth(),
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodySmall.copy(
-                shadow = shadow
-            )
+            style = MaterialTheme.typography.bodySmall
         )
         AnimatedText(
             price = price
