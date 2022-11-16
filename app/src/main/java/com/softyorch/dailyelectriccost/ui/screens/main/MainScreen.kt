@@ -127,11 +127,9 @@ fun Body(
             modifier = Modifier
                 .verticalScroll(rememberScrollState(0))
                 .fillMaxSize(),
-            //.padding(start = 16.dp, end = 16.dp),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
-            //PriceTodayCard(modifier, marketsData, shadow)
             CircleTodayPrice(marketsData, shadow)
             Spacer(modifier = Modifier.padding(vertical = 8.dp))
             GrafValuesOfToday(
