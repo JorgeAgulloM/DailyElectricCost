@@ -5,12 +5,13 @@ import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.core.view.WindowCompat
-import com.softyorch.dailyelectriccost.ui.screens.DailyElectricCost
+import com.softyorch.dailyelectriccost.core.SendEmail
+import com.softyorch.dailyelectriccost.ui.screens.loadSurface.DailyElectricCost
 import com.softyorch.dailyelectriccost.utils.sdk29AndUp
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity: ComponentActivity() {
+class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -22,8 +23,11 @@ class MainActivity: ComponentActivity() {
             )
         }
 
+        val sendEmail = SendEmail(this)
+
         setContent {
-            DailyElectricCost()
+            DailyElectricCost(sendEmail)
         }
     }
 }
+

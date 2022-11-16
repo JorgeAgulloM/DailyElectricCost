@@ -4,10 +4,7 @@
 
 package com.softyorch.dailyelectriccost.ui.screens.main.components
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,14 +25,15 @@ fun TextPrice(
     shadow: Shadow
 ) {
     Row(
+        modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.Bottom,
-        horizontalArrangement = Arrangement.Center
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
             text = text,
-            modifier = Modifier.padding(start = 8.dp, top = 8.dp),
+            modifier = Modifier.padding(top = 8.dp),
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f),
-            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold)
+            style = MaterialTheme.typography.labelMedium
         )
         Spacer(modifier = Modifier.padding(horizontal = 4.dp))
         AnimatedText(

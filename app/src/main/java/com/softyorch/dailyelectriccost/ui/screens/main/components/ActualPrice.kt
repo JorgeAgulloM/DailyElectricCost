@@ -28,7 +28,7 @@ fun ActualPrice(
 
     Row(
         modifier = Modifier
-            .padding(top = 48.dp)
+            .padding(top = 40.dp)
             .width(width = 380.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
