@@ -15,7 +15,6 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.softyorch.dailyelectriccost.utils.funcExtensions.limitLengthToString
 
 @Composable
@@ -43,7 +42,7 @@ fun LitleKwhPrice(
             price = price
         ) { targetCount ->
             Text(
-                text = "${(targetCount / 1000).limitLengthToString()} €",
+                text = "${(targetCount / 1000).limitLengthToString()}€",
                 modifier = Modifier.fillMaxWidth(),
                 color = color,
                 textAlign = TextAlign.Center,

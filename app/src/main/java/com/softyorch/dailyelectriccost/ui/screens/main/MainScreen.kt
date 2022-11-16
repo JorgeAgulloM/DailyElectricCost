@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -37,11 +38,13 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel, sendEmail
     val marketsData: MarketsModelUi by viewModel.marketsData.observeAsState(
         initial = MarketsModelUi.emptyMarketsDao
     )
-    val settings: SettingsUi by viewModel.settings.observeAsState(SettingsUi(
-        autoLightDark = false,
-        manualLightDark = false,
-        autoColors = false
-    ))
+    val settings: SettingsUi by viewModel.settings.observeAsState(
+        SettingsUi(
+            autoLightDark = false,
+            manualLightDark = false,
+            autoColors = false
+        )
+    )
 
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
@@ -72,7 +75,7 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel, sendEmail
         },
         containerColor = MaterialTheme.colorScheme.tertiaryContainer,
     ) {
-        Box(contentAlignment = Alignment.Center){
+        Box(contentAlignment = Alignment.Center) {
             BackgroundS() //Background S form
             Column(modifier = Modifier.fillMaxSize()) {
                 Head(marketsData)
@@ -80,7 +83,7 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel, sendEmail
                     modifier = Modifier.fillMaxSize().padding(top = 8.dp),
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Body(modifier, marketsData)
+                    Body(marketsData)
                     Footer(modifier)
                 }
             }
@@ -93,7 +96,7 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel, sendEmail
                 scope = scope,
                 drawerState = drawerState,
                 sendEmail = sendEmail
-            ){ settings ->
+            ) { settings ->
                 viewModel.saveSettings(settings)
             }
     }
@@ -107,7 +110,6 @@ fun Head(marketsData: MarketsModelUi) {
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun Body(
-    modifier: Modifier,
     marketsData: MarketsModelUi
 ) {
     val shadow = Shadow(
@@ -117,37 +119,27 @@ fun Body(
     )
 
     Column(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Column(
             modifier = Modifier
                 .verticalScroll(rememberScrollState(0))
-                .fillMaxSize()
-                .padding(start = 16.dp, end = 16.dp),
+                .fillMaxSize(),
+            //.padding(start = 16.dp, end = 16.dp),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
-            /*Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                PriceTodayCard(modifier, marketsData, shadow)
-                MainDatePicker(date){ onClickDatePicker(it) }
-            }*/
             //PriceTodayCard(modifier, marketsData, shadow)
             CircleTodayPrice(marketsData, shadow)
             Spacer(modifier = Modifier.padding(vertical = 8.dp))
             GrafValuesOfToday(
-                modifier,
                 "Precios en €/Kwh del día",
                 marketsData
             )
             Spacer(modifier = Modifier.padding(vertical = 8.dp))
-            GrafBestHourOfToday(modifier, marketsData)
+            GrafBestHourOfToday(marketsData)
             Spacer(modifier = Modifier.padding(vertical = 8.dp))
         }
     }
@@ -246,9 +238,7 @@ private fun TopBar(
                 }*/
             }
         },
-        colors = TopAppBarDefaults.smallTopAppBarColors(
-            containerColor = Color.Transparent
-        )
+        colors = topAppBarColors(containerColor = Color.Transparent)
     )
 
 }
