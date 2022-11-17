@@ -15,10 +15,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdSize
+import com.google.android.gms.ads.AdView
 import com.softyorch.dailyelectriccost.R
 import com.softyorch.dailyelectriccost.core.SendEmail
 import com.softyorch.dailyelectriccost.ui.model.datastore.SettingsUi
@@ -123,19 +129,31 @@ fun Body(
     }
 }
 
+@Preview
 @Composable
 fun Footer() {
     /** Google Adds */
+
+    val currentWidth = LocalConfiguration.current.screenWidthDp
+
     ElevatedCard(
         modifier = Modifier.padding(16.dp),
         elevation = CardDefaults.elevatedCardElevation(2.dp)
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(height = 100.dp),
-            contentAlignment = Alignment.Center
-        ) { Text(text = "Google Adds") }
+        AndroidView(
+            factory = { context ->
+                AdView(context).apply {
+                    setAdSize(
+                        AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+                            context, currentWidth
+                        )
+                    )
+                    adUnitId = "ca-app-pub-3940256099942544/6300978111"
+                    loadAd(AdRequest.Builder().build())
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 
