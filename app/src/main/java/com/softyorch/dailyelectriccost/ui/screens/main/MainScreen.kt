@@ -18,6 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import com.google.android.gms.ads.AdRequest
@@ -88,7 +89,14 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel, sendEmail
 
 @Composable
 fun Head(marketsData: MarketsModelUi) {
-    ActualPrice(marketsData)
+    Column {
+        ActualPrice(marketsData)
+        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.Center) {
+            CirclePrice(marketsData, marketsData.hiPrice, size = 90, textSize = 7.sp, "Máximo €/Kwh")
+            CirclePrice(marketsData, marketsData.currentPrice)
+            CirclePrice(marketsData, marketsData.lowPrice, size = 90, textSize = 7.sp,"Mímino €/Kwh")
+        }
+    }
 }
 
 @Composable

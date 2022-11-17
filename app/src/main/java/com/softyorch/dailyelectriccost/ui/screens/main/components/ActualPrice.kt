@@ -25,70 +25,66 @@ import com.softyorch.dailyelectriccost.utils.funcExtensions.limitLengthToString
 fun ActualPrice(
     marketsData: MarketsModelUi
 ) {
-
-    Column {
-        Row(
-            modifier = Modifier
-                .padding(top = 40.dp)
-                .width(width = 380.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+    Row(
+        modifier = Modifier
+            .padding(top = 40.dp)
+            .width(width = 380.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Column(
+            modifier = Modifier.weight(1f),
         ) {
-            Column(
-                modifier = Modifier.weight(1f),
-            ) {
-                AnimatedText(
-                    price = marketsData.currentPrice
-                ) { targetCount ->
-                    Text(
-                        text = "${targetCount.limitLengthToString()} €",
-                        color = MaterialTheme.colorScheme.onBackground,
-                        textAlign = TextAlign.End,
-                        style = TextStyle(
-                            fontSize = 45.sp,
-                            shadow = Shadow(
-                                MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
-                                offset = Offset(2F, 10F),
-                                blurRadius = 8F
-                            )
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    )
-                }
-
+            AnimatedText(
+                price = marketsData.currentPrice
+            ) { targetCount ->
                 Text(
-                    text = "${marketsData.type} actual",
-                    modifier = Modifier.fillMaxWidth(),
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
+                    text = "${targetCount.limitLengthToString()} €",
+                    color = MaterialTheme.colorScheme.onBackground,
                     textAlign = TextAlign.End,
-                    style = MaterialTheme.typography.bodyMedium.copy(
+                    style = TextStyle(
+                        fontSize = 45.sp,
                         shadow = Shadow(
                             MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
-                            offset = Offset(2F, 4F),
-                            blurRadius = 2F
+                            offset = Offset(2F, 10F),
+                            blurRadius = 8F
                         )
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+            }
+
+            Text(
+                text = "${marketsData.type} actual",
+                modifier = Modifier.fillMaxWidth(),
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
+                textAlign = TextAlign.End,
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    shadow = Shadow(
+                        MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+                        offset = Offset(2F, 4F),
+                        blurRadius = 2F
                     )
                 )
-            }
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.Top,
-                horizontalAlignment = Alignment.Start
-            ) {
-                LitlePrice(
-                    marketsData.hiPrice,
-                    "máximo",
-                    MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f)
-                )
-                Spacer(modifier = Modifier.padding(vertical = 4.dp))
-                LitlePrice(
-                    marketsData.lowPrice,
-                    "mínimo",
-                    MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f)
-                )
-            }
+            )
         }
-        CircleTodayPrice(marketsData)
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.Start
+        ) {
+            LitlePrice(
+                marketsData.hiPrice,
+                "máximo",
+                MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f)
+            )
+            Spacer(modifier = Modifier.padding(vertical = 4.dp))
+            LitlePrice(
+                marketsData.lowPrice,
+                "mínimo",
+                MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f)
+            )
+        }
     }
 }
