@@ -54,6 +54,9 @@ dependencies {
     //Legacy <API26
     //implementation 'com.jakewharton.threetenabp:threetenabp:1.2.1'
 
+    //Google Admob
+    implementation 'com.google.android.gms:play-services-ads:21.3.0'
+
     // WorkManager dependency
     implementation "androidx.work:work-runtime-ktx:2.7.1"
 
