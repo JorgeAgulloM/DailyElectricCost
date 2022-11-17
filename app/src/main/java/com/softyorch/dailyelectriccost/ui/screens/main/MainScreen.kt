@@ -12,9 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -66,17 +64,12 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel, sendEmail
         },
         containerColor = MaterialTheme.colorScheme.tertiaryContainer,
     ) {
-        Box(contentAlignment = Alignment.Center) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             BackgroundS() //Background S form
-            Column(modifier = Modifier.fillMaxSize()) {
+            Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween) {
                 Head(marketsData)
-                Column(
-                    modifier = Modifier.fillMaxSize().padding(top = 8.dp),
-                    verticalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Body(marketsData)
-                    Footer()
-                }
+                Body(marketsData)
+                Footer()
             }
         }
         if (isDrawerOpen || drawerState.isOpen)
@@ -102,25 +95,22 @@ fun Head(marketsData: MarketsModelUi) {
 fun Body(
     marketsData: MarketsModelUi
 ) {
-    val shadow = Shadow(
-        MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f),
-        offset = Offset(1F, 1F),
-        blurRadius = 1F
-    )
+    val heightOffBanner = 50
+    val maxHeight = LocalConfiguration.current.screenHeightDp / 2 - heightOffBanner
 
     Column(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+            .heightIn(min = 100.dp, max = maxHeight.dp),
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Column(
             modifier = Modifier
-                .verticalScroll(rememberScrollState(0))
-                .fillMaxSize(),
+                .verticalScroll(rememberScrollState(0)),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
-            CircleTodayPrice(marketsData, shadow)
+            //CircleTodayPrice(marketsData, shadow)
             GrafValuesOfToday(marketsData)
             Spacer(modifier = Modifier.padding(vertical = 8.dp))
             GrafBestHourOfToday(marketsData)

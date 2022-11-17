@@ -34,7 +34,12 @@ import com.softyorch.dailyelectriccost.ui.screens.main.utils.CalculateColor
 import com.softyorch.dailyelectriccost.ui.screens.main.utils.calculateBrush
 
 @Composable
-fun CircleTodayPrice(marketsData: MarketsModelUi, shadow: Shadow) {
+fun CircleTodayPrice(marketsData: MarketsModelUi) {
+    val shadow = Shadow(
+        MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f),
+        offset = Offset(1F, 1F),
+        blurRadius = 1F
+    )
     Box(
         modifier = Modifier.fillMaxWidth(),
         contentAlignment = Alignment.Center
