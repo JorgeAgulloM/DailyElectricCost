@@ -124,7 +124,7 @@ private fun LogoMenu() {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
-            painter = painterResource(R.drawable.logo),
+            painter = painterResource(R.drawable.logo2),
             contentDescription = "Logo"
         )
     }

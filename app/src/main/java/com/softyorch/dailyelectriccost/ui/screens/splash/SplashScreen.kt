@@ -23,7 +23,7 @@ fun SplashScreen(navController: NavController) {
     val scale = remember { Animatable(0f) }
     LaunchedEffect(key1 = true, block = {
         scale.animateTo(
-            targetValue = 2f,
+            targetValue = 1f,
             animationSpec = spring(dampingRatio = 1f, stiffness = 10f)
         )
 
@@ -34,6 +34,6 @@ fun SplashScreen(navController: NavController) {
         }
     })
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-        Image(painter = painterResource(R.drawable.logo), contentDescription = null, modifier = Modifier.scale(scale.value))
+        Image(painter = painterResource(R.drawable.logo2_1080x1080), contentDescription = null, modifier = Modifier.scale(scale.value))
     }
 }
