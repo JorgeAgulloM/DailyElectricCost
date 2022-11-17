@@ -19,6 +19,7 @@ Android 12L version for automatic colors if desired.
 The application incorporates an advertising banner based on google Admob.
 
 This app is developed with:
+
     - JetPack Compose 1.3.1
     - Dagger Hilt 2.42
     - Datastore 1.0.0
@@ -34,4 +35,4 @@ Target SDK 33
 
 ### Illustration of current work
 
-![Alpha version](https://github.com/JorgeAgulloM/DailyElectricCost/blob/main/Ilustrations/Alpha_DailyElecticCost.gif)
+<img src="https://github.com/JorgeAgulloM/DailyElectricCost/blob/main/Ilustrations/Alpha_DailyElecticCost.gif" alt="Alpha version" width="300px">
