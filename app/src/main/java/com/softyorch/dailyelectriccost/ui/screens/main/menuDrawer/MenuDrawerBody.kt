@@ -5,6 +5,7 @@
 package com.softyorch.dailyelectriccost.ui.screens.main.menuDrawer
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.WbSunny
@@ -16,7 +17,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.softyorch.dailyelectriccost.R
 import com.softyorch.dailyelectriccost.core.SendEmail
 import com.softyorch.dailyelectriccost.ui.model.datastore.SettingsUi
 import kotlinx.coroutines.CoroutineScope
@@ -40,6 +43,17 @@ fun MenuDrawerBody(
         drawerContent = {
             ModalDrawerSheet {
                 Spacer(Modifier.height(paddingValues.calculateTopPadding() + 8.dp))
+                Divider(modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.logo),
+                        contentDescription = "Logo"
+                    )
+                }
                 Divider(modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp))
 
                 SwitchMenuDrawer(
