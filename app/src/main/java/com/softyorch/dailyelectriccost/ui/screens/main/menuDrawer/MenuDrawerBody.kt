@@ -42,18 +42,15 @@ fun MenuDrawerBody(
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet {
-                Spacer(Modifier.height(paddingValues.calculateTopPadding() + 8.dp))
-                Divider(modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Image(
-                        painter = painterResource(R.drawable.logo),
-                        contentDescription = "Logo"
+                Divider(
+                    modifier = Modifier.padding(
+                        top = paddingValues.calculateTopPadding() + 8.dp,
+                        bottom = 8.dp,
+                        start = 8.dp,
+                        end = 8.dp
                     )
-                }
+                )
+                LogoMenu()
                 Divider(modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp))
 
                 SwitchMenuDrawer(
@@ -117,6 +114,20 @@ fun MenuDrawerBody(
         },
         content = {}
     )
+}
+
+@Composable
+private fun LogoMenu() {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            painter = painterResource(R.drawable.logo),
+            contentDescription = "Logo"
+        )
+    }
 }
 
 @Composable
