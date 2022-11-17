@@ -1,6 +1,7 @@
 package com.softyorch.dailyelectriccost.domain.redUseCases
 
 data class RedUsesCases(
-    val getDataDefault: GetDataDefault,
-    val getDataGeoTruncate: GetDataGeoTruncate
+    val getDataBalance: GetDataBalance,
+    val getDataGenerationTruncate: GetDataGenerationTruncate,
+    val getDataMarketsTruncate: GetDataMarketsTruncate
 )

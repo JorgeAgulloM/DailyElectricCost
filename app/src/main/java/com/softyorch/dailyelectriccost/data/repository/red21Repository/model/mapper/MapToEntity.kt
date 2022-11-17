@@ -1,14 +1,20 @@
 package com.softyorch.dailyelectriccost.data.repository.red21Repository.model.mapper
 
-import com.softyorch.dailyelectriccost.data.network.red21Api.entity.RedDataTruncateEntity
-import com.softyorch.dailyelectriccost.data.network.red21Api.entity.RedDefaultEntity
-import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.RedDataTruncateModel
-import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.RedDefaultModel
+import com.softyorch.dailyelectriccost.data.network.red21Api.entity.RedMarketsTruncateEntity
+import com.softyorch.dailyelectriccost.data.network.red21Api.entity.RedBalanceEntity
+import com.softyorch.dailyelectriccost.data.network.red21Api.entity.RedGenerationTruncateEntity
+import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.RedMarketsTruncateModel
+import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.RedBalanceModel
+import com.softyorch.dailyelectriccost.data.repository.red21Repository.model.RedGenerationTruncateModel
 
-fun RedDefaultModel.mapToRedDefaultEntity(): RedDefaultEntity = RedDefaultEntity(
-    widget, startDate, endDate, timeTruncate
+fun RedBalanceModel.mapToRedBalanceEntity(): RedBalanceEntity = RedBalanceEntity(
+    category, widget, startDate, endDate, timeTruncate
 )
 
-fun RedDataTruncateModel.mapToRedDataTruncateEntity(): RedDataTruncateEntity = RedDataTruncateEntity(
-    widget, startDate, endDate, timeTruncate, geo_limit, geo_ids
+fun RedGenerationTruncateModel.mapToGenerationTruncateEntity(): RedGenerationTruncateEntity = RedGenerationTruncateEntity(
+    category, widget, startDate, endDate, timeTruncate, geo_limit, geo_ids
+)
+
+fun RedMarketsTruncateModel.mapToRedMarketsTruncateEntity(): RedMarketsTruncateEntity = RedMarketsTruncateEntity(
+    category, widget, startDate, endDate, timeTruncate, geo_limit, geo_ids
 )
