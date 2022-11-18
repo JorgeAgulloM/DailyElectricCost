@@ -34,6 +34,6 @@ fun SplashScreen(navController: NavController) {
         }
     })
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-        Image(painter = painterResource(R.drawable.logo2_1080x1080), contentDescription = null, modifier = Modifier.scale(scale.value))
+        Image(painter = painterResource(R.drawable.logo_new3), contentDescription = null, modifier = Modifier.scale(scale.value))
     }
 }

@@ -119,12 +119,12 @@ fun MenuDrawerBody(
 @Composable
 private fun LogoMenu() {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
+        modifier = Modifier.fillMaxWidth().height(200.dp).padding(vertical = 16.dp),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
-            painter = painterResource(R.drawable.logo2),
+            painter = painterResource(R.drawable.logo_new3),
             contentDescription = "Logo"
         )
     }
