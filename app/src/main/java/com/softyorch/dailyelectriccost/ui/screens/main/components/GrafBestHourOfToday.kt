@@ -14,8 +14,6 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.unit.dp
 import com.softyorch.dailyelectriccost.ui.model.markets.MarketsModelUi
 import com.softyorch.dailyelectriccost.ui.theme.colorAvg
-import com.softyorch.dailyelectriccost.ui.theme.colorHi
-import com.softyorch.dailyelectriccost.ui.theme.colorLow
 
 @Composable
 fun GrafBestHourOfToday(marketsData: MarketsModelUi) {
@@ -26,12 +24,12 @@ fun GrafBestHourOfToday(marketsData: MarketsModelUi) {
     )
 
     Column {
-        TextPrice(
+/*        TextPrice(
             marketsData.lowPrice,
             "Hora más barata del día:  ${marketsData.lowHour}",
             colorLow,
             shadow
-        )
+        )*/
         Spacer(modifier = Modifier.size(8.dp))
         TextPrice(
             marketsData.avgPrice,
@@ -40,14 +38,14 @@ fun GrafBestHourOfToday(marketsData: MarketsModelUi) {
             shadow
         )
         Spacer(modifier = Modifier.size(8.dp))
-        TextPrice(
+/*        TextPrice(
             marketsData.hiPrice,
             "Hora más cara del día:  ${marketsData.hiHour}",
             colorHi,
             shadow
-        )
+        )*/
         Spacer(modifier = Modifier.size(8.dp))
-        TextContent(text = marketsData.bestLowRange)
+        //TextContent(text = marketsData.bestLowRange)
     }
 }
 

@@ -9,7 +9,6 @@ import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -28,46 +27,62 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.softyorch.dailyelectriccost.ui.model.markets.MarketsModelUi
 import com.softyorch.dailyelectriccost.ui.screens.main.utils.CalculateColor
 import com.softyorch.dailyelectriccost.ui.screens.main.utils.calculateBrush
 
 @Composable
-fun CircleTodayPrice(marketsData: MarketsModelUi, shadow: Shadow) {
+fun CirclePrice(
+    marketsData: MarketsModelUi,
+    showPrice: Double, //marketsData.currentPrice
+    size: Int = 150,
+    textSize: TextUnit = 10.sp,
+    text: String = "Precio actual €/Kwh"
+) {
+    val increaseTo = 120
+    val increasedSize = (increaseTo * size) / 100
+    val shadow = Shadow(
+        MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f),
+        offset = Offset(1F, 1F),
+        blurRadius = 1F
+    )
+    val brush = calculateBrush(marketsData, showPrice)
+    val textColor = CalculateColor(marketsData, showPrice)
+    val hiPrice = marketsData.hiPrice
     Box(
-        modifier = Modifier.fillMaxWidth(),
+        //modifier = Modifier.fillMaxWidth(),
         contentAlignment = Alignment.Center
     ) {
-        Box(modifier = Modifier
-            .size(150.dp)
-            .shadow(elevation = 24.dp, shape = CircleShape, clip = true, spotColor = MaterialTheme.colorScheme.primaryContainer)
+        Box(
+            modifier = Modifier.size(size.dp).shadow(
+                    elevation = 24.dp,
+                    shape = CircleShape,
+                    clip = true,
+                    spotColor = MaterialTheme.colorScheme.primaryContainer
+                )
         )
         Box(
-            modifier = Modifier
-                .size(170.dp)
-                .padding(8.dp)
-                .background(
+            modifier = Modifier.size(increasedSize.dp).padding(8.dp).background(
                     color = MaterialTheme.colorScheme.background.copy(alpha = 0.4f),
                     shape = CircleShape
                 ),
             contentAlignment = Alignment.Center
         ) {
-            val progress = ((marketsData.currentPrice * 100) / marketsData.hiPrice).toInt().toFloat()
+            val progress =
+                ((showPrice * 100) / hiPrice).toInt().toFloat()
 
-            CircularProgressBar(marketsData = marketsData, dataUsage = progress)
-            val textColor = CalculateColor(marketsData, marketsData.currentPrice)
+            CircularProgressBar(brush, size = size.dp, dataUsage = progress)
             Box(
-                modifier = Modifier
-                    .size(140.dp)
-                    .padding(8.dp)
-                    .background(
+                modifier = Modifier.size(size.dp).padding(8.dp).background(
                         color = MaterialTheme.colorScheme.background,
                         shape = CircleShape
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                LitleKwhPrice(marketsData.currentPrice, "actual €/Kwh", textColor, shadow)
+                LitleKwhPrice(showPrice, text, textSize, textColor, shadow )
             }
         }
     }
@@ -75,14 +90,14 @@ fun CircleTodayPrice(marketsData: MarketsModelUi, shadow: Shadow) {
 
 @Composable
 fun CircularProgressBar(
-    marketsData: MarketsModelUi,
-    size: Dp = 140.dp,
+    brush: Brush,
+    size: Dp = 150.dp,
     shadowColor: Color = MaterialTheme.colorScheme.primaryContainer,
     indicatorThickness: Dp = 8.dp,
     dataUsage: Float
 ) {
 
-    val brush = calculateBrush(marketsData, marketsData.currentPrice)
+
     val scale = remember { Animatable(0f) }
     if (dataUsage > 0) LaunchedEffect(
         key1 = true,

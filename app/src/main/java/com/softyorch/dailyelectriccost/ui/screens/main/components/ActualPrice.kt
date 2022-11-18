@@ -25,7 +25,6 @@ import com.softyorch.dailyelectriccost.utils.funcExtensions.limitLengthToString
 fun ActualPrice(
     marketsData: MarketsModelUi
 ) {
-
     Row(
         modifier = Modifier
             .padding(top = 40.dp)

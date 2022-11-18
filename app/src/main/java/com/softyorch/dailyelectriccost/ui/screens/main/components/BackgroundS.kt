@@ -5,10 +5,7 @@
 package com.softyorch.dailyelectriccost.ui.screens.main.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.material3.MaterialTheme
@@ -29,7 +26,7 @@ fun BackgroundS() {
 
     Surface(Modifier.fillMaxSize()) {
         Column {
-            Box(Modifier.weight(0.25f), contentAlignment = Alignment.BottomEnd) {
+            Box(Modifier.height(220.dp), contentAlignment = Alignment.BottomEnd) {
                 Box(Modifier.size(sizeCorners).background(color = bottomColor))
                 Box(
                     Modifier
@@ -46,7 +43,7 @@ fun BackgroundS() {
                 )
 
             }
-            Box(Modifier.weight(0.75f), contentAlignment = Alignment.TopStart) {
+            Box(Modifier.weight(1f), contentAlignment = Alignment.TopStart) {
                 Box(Modifier.size(sizeCorners).background(color = topColor))
                 Box(
                     Modifier
