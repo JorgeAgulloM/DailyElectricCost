@@ -26,7 +26,7 @@ data class MenuDrawerItems(
                 ),
                 MenuDrawerItems(
                     id = 1,
-                    text = "Contacta con el desarrollador",
+                    text = "Contacto",
                     contentDescription = "Envia eMail al desarrollador",
                     icon = Icons.Rounded.Email
                 )

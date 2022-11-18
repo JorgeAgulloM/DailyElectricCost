@@ -39,52 +39,47 @@ fun GrafValuesOfToday(
     marketsData: MarketsModelUi
 ) {
     val height = marketsData.hiPrice
+    val maxHeight = (marketsData.hiPrice / 10) * 8
 
     Column(
         verticalArrangement = Arrangement.SpaceAround,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.height(height = height.dp)
+        modifier = Modifier.height(height = maxHeight.dp)
     ) {
-        Column(
-            verticalArrangement = Arrangement.Top
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 8.dp),
+            verticalAlignment = Alignment.Top,
+            horizontalArrangement = Arrangement.Start
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .weight(1f)
-                    .padding(bottom = 8.dp),
-                verticalAlignment = Alignment.Bottom,
-                horizontalArrangement = Arrangement.Start
-            ) {
-                val scrollState = rememberLazyListState()
+            val scrollState = rememberLazyListState()
 
-                LazyRow(
-                    modifier = Modifier.simpleHorizontalScrollBar(scrollState),
-                    state = scrollState,
-                    verticalAlignment = Alignment.Bottom,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    items(marketsData.values) { valuesUi ->
-                        if (valuesUi.value > 0.0) Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Bottom
-                        ) {
-                            val brush = calculateBrush(marketsData, valuesUi.value)
-                            GraphicColumnDay(
-                                value = valuesUi.value,
-                                hour = valuesUi.dateTime,
-                                isCurrentHour = valuesUi.value == marketsData.currentPrice,
-                                maxHeight = height,
-                                brush = brush
-                            )
-                            GraphicTextDay(valuesUi.value)
-                        }
+            LazyRow(
+                modifier = Modifier.simpleHorizontalScrollBar(scrollState),
+                state = scrollState,
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                items(marketsData.values) { valuesUi ->
+                    if (valuesUi.value > 0.0) Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Bottom
+                    ) {
+                        val brush = calculateBrush(marketsData, valuesUi.value)
+                        GraphicColumnDay(
+                            value = valuesUi.value,
+                            hour = valuesUi.dateTime,
+                            isCurrentHour = valuesUi.value == marketsData.currentPrice,
+                            maxHeight = height,
+                            brush = brush
+                        )
+                        GraphicTextDay(valuesUi.value)
                     }
                 }
             }
         }
     }
-
 }
 
 
@@ -113,7 +108,7 @@ private fun GraphicColumnDay(
         }
     )
     Box(
-        modifier = Modifier.padding(top = 16.dp).clickable {
+        modifier = Modifier.padding(top = 4.dp).clickable {
             showPopup = true
             scope.launch {
                 delay(2000)

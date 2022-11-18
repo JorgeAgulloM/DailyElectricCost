@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import com.softyorch.dailyelectriccost.utils.funcExtensions.limitLengthToString
 
@@ -21,6 +22,7 @@ import com.softyorch.dailyelectriccost.utils.funcExtensions.limitLengthToString
 fun LitleKwhPrice(
     price: Double,
     text: String,
+    fontSize: TextUnit,
     color: Color,
     shadow: Shadow
 ) {
@@ -30,11 +32,13 @@ fun LitleKwhPrice(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Precio $text",
+            text = text,
             modifier = Modifier.fillMaxWidth(),
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodySmall
+            style = MaterialTheme.typography.bodySmall.copy(
+                fontSize = fontSize
+            )
         )
         AnimatedText(
             price = price
@@ -46,6 +50,7 @@ fun LitleKwhPrice(
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleLarge.copy(
                     fontWeight = FontWeight.Bold,
+                    fontSize = fontSize * 2,
                     shadow = shadow
                 )
             )
