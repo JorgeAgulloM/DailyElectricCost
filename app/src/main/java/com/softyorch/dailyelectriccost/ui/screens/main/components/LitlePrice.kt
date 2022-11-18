@@ -30,7 +30,7 @@ fun LitlePrice(
         verticalArrangement = Arrangement.SpaceAround,
         horizontalAlignment = Alignment.Start
     ) {
-        AnimatedText(
+        AnimatedPrice(
             price = price
         ) { targetCount ->
             Text(

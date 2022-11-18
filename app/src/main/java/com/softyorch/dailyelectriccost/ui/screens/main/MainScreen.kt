@@ -12,11 +12,14 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -31,6 +34,7 @@ import com.softyorch.dailyelectriccost.ui.model.markets.MarketsModelUi
 import com.softyorch.dailyelectriccost.ui.screens.main.components.*
 import com.softyorch.dailyelectriccost.ui.screens.main.menuDrawer.MenuDrawerBody
 import com.softyorch.dailyelectriccost.ui.screens.main.menuDrawer.MenuDrawerItems
+import com.softyorch.dailyelectriccost.ui.screens.main.utils.CalculateColor
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -67,7 +71,10 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel, sendEmail
     ) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             BackgroundS() //Background S form
-            Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
                 Head(marketsData)
                 Body(marketsData)
                 Footer()
@@ -91,11 +98,42 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel, sendEmail
 fun Head(marketsData: MarketsModelUi) {
     Column {
         ActualPrice(marketsData)
-        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.Center) {
-            CirclePrice(marketsData, marketsData.hiPrice, size = 90, textSize = 7.sp, "Máximo €/Kwh")
-            CirclePrice(marketsData, marketsData.currentPrice)
-            CirclePrice(marketsData, marketsData.lowPrice, size = 90, textSize = 7.sp,"Mímino €/Kwh")
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.Bottom,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            TextValuesToDay(
+                marketsData.hiPrice,
+                "Mímino €/Kwh",
+                fontSize = 8.sp,
+                CalculateColor(marketsData, marketsData.hiPrice)
+            )
+            CirclePrice(marketsData)
+            TextValuesToDay(
+                marketsData.lowPrice,
+                "Mímino €/Kwh",
+                fontSize = 8.sp,
+                CalculateColor(marketsData, marketsData.lowPrice)
+            )
         }
+    }
+}
+
+@Composable
+fun TextValuesToDay(
+    showPrice: Double,
+    text: String,
+    fontSize: TextUnit,
+    textColor: Color,
+) {
+    Box(modifier = Modifier.padding(bottom = 16.dp)) {
+        val shadow = Shadow(
+            MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f),
+            offset = Offset(1F, 1F),
+            blurRadius = 1F
+        )
+        LitleKwhPrice(showPrice, text, fontSize, textColor, shadow)
     }
 }
 
@@ -112,18 +150,8 @@ fun Body(
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column(
-            modifier = Modifier
-                .verticalScroll(rememberScrollState(0)),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.Start
-        ) {
-            //CircleTodayPrice(marketsData, shadow)
-            GrafValuesOfToday(marketsData)
-            Spacer(modifier = Modifier.padding(vertical = 8.dp))
-            GrafBestHourOfToday(marketsData)
-            Spacer(modifier = Modifier.padding(vertical = 8.dp))
-        }
+        GrafValuesOfToday(marketsData)
+        Spacer(modifier = Modifier.padding(vertical = 8.dp))
     }
 }
 

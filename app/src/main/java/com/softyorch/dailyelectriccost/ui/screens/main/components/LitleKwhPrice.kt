@@ -4,6 +4,8 @@
 
 package com.softyorch.dailyelectriccost.ui.screens.main.components
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -18,6 +20,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import com.softyorch.dailyelectriccost.utils.funcExtensions.limitLengthToString
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun LitleKwhPrice(
     price: Double,
@@ -27,25 +30,27 @@ fun LitleKwhPrice(
     shadow: Shadow
 ) {
     Column(
-        modifier = Modifier.padding(4.dp),
+        modifier = Modifier.padding(4.dp).width(110.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = text,
-            modifier = Modifier.fillMaxWidth(),
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodySmall.copy(
-                fontSize = fontSize
+        AnimatedContent(
+            targetState = text
+        ) { textResult ->
+            Text(
+                text = textResult,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodySmall.copy(
+                    fontSize = fontSize
+                )
             )
-        )
-        AnimatedText(
+        }
+        AnimatedPrice(
             price = price
         ) { targetCount ->
             Text(
                 text = "${(targetCount / 1000).limitLengthToString()}€",
-                modifier = Modifier.fillMaxWidth(),
                 color = color,
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleLarge.copy(

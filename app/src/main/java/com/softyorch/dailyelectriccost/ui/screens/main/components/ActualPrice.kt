@@ -35,7 +35,7 @@ fun ActualPrice(
         Column(
             modifier = Modifier.weight(1f),
         ) {
-            AnimatedText(
+            AnimatedPrice(
                 price = marketsData.currentPrice
             ) { targetCount ->
                 Text(

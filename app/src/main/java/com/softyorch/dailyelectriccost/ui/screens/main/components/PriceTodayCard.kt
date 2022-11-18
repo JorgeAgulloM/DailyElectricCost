@@ -4,18 +4,24 @@
 
 package com.softyorch.dailyelectriccost.ui.screens.main.components
 
+import androidx.compose.animation.*
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -37,11 +43,18 @@ import com.softyorch.dailyelectriccost.ui.screens.main.utils.calculateBrush
 @Composable
 fun CirclePrice(
     marketsData: MarketsModelUi,
-    showPrice: Double, //marketsData.currentPrice
     size: Int = 150,
-    textSize: TextUnit = 10.sp,
-    text: String = "Precio actual €/Kwh"
+    textSize: TextUnit = 10.sp
 ) {
+    var text by remember { mutableStateOf("") }
+    var showPrice by remember { mutableStateOf(0.0) }
+    var isAvgPrice by remember { mutableStateOf(false) }
+    var progress by remember { mutableStateOf(0f) }
+
+    text = if (isAvgPrice) "Precio medio €/Kwh" else "Precio actual €/Kwh"
+    showPrice = if (isAvgPrice) marketsData.avgPrice else marketsData.currentPrice
+    progress = ((showPrice * 100) / marketsData.hiPrice).toInt().toFloat()
+
     val increaseTo = 120
     val increasedSize = (increaseTo * size) / 100
     val shadow = Shadow(
@@ -51,104 +64,119 @@ fun CirclePrice(
     )
     val brush = calculateBrush(marketsData, showPrice)
     val textColor = CalculateColor(marketsData, showPrice)
-    val hiPrice = marketsData.hiPrice
+
     Box(
-        //modifier = Modifier.fillMaxWidth(),
         contentAlignment = Alignment.Center
     ) {
         Box(
             modifier = Modifier.size(size.dp).shadow(
-                    elevation = 24.dp,
-                    shape = CircleShape,
-                    clip = true,
-                    spotColor = MaterialTheme.colorScheme.primaryContainer
-                )
+                elevation = 24.dp,
+                shape = CircleShape,
+                clip = true,
+                spotColor = MaterialTheme.colorScheme.primaryContainer
+            )
         )
         Box(
             modifier = Modifier.size(increasedSize.dp).padding(8.dp).background(
-                    color = MaterialTheme.colorScheme.background.copy(alpha = 0.4f),
-                    shape = CircleShape
-                ),
+                color = MaterialTheme.colorScheme.background.copy(alpha = 0.4f),
+                shape = CircleShape
+            ),
             contentAlignment = Alignment.Center
         ) {
-            val progress =
-                ((showPrice * 100) / hiPrice).toInt().toFloat()
 
-            CircularProgressBar(brush, size = size.dp, dataUsage = progress)
+            var isEnable by remember { mutableStateOf(value = false) }
+            isEnable = circularProgressBar(brush, size = size.dp, dataUsage = progress)
             Box(
                 modifier = Modifier.size(size.dp).padding(8.dp).background(
-                        color = MaterialTheme.colorScheme.background,
-                        shape = CircleShape
-                    ),
+                    color = MaterialTheme.colorScheme.background,
+                    shape = CircleShape
+                ),
                 contentAlignment = Alignment.Center
             ) {
-                LitleKwhPrice(showPrice, text, textSize, textColor, shadow )
+                IconButton(
+                    modifier = Modifier.fillMaxSize(),
+                    enabled = isEnable,
+                    onClick = {
+                        isAvgPrice = !isAvgPrice
+                    }
+                ) {
+                    LitleKwhPrice(showPrice, text, textSize, textColor, shadow)
+                }
             }
         }
     }
+
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun CircularProgressBar(
+fun circularProgressBar(
     brush: Brush,
     size: Dp = 150.dp,
     shadowColor: Color = MaterialTheme.colorScheme.primaryContainer,
     indicatorThickness: Dp = 8.dp,
     dataUsage: Float
-) {
+): Boolean {
 
+    var isAnimatingFinished by remember { mutableStateOf(false) }
 
-    val scale = remember { Animatable(0f) }
-    if (dataUsage > 0) LaunchedEffect(
-        key1 = true,
-        block = {
-            scale.animateTo(
-                targetValue = dataUsage,
-                animationSpec = spring(dampingRatio = 1f, stiffness = 10f)
-            )
-        }
-    )
+    AnimatedContent(
+        targetState = dataUsage,
+    ) { targetState ->
+        val scale = remember { Animatable(0f) }
+        if (targetState > 0) LaunchedEffect(
+            key1 = true,
+            block = {
+                scale.animateTo(
+                    targetValue = targetState,
+                    animationSpec = spring(dampingRatio = 1f, stiffness = 10f)
+                )
+            }
+        )
+        isAnimatingFinished = scale.value == dataUsage
 
-    Box(
-        modifier = Modifier.size(size),
-        contentAlignment = Alignment.Center
-    ) {
-
-        val backColor = MaterialTheme.colorScheme.background
-        Canvas(
-            modifier = Modifier.size(size)
+        Box(
+            modifier = Modifier.size(size),
+            contentAlignment = Alignment.Center
         ) {
 
-            // For shadow
-            drawCircle(
-                brush = Brush.radialGradient(
-                    colors = listOf(shadowColor, backColor),
-                    center = Offset(x = this.size.width / 2, y = this.size.height / 2),
-                    radius = this.size.height / 2
-                ),
-                radius = this.size.height / 2,
-                center = Offset(x = this.size.width / 2, y = this.size.height / 2)
-            )
+            val backColor = MaterialTheme.colorScheme.background
+            Canvas(
+                modifier = Modifier.size(size)
+            ) {
 
-            // Convert the dataUsage to angle
-            val sweepAngle = (scale.value) * 360 / 100
-
-            // Foreground indicator
-            drawArc(
-                brush = brush,
-                startAngle = -90f,
-                sweepAngle = sweepAngle,
-                useCenter = false,
-                style = Stroke(width = indicatorThickness.toPx(), cap = StrokeCap.Round),
-                size = Size(
-                    width = (size - indicatorThickness).toPx(),
-                    height = (size - indicatorThickness).toPx()
-                ),
-                topLeft = Offset(
-                    x = (indicatorThickness / 2).toPx(),
-                    y = (indicatorThickness / 2).toPx()
+                // For shadow
+                drawCircle(
+                    brush = Brush.radialGradient(
+                        colors = listOf(shadowColor, backColor),
+                        center = Offset(x = this.size.width / 2, y = this.size.height / 2),
+                        radius = this.size.height / 2
+                    ),
+                    radius = this.size.height / 2,
+                    center = Offset(x = this.size.width / 2, y = this.size.height / 2)
                 )
-            )
+
+                // Convert the dataUsage to angle
+                val sweepAngle = (scale.value) * 360 / 100
+
+                // Foreground indicator
+                drawArc(
+                    brush = brush,
+                    startAngle = -90f,
+                    sweepAngle = sweepAngle,
+                    useCenter = false,
+                    style = Stroke(width = indicatorThickness.toPx(), cap = StrokeCap.Round),
+                    size = Size(
+                        width = (size - indicatorThickness).toPx(),
+                        height = (size - indicatorThickness).toPx()
+                    ),
+                    topLeft = Offset(
+                        x = (indicatorThickness / 2).toPx(),
+                        y = (indicatorThickness / 2).toPx()
+                    )
+                )
+            }
         }
     }
+    return isAnimatingFinished
 }

@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 @SuppressLint("CoroutineCreationDuringComposition")
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun AnimatedText(
+fun AnimatedPrice(
     price: Double = 0.0,
     animatedScope: @Composable (Double) -> Unit
 ) {
